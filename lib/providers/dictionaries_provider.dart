@@ -23,6 +23,13 @@ final downloadProgressProvider =
 final downloadStatusProvider =
     StateProvider.family<String, String>((ref, dictCode) => '');
 
+/// Remote file size provider.
+final remoteSizeProvider = FutureProvider.family<int?, String>((ref, dictCode) async {
+  final info = DictionaryRegistry.byCode(dictCode);
+  if (info == null) return null;
+  return DownloadService.fetchRemoteSize(info);
+});
+
 /// Action: download a specific dictionary and refresh available list.
 class DownloadNotifier {
   final Ref _ref;
@@ -51,6 +58,21 @@ class DownloadNotifier {
     } finally {
       _ref.read(downloadProgressProvider(dictCode).notifier).state = null;
       _ref.invalidate(availableDictsProvider);
+    }
+  }
+
+  Future<void> downloadAll() async {
+    final available = await _ref.read(availableDictsProvider.future);
+    final toDownload = DictionaryRegistry.all
+        .where((d) => !available.contains(d.codeLo))
+        .map((d) => d.codeLo)
+        .toList();
+
+    for (final code in toDownload) {
+      // Check if already downloading via progress provider
+      if (_ref.read(downloadProgressProvider(code)) == null) {
+        await download(code);
+      }
     }
   }
 

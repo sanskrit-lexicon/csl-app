@@ -15,7 +15,18 @@ class ManageDictionariesScreen extends ConsumerWidget {
     final settingsNotifier = ref.read(settingsProvider.notifier);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Manage Dictionaries')),
+      appBar: AppBar(
+        title: const Text('Manage Dictionaries'),
+        actions: [
+          IconButton(
+            tooltip: 'Download All',
+            icon: const Icon(Icons.download_for_offline),
+            onPressed: () {
+              ref.read(downloadNotifierProvider).downloadAll();
+            },
+          ),
+        ],
+      ),
       body: availableAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, _) => Center(child: Text('Error loading status: $err')),
@@ -47,7 +58,25 @@ class ManageDictionariesScreen extends ConsumerWidget {
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('${info.codeUp} • ${info.year}'),
+                    Row(
+                      children: [
+                        Text('${info.codeUp} • ${info.year}'),
+                        const Spacer(),
+                        if (!isAvailable && !isDownloading)
+                          Consumer(
+                            builder: (context, ref, child) {
+                              final sizeAsync = ref.watch(remoteSizeProvider(info.codeLo));
+                              return sizeAsync.maybeWhen(
+                                data: (size) => size != null
+                                    ? Text(DownloadService.formatBytes(size),
+                                        style: const TextStyle(fontSize: 12, color: Colors.grey))
+                                    : const SizedBox.shrink(),
+                                orElse: () => const SizedBox.shrink(),
+                              );
+                            },
+                          ),
+                      ],
+                    ),
                     if (isDownloading) ...[
                       const SizedBox(height: 4),
                       LinearProgressIndicator(value: progress),

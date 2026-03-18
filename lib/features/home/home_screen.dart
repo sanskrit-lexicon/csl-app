@@ -25,10 +25,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   void initState() {
     super.initState();
     _hwController.addListener(() {
-      ref.read(headwordQueryProvider.notifier).state = _hwController.text;
+      final text = _hwController.text.trim();
+      if (text.length >= 3) {
+        ref.read(headwordQueryProvider.notifier).state = text;
+      }
     });
     _defController.addListener(() {
-      ref.read(definitionQueryProvider.notifier).state = _defController.text;
+      final text = _defController.text.trim();
+      if (text.length >= 3) {
+        ref.read(definitionQueryProvider.notifier).state = text;
+      }
     });
   }
 
@@ -57,7 +63,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   @override
   Widget build(BuildContext context) {
     final settings = ref.watch(settingsProvider);
-    _syncTabs(settings.activeDictCodes);
+    final filteredTabsAsync = ref.watch(filteredTabsProvider);
+    final filteredTabs = filteredTabsAsync.value ?? [];
+    _syncTabs(filteredTabs);
 
     return Scaffold(
       appBar: AppBar(
@@ -73,7 +81,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                   isScrollable: true,
                   tabs: _currentTabs.map((code) {
                     final info = DictionaryRegistry.byCode(code)!;
-                    return Tab(text: info.name);
+                    return Tab(text: info.codeUp);
                   }).toList(),
                 ),
             ],
@@ -81,7 +89,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         ),
       ),
       drawer: const AppDrawer(),
-      body: _buildBody(settings.headwordSearchMode, settings.definitionSearchMode),
+      body: _buildBody(settings, settings.headwordSearchMode, settings.definitionSearchMode),
     );
   }
 
@@ -105,10 +113,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                     suffixIcon: _hwController.text.isNotEmpty
                         ? IconButton(
                             icon: const Icon(Icons.clear, size: 18),
-                            onPressed: () => _hwController.clear(),
+                            onPressed: () {
+                              _hwController.clear();
+                              ref.read(headwordQueryProvider.notifier).state = '';
+                            },
                           )
                         : null,
                   ),
+                  onSubmitted: (val) {
+                    ref.read(headwordQueryProvider.notifier).state = val.trim();
+                  },
                 ),
               ),
             ],
@@ -129,10 +143,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                     suffixIcon: _defController.text.isNotEmpty
                         ? IconButton(
                             icon: const Icon(Icons.clear, size: 18),
-                            onPressed: () => _defController.clear(),
+                            onPressed: () {
+                              _defController.clear();
+                              ref.read(definitionQueryProvider.notifier).state = '';
+                            },
                           )
                         : null,
                   ),
+                  onSubmitted: (val) {
+                    ref.read(definitionQueryProvider.notifier).state = val.trim();
+                  },
                 ),
               ),
             ],
@@ -142,8 +162,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     );
   }
 
-  Widget _buildBody(SearchMode hwMode, SearchMode defMode) {
-    if (_currentTabs.isEmpty) {
+  Widget _buildBody(AppSettings settings, SearchMode hwMode, SearchMode defMode) {
+    if (settings.activeDictCodes.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -158,6 +178,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               },
               child: const Text('Open Drawer to Manage Dictionaries'),
             )
+          ],
+        ),
+      );
+    }
+
+    if (_currentTabs.isEmpty) {
+      return const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.search_off, size: 64, color: Colors.grey),
+            SizedBox(height: 16),
+            Text('No word matches the query.'),
           ],
         ),
       );

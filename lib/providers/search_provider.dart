@@ -22,12 +22,12 @@ final searchResultsProvider = FutureProvider.family<List<SearchResult>, String>(
     }
 
     if (hwQuery.trim().isNotEmpty && defQuery.trim().isNotEmpty) {
-      // Both queries set — prioritise headword search
-      return SearchService.searchHeadword(
+      return SearchService.searchCombined(
         dictCode: dictCode,
-        inputWord: hwQuery.trim(),
+        hwInput: hwQuery.trim(),
+        defInput: defQuery.trim(),
         inputTranslit: settings.inputTranslit,
-        mode: settings.headwordSearchMode,
+        hwMode: settings.headwordSearchMode,
         maxResults: settings.maxResults,
       );
     }
@@ -52,3 +52,30 @@ final searchResultsProvider = FutureProvider.family<List<SearchResult>, String>(
     );
   },
 );
+
+/// Only show tabs that have results for the current search.
+final filteredTabsProvider = FutureProvider<List<String>>((ref) async {
+  final settings = ref.watch(settingsProvider);
+  final activeCodes = settings.activeDictCodes;
+  if (activeCodes.isEmpty) return [];
+
+  final hwQuery = ref.watch(headwordQueryProvider);
+  final defQuery = ref.watch(definitionQueryProvider);
+
+  if (hwQuery.trim().isEmpty && defQuery.trim().isEmpty) {
+    return activeCodes;
+  }
+
+  // Run searches in parallel to see which dicts have results
+  final results = await Future.wait(
+    activeCodes.map((code) => ref.read(searchResultsProvider(code).future)),
+  );
+
+  final filtered = <String>[];
+  for (int i = 0; i < activeCodes.length; i++) {
+    if (results[i].isNotEmpty) {
+      filtered.add(activeCodes[i]);
+    }
+  }
+  return filtered;
+});

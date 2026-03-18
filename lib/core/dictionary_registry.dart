@@ -188,14 +188,6 @@ class DictionaryRegistry {
       bibliographicEntry: 'MONIER-WILLIAMS, M. (1851). A dictionary, English and Sanscrit. London, W.H. Allen.',
     ),
     DictionaryInfo(
-      codeUp: 'PD', codeLo: 'pd', year: '2020',
-      name: 'An Encyclopedic Dictionary of Sanskrit on Historical Principles',
-      title: 'Encyclopedic Dictionary of Sanskrit 1976+',
-      hasAccent: true, hasDevaTextOption: true,
-      worldCatUrl: 'https://www.worldcat.org/title/encyclopaedic-dictionary-of-sanskrit/oclc/3932453',
-      bibliographicEntry: 'GHATAGE, A. M. et al. (1976). An Encyclopaedic Dictionary of Sanskrit. Poona: Deccan College.',
-    ),
-    DictionaryInfo(
       codeUp: 'PE', codeLo: 'pe', year: '2020',
       name: 'Puranic Encyclopedia',
       title: 'Puranic Encyclopedia 1975',

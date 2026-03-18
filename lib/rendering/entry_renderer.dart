@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../models/app_settings.dart';
+import '../models/dictionary_info.dart';
+import '../core/dictionary_registry.dart';
 import '../core/transliteration_service.dart';
 import '../core/search_service.dart';
 import 'entry_parser.dart';
@@ -19,7 +22,10 @@ class EntryRenderer {
     required VoidCallback onCopy,
     required String dictCodeUp,
     required double lnum,
+    String? highlightTerm,
   }) async {
+    final dictInfo = DictionaryRegistry.byCode(dictCode)!;
+
     // 1. Pre-fetch abbreviations used in this entry
     final abbrsNeeded = EntryParser.extractAbbreviations(entry.bodyHtml);
     final abbrCache = <String, String>{};
@@ -37,7 +43,7 @@ class EntryRenderer {
         TransliterationService.fromSlp1(slp1Key, settings.outputTranslit);
 
     // 3. Process body HTML
-    final processedHtml = _buildBodyHtml(entry.bodyHtml, abbrCache);
+    final processedHtml = _buildBodyHtml(entry.bodyHtml, abbrCache, highlightTerm);
 
     return _EntryCard(
       displayKey: displayKey,
@@ -49,6 +55,7 @@ class EntryRenderer {
       onWordTap: onWordTap,
       onCopy: onCopy,
       outputTranslit: settings.outputTranslit,
+      dictInfo: dictInfo,
     );
   }
 
@@ -61,7 +68,7 @@ class EntryRenderer {
   }
 
   String _buildBodyHtml(
-      String bodyHtml, Map<String, String> abbreviationCache) {
+      String bodyHtml, Map<String, String> abbreviationCache, String? highlightTerm) {
     // Replace <s> and <SA> Sanskrit inline text with transliterated output
     String html = bodyHtml;
 
@@ -71,7 +78,8 @@ class EntryRenderer {
         final slp1 = m.group(1) ?? '';
         final out =
             TransliterationService.fromSlp1(slp1, settings.outputTranslit);
-        return '<b>$out</b>';
+        // Use a <span> with a specific class for subtle Sanskrit color
+        return '<span class="sanskrit">$out</span>';
       },
     );
 
@@ -102,6 +110,17 @@ class EntryRenderer {
     html = html.replaceAll(RegExp(r'</?F>'), '');
     html = html.replaceAll(RegExp(r'</?hom>'), '');
 
+    // Apply highlighting if term is provided
+    if (highlightTerm != null && highlightTerm.isNotEmpty) {
+      // Basic case-insensitive highlight for the term in the final HTML
+      // Note: This is a simple implementation; real highlighting might need to skip tags.
+      final escaped = RegExp.escape(highlightTerm);
+      html = html.replaceAllMapped(
+        RegExp('($escaped)', caseSensitive: false),
+        (match) => '<mark>${match.group(1)}</mark>',
+      );
+    }
+
     // Wrap in a div for styling
     return '<div style="font-size:15px; line-height:1.6;">$html</div>';
   }
@@ -129,7 +148,9 @@ class _EntryCard extends StatelessWidget {
     required this.onWordTap,
     required this.onCopy,
     required this.outputTranslit,
+    required this.dictInfo,
   });
+  final DictionaryInfo dictInfo;
 
   @override
   Widget build(BuildContext context) {
@@ -192,9 +213,14 @@ class _EntryCard extends StatelessWidget {
               return false;
             },
             customStylesBuilder: (element) {
-              if (element.classes.contains('sa') ||
-                  element.localName == 'b') {
-                return {'color': '#E07800'};
+              if (element.classes.contains('sanskrit')) {
+                // Subtle color for Sanskrit text, e.g., slightly desaturated greyish-brown
+                // Using a color that is "barely different" but noticeable.
+                return {'color': theme.brightness == Brightness.dark ? '#A0A0A0' : '#555555'};
+              }
+              if (element.localName == 'b') {
+                final primaryHex = '#${theme.colorScheme.primary.toARGB32().toRadixString(16).substring(2).padLeft(6, '0')}';
+                return {'color': primaryHex};
               }
               if (element.classes.contains('ls')) {
                 return {'color': '#888888', 'font-style': 'italic'};
@@ -215,13 +241,13 @@ class _EntryCard extends StatelessWidget {
               _linkText(
                 context,
                 'PDF',
-                'https://www.sanskrit-lexicon.uni-koeln.de/scans/${dictCodeUp}Scan/2020/MCS/${dictCodeUp.toLowerCase()}${lnum.toInt()}.pdf',
+                dictInfo.pdfUrl(pageCol ?? ''),
               ),
               const SizedBox(width: 16),
               _linkText(
                 context,
                 'Correction',
-                'https://www.sanskrit-lexicon.uni-koeln.de/scans/csl-corrections/app/correction_form_response.php?dict=$dictCodeUp&L=${lnum.toInt()}',
+                dictInfo.correctionBaseUrl,
               ),
               if (pageCol != null) ...[
                 const Spacer(),
@@ -244,7 +270,10 @@ class _EntryCard extends StatelessWidget {
   Widget _linkText(BuildContext context, String label, String url) {
     return GestureDetector(
       onTap: () async {
-        // URL launching handled by parent via url_launcher
+        final uri = Uri.parse(url);
+        if (await canLaunchUrl(uri)) {
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+        }
       },
       child: Text(
         label,

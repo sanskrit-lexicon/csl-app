@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../preferences/preferences_screen.dart';
 import '../../dictionaries/manage_dictionaries_screen.dart';
 
@@ -65,10 +66,46 @@ class AppDrawer extends StatelessWidget {
               showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
-                  title: const Text('About sanslex'),
-                  content: const Text(
-                      'Offline dictionary application for the Cologne '
-                      'Sanskrit Lexicon.\n\nBuilt with Flutter.'),
+                  title: const Text('Cologne Digital Sanskrit Dictionaries'),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Offline dictionary application for the Cologne '
+                        'Sanskrit Lexicon.',
+                      ),
+                      const SizedBox(height: 16),
+                      const Text('License: GNU GPL v3.0'),
+                      const SizedBox(height: 8),
+                      InkWell(
+                        onTap: () => launchUrl(
+                          Uri.parse('https://github.com/sanskrit-lexicon/csl-app'),
+                          mode: LaunchMode.externalApplication,
+                        ),
+                        child: Text(
+                          'GitHub Repository',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      InkWell(
+                        onTap: () => launchUrl(
+                          Uri.parse('mailto:drdhaval2785@gmail.com'),
+                        ),
+                        child: Text(
+                          'drdhaval2785@gmail.com',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),

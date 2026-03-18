@@ -38,7 +38,12 @@ class DatabaseHelper {
     final path = await dbPath(code);
     final db = await databaseFactory.openDatabase(
       path,
-      options: OpenDatabaseOptions(readOnly: true),
+      options: OpenDatabaseOptions(
+        readOnly: true,
+        onOpen: (db) async {
+          await db.execute('PRAGMA case_sensitive_like = ON;');
+        },
+      ),
     );
     _openDbs[code] = db;
     return db;
@@ -51,7 +56,12 @@ class DatabaseHelper {
     final path = await abDbPath(dictCode);
     final db = await databaseFactory.openDatabase(
       path,
-      options: OpenDatabaseOptions(readOnly: true),
+      options: OpenDatabaseOptions(
+        readOnly: true,
+        onOpen: (db) async {
+          await db.execute('PRAGMA case_sensitive_like = ON;');
+        },
+      ),
     );
     _openDbs[code] = db;
     return db;

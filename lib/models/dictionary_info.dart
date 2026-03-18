@@ -32,5 +32,9 @@ class DictionaryInfo {
 
   /// Correction form base URL.
   String get correctionBaseUrl =>
-      'https://www.sanskrit-lexicon.uni-koeln.de/scans/csl-corrections/app/correction_form_response.php?dict=$codeUp';
+      'https://www.sanskrit-lexicon.uni-koeln.de/scans/csl-corrections/app/correction_form.php?dict=$codeUp';
+
+  /// PDF view URL.
+  String pdfUrl(String pageCol) =>
+      'https://www.sanskrit-lexicon.uni-koeln.de/scans/csl-apidev/servepdf.php?dict=$codeUp&page=$pageCol';
 }

@@ -131,8 +131,22 @@ class DownloadService {
     return DatabaseHelper.isAvailable(dictCode);
   }
 
+  /// Fetches the remote zip file size using a HEAD request.
+  static Future<int?> fetchRemoteSize(DictionaryInfo info) async {
+    try {
+      final response = await http.head(Uri.parse(info.downloadUrl));
+      if (response.statusCode == 200) {
+        final len = response.headers['content-length'];
+        if (len != null) return int.tryParse(len);
+      }
+    } catch (_) {}
+    return null;
+  }
+
   static String _fmtBytes(int bytes) {
     if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
     return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
   }
+
+  static String formatBytes(int bytes) => _fmtBytes(bytes);
 }

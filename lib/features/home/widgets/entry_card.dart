@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/dictionary_registry.dart';
 import '../../../models/search_result.dart';
@@ -36,13 +37,15 @@ class EntryCardWidget extends ConsumerWidget {
         entry: parsed,
         onWordTap: onWordTap,
         onCopy: () {
-          // In a real app, use Clipboard.setData
+          final text = '${parsed.key1Slp1}\n${parsed.bodyHtml.replaceAll(RegExp(r'<[^>]*>'), '')}';
+          Clipboard.setData(ClipboardData(text: text));
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Copied to clipboard')),
           );
         },
         dictCodeUp: dictInfo.codeUp,
         lnum: parsed.lnum,
+        highlightTerm: highlightTerm,
       ),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
