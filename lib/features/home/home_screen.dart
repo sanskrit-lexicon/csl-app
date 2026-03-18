@@ -180,20 +180,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
   Widget _buildBody(AppSettings settings, SearchMode hwMode, SearchMode defMode) {
     if (settings.activeDictCodes.isEmpty) {
-      return Center(
+      return const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.library_add, size: 64, color: Colors.grey),
-            const SizedBox(height: 16),
-            const Text('No dictionaries active.'),
-            const SizedBox(height: 8),
-            ElevatedButton(
-              onPressed: () {
-                Scaffold.of(context).openDrawer();
-              },
-              child: const Text('Open Drawer to Manage Dictionaries'),
-            )
+            Icon(Icons.library_add, size: 64, color: Colors.grey),
+            SizedBox(height: 16),
+            Text('No dictionaries active.'),
+            Text(
+              'Please open the side drawer to download and manage dictionaries.',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.grey),
+            ),
           ],
         ),
       );
