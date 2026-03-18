@@ -1,0 +1,46 @@
+name: sanslex
+description: Cologne Sanskrit Lexicon – offline dictionary app for all platforms.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.4.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # SQLite
+  sqflite: ^2.3.3+1
+  sqflite_common_ffi: ^2.3.4+2
+
+  # File system & networking
+  path_provider: ^2.1.4
+  path: ^1.9.0
+  http: ^1.2.2
+  archive: ^3.6.1
+
+  # Transliteration
+  indic_transliteration_dart: ^2.3.80
+
+  # State management
+  flutter_riverpod: ^2.5.1
+
+  # Persistence
+  shared_preferences: ^2.3.2
+
+  # HTML rendering for definition bodies
+  flutter_widget_from_html_core: ^0.15.2
+
+  # URL launching (PDF / Correction links)
+  url_launcher: ^6.3.1
+
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true

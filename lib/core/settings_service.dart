@@ -1,0 +1,52 @@
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../models/app_settings.dart';
+
+/// Persists and loads [AppSettings] using SharedPreferences.
+class SettingsService {
+  static const _hwMode = 'hw_search_mode';
+  static const _defMode = 'def_search_mode';
+  static const _inputTranslit = 'input_translit';
+  static const _outputTranslit = 'output_translit';
+  static const _showAccent = 'show_accent';
+  static const _highlight = 'highlight_enabled';
+  static const _maxResults = 'max_results';
+  static const _activeDicts = 'active_dicts';
+
+  static Future<AppSettings> load() async {
+    final prefs = await SharedPreferences.getInstance();
+    return AppSettings(
+      headwordSearchMode: SearchModeX.fromValue(
+          prefs.getString(_hwMode) ?? SearchMode.prefix.name),
+      definitionSearchMode: SearchModeX.fromValue(
+          prefs.getString(_defMode) ?? SearchMode.substring.name),
+      inputTranslit: prefs.getString(_inputTranslit) ?? 'hk',
+      outputTranslit: prefs.getString(_outputTranslit) ?? 'devanagari',
+      showAccent: prefs.getBool(_showAccent) ?? false,
+      highlightEnabled: prefs.getBool(_highlight) ?? true,
+      maxResults: prefs.getInt(_maxResults) ?? 100,
+      activeDictCodes: _decodeList(prefs.getString(_activeDicts)),
+    );
+  }
+
+  static Future<void> save(AppSettings s) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_hwMode, s.headwordSearchMode.name);
+    await prefs.setString(_defMode, s.definitionSearchMode.name);
+    await prefs.setString(_inputTranslit, s.inputTranslit);
+    await prefs.setString(_outputTranslit, s.outputTranslit);
+    await prefs.setBool(_showAccent, s.showAccent);
+    await prefs.setBool(_highlight, s.highlightEnabled);
+    await prefs.setInt(_maxResults, s.maxResults);
+    await prefs.setString(_activeDicts, jsonEncode(s.activeDictCodes));
+  }
+
+  static List<String> _decodeList(String? raw) {
+    if (raw == null || raw.isEmpty) return [];
+    try {
+      return List<String>.from(jsonDecode(raw) as List);
+    } catch (_) {
+      return [];
+    }
+  }
+}
