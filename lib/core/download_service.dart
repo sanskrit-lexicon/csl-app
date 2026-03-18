@@ -131,16 +131,32 @@ class DownloadService {
     return DatabaseHelper.isAvailable(dictCode);
   }
 
-  /// Fetches the remote zip file size using a HEAD request.
-  static Future<int?> fetchRemoteSize(DictionaryInfo info) async {
+  /// Fetches the remote zip file size and last-modified date using a HEAD request.
+  static Future<({int? size, DateTime? lastModified})> fetchRemoteMetadata(DictionaryInfo info) async {
     try {
       final response = await http.head(Uri.parse(info.downloadUrl));
       if (response.statusCode == 200) {
         final len = response.headers['content-length'];
-        if (len != null) return int.tryParse(len);
+        final modified = response.headers['last-modified'];
+        
+        return (
+          size: len != null ? int.tryParse(len) : null,
+          lastModified: modified != null ? _parseHttpDate(modified) : null,
+        );
       }
     } catch (_) {}
-    return null;
+    return (size: null, lastModified: null);
+  }
+
+  static DateTime? _parseHttpDate(String dateStr) {
+    try {
+      // http.head returns dates in RFC 1123 format usually, 
+      // e.g. "Wed, 21 Oct 2015 07:28:00 GMT"
+      // HttpDate.parse handles this but requires dart:io
+      return HttpDate.parse(dateStr);
+    } catch (_) {
+      return DateTime.tryParse(dateStr);
+    }
   }
 
   static String _fmtBytes(int bytes) {

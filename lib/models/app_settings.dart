@@ -1,4 +1,32 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart' show ThemeMode;
+
+/// Theme modes for the app.
+enum AppThemeMode { system, light, dark }
+
+extension AppThemeModeX on AppThemeMode {
+  String get label {
+    switch (this) {
+      case AppThemeMode.system:
+        return 'System Default';
+      case AppThemeMode.light:
+        return 'Light';
+      case AppThemeMode.dark:
+        return 'Dark';
+    }
+  }
+
+  ThemeMode get toThemeMode {
+    switch (this) {
+      case AppThemeMode.system:
+        return ThemeMode.system;
+      case AppThemeMode.light:
+        return ThemeMode.light;
+      case AppThemeMode.dark:
+        return ThemeMode.dark;
+    }
+  }
+}
 
 /// Search mode for headword or definition search.
 enum SearchMode { exact, prefix, suffix, substring }
@@ -39,7 +67,8 @@ class AppSettings {
   final bool showAccent;
   final bool highlightEnabled;
   final int maxResults;
-  final List<String> activeDictCodes; // ordered list of open tabs
+  final List<String> activeDictCodes; 
+  final AppThemeMode themeMode;
 
   const AppSettings({
     this.headwordSearchMode = SearchMode.prefix,
@@ -50,6 +79,7 @@ class AppSettings {
     this.highlightEnabled = true,
     this.maxResults = 100,
     this.activeDictCodes = const [],
+    this.themeMode = AppThemeMode.system,
   });
 
   AppSettings copyWith({
@@ -61,6 +91,7 @@ class AppSettings {
     bool? highlightEnabled,
     int? maxResults,
     List<String>? activeDictCodes,
+    AppThemeMode? themeMode,
   }) {
     return AppSettings(
       headwordSearchMode: headwordSearchMode ?? this.headwordSearchMode,
@@ -71,6 +102,7 @@ class AppSettings {
       highlightEnabled: highlightEnabled ?? this.highlightEnabled,
       maxResults: maxResults ?? this.maxResults,
       activeDictCodes: activeDictCodes ?? this.activeDictCodes,
+      themeMode: themeMode ?? this.themeMode,
     );
   }
 }

@@ -4,6 +4,7 @@ import '../../core/dictionary_registry.dart';
 import '../../core/download_service.dart';
 import '../../providers/dictionaries_provider.dart';
 import '../../providers/settings_provider.dart';
+import 'package:intl/intl.dart';
 
 class ManageDictionariesScreen extends ConsumerWidget {
   const ManageDictionariesScreen({super.key});
@@ -60,15 +61,15 @@ class ManageDictionariesScreen extends ConsumerWidget {
                   children: [
                     Row(
                       children: [
-                        Text('${info.codeUp} • ${info.year}'),
+                        Text(info.codeUp),
                         const Spacer(),
-                        if (!isAvailable && !isDownloading)
+                        if (!isDownloading)
                           Consumer(
                             builder: (context, ref, child) {
-                              final sizeAsync = ref.watch(remoteSizeProvider(info.codeLo));
-                              return sizeAsync.maybeWhen(
-                                data: (size) => size != null
-                                    ? Text(DownloadService.formatBytes(size),
+                              final remoteMetaAsync = ref.watch(remoteMetadataProvider(info.codeLo));
+                              return remoteMetaAsync.maybeWhen(
+                                data: (meta) => meta.size != null
+                                    ? Text(DownloadService.formatBytes(meta.size!),
                                         style: const TextStyle(fontSize: 12, color: Colors.grey))
                                     : const SizedBox.shrink(),
                                 orElse: () => const SizedBox.shrink(),
@@ -76,6 +77,35 @@ class ManageDictionariesScreen extends ConsumerWidget {
                             },
                           ),
                       ],
+                    ),
+                    Consumer(
+                      builder: (context, ref, child) {
+                        final localDateAsync = ref.watch(localMetadataProvider(info.codeLo));
+                        final remoteMetaAsync = ref.watch(remoteMetadataProvider(info.codeLo));
+
+                        return localDateAsync.when(
+                          loading: () => const SizedBox.shrink(),
+                          error: (_, __) => const SizedBox.shrink(),
+                          data: (localDate) {
+                            if (!isAvailable || localDate == null) return const SizedBox.shrink();
+                            
+                            final fmt = DateFormat('yyyy-MM-dd HH:mm');
+                            final dateStr = fmt.format(localDate);
+                            
+                            final remoteDate = remoteMetaAsync.value?.lastModified;
+                            final hasUpdate = remoteDate != null && remoteDate.isAfter(localDate);
+
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Downloaded on $dateStr', style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                                if (hasUpdate)
+                                  const Text('Update Available!', style: TextStyle(fontSize: 12, color: Colors.green, fontWeight: FontWeight.bold)),
+                              ],
+                            );
+                          },
+                        );
+                      },
                     ),
                     if (isDownloading) ...[
                       const SizedBox(height: 4),
@@ -87,15 +117,27 @@ class ManageDictionariesScreen extends ConsumerWidget {
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    if (!isAvailable && !isDownloading)
-                      IconButton(
-                        icon: const Icon(Icons.download),
-                        onPressed: () {
-                          ref
-                              .read(downloadNotifierProvider)
-                              .download(info.codeLo);
-                        },
-                      ),
+                    Consumer(
+                      builder: (context, ref, child) {
+                        final localDateAsync = ref.watch(localMetadataProvider(info.codeLo));
+                        final remoteMetaAsync = ref.watch(remoteMetadataProvider(info.codeLo));
+                        
+                        final localDate = localDateAsync.value;
+                        final remoteDate = remoteMetaAsync.value?.lastModified;
+                        final hasUpdate = isAvailable && localDate != null && remoteDate != null && remoteDate.isAfter(localDate);
+
+                        if (!isDownloading && (!isAvailable || hasUpdate)) {
+                          return IconButton(
+                            icon: Icon(hasUpdate ? Icons.system_update : Icons.download),
+                            tooltip: hasUpdate ? 'Update Dictionary' : 'Download Dictionary',
+                            onPressed: () {
+                              ref.read(downloadNotifierProvider).download(info.codeLo);
+                            },
+                          );
+                        }
+                        return const SizedBox.shrink();
+                      },
+                    ),
                     if (isAvailable) ...[
                       // Toggle Active status (shows in HomeScreen tabs)
                       Switch(

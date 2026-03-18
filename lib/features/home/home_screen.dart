@@ -28,12 +28,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       final text = _hwController.text.trim();
       if (text.length >= 3) {
         ref.read(headwordQueryProvider.notifier).state = text;
+        ref.read(closedTabsProvider.notifier).state = {};
       }
     });
     _defController.addListener(() {
       final text = _defController.text.trim();
       if (text.length >= 3) {
         ref.read(definitionQueryProvider.notifier).state = text;
+        ref.read(closedTabsProvider.notifier).state = {};
       }
     });
   }
@@ -69,7 +71,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Cologne Sanskrit Lexicon'),
+        title: const Text('Sanskrit Lexicon'),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(130),
           child: Column(
@@ -81,7 +83,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                   isScrollable: true,
                   tabs: _currentTabs.map((code) {
                     final info = DictionaryRegistry.byCode(code)!;
-                    return Tab(text: info.codeUp);
+                    return Tab(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(info.codeUp),
+                          const SizedBox(width: 4),
+                          GestureDetector(
+                            onTap: () {
+                              ref.read(closedTabsProvider.notifier).update((s) => {...s, code});
+                            },
+                            child: const Icon(Icons.close, size: 14),
+                          ),
+                        ],
+                      ),
+                    );
                   }).toList(),
                 ),
             ],
@@ -178,6 +194,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               },
               child: const Text('Open Drawer to Manage Dictionaries'),
             )
+          ],
+        ),
+      );
+    }
+
+    final hwQuery = ref.watch(headwordQueryProvider);
+    final defQuery = ref.watch(definitionQueryProvider);
+
+    if (hwQuery.trim().isEmpty && defQuery.trim().isEmpty) {
+      return const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.search, size: 64, color: Colors.grey),
+            SizedBox(height: 16),
+            Text('Enter at least 3 characters to begin searching.'),
           ],
         ),
       );

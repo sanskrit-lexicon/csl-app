@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import '../../preferences/preferences_screen.dart';
 import '../../dictionaries/manage_dictionaries_screen.dart';
 
@@ -17,20 +18,32 @@ class AppDrawer extends StatelessWidget {
               color: Theme.of(context).colorScheme.surfaceContainerHighest,
             ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const Icon(Icons.menu_book, size: 48),
                 const SizedBox(height: 16),
                 Text(
-                  'sanslex',
+                  'Sanskrit Lexicon',
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                         color: Theme.of(context).colorScheme.primary,
                         fontWeight: FontWeight.bold,
                       ),
                 ),
                 Text(
-                  'Cologne Sanskrit Lexicon',
+                  'Cologne Digital Sanskrit Dictionaries',
                   style: Theme.of(context).textTheme.bodySmall,
+                ),
+                FutureBuilder<PackageInfo>(
+                  future: PackageInfo.fromPlatform(),
+                  builder: (context, snapshot) {
+                    final version = snapshot.data?.version ?? '...';
+                    return Text(
+                      'v$version',
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                            color: Colors.grey,
+                          ),
+                    );
+                  },
                 ),
               ],
             ),
@@ -61,7 +74,7 @@ class AppDrawer extends StatelessWidget {
           const Divider(),
           ListTile(
             leading: const Icon(Icons.info_outline),
-            title: const Text('About'),
+            title: const Text('About Us'),
             onTap: () {
               showDialog(
                 context: context,
@@ -77,31 +90,47 @@ class AppDrawer extends StatelessWidget {
                       ),
                       const SizedBox(height: 16),
                       const Text('License: GNU GPL v3.0'),
-                      const SizedBox(height: 8),
-                      InkWell(
-                        onTap: () => launchUrl(
-                          Uri.parse('https://github.com/sanskrit-lexicon/csl-app'),
-                          mode: LaunchMode.externalApplication,
-                        ),
-                        child: Text(
-                          'GitHub Repository',
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.primary,
-                            decoration: TextDecoration.underline,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      InkWell(
-                        onTap: () => launchUrl(
-                          Uri.parse('mailto:drdhaval2785@gmail.com'),
-                        ),
-                        child: Text(
-                          'drdhaval2785@gmail.com',
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.primary,
-                            decoration: TextDecoration.underline,
-                          ),
+                      const SizedBox(height: 16),
+                      RichText(
+                        text: TextSpan(
+                          style: Theme.of(context).textTheme.bodyMedium,
+                          children: [
+                            const TextSpan(
+                              text: 'For bug reports / feature requests or corrections in entries, visit ',
+                            ),
+                            WidgetSpan(
+                              alignment: PlaceholderAlignment.middle,
+                              child: InkWell(
+                                onTap: () => launchUrl(
+                                  Uri.parse('https://github.com/sanskrit-lexicon/csl-app'),
+                                  mode: LaunchMode.externalApplication,
+                                ),
+                                child: Text(
+                                  'GitHub Repository',
+                                  style: TextStyle(
+                                    color: Theme.of(context).colorScheme.primary,
+                                    decoration: TextDecoration.underline,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const TextSpan(text: ' or write to '),
+                            WidgetSpan(
+                              alignment: PlaceholderAlignment.middle,
+                              child: InkWell(
+                                onTap: () => launchUrl(
+                                  Uri.parse('mailto:drdhaval2785@gmail.com'),
+                                ),
+                                child: Text(
+                                  'drdhaval2785@gmail.com',
+                                  style: TextStyle(
+                                    color: Theme.of(context).colorScheme.primary,
+                                    decoration: TextDecoration.underline,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],

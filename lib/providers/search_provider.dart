@@ -9,6 +9,9 @@ final headwordQueryProvider = StateProvider<String>((ref) => '');
 /// Current definition search query text.
 final definitionQueryProvider = StateProvider<String>((ref) => '');
 
+/// User-closed tabs for the current search session.
+final closedTabsProvider = StateProvider<Set<String>>((ref) => {});
+
 /// Search results for a given dictionary code.
 /// Runs whenever headwordQuery, definitionQuery, or settings change.
 final searchResultsProvider = FutureProvider.family<List<SearchResult>, String>(
@@ -61,9 +64,10 @@ final filteredTabsProvider = FutureProvider<List<String>>((ref) async {
 
   final hwQuery = ref.watch(headwordQueryProvider);
   final defQuery = ref.watch(definitionQueryProvider);
+  final closedTabs = ref.watch(closedTabsProvider);
 
   if (hwQuery.trim().isEmpty && defQuery.trim().isEmpty) {
-    return activeCodes;
+    return [];
   }
 
   // Run searches in parallel to see which dicts have results
@@ -73,8 +77,9 @@ final filteredTabsProvider = FutureProvider<List<String>>((ref) async {
 
   final filtered = <String>[];
   for (int i = 0; i < activeCodes.length; i++) {
-    if (results[i].isNotEmpty) {
-      filtered.add(activeCodes[i]);
+    final code = activeCodes[i];
+    if (results[i].isNotEmpty && !closedTabs.contains(code)) {
+      filtered.add(code);
     }
   }
   return filtered;

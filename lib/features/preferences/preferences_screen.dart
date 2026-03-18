@@ -110,6 +110,21 @@ class PreferencesScreen extends ConsumerWidget {
               ),
             ),
           ),
+          const Divider(),
+          // 8. Theme Mode
+          ListTile(
+            title: const Text('App Theme'),
+            subtitle: const Text('Choose light, dark, or follow system theme'),
+            trailing: DropdownButton<AppThemeMode>(
+              value: settings.themeMode,
+              onChanged: (v) {
+                if (v != null) notifier.update(settings.copyWith(themeMode: v));
+              },
+              items: AppThemeMode.values
+                  .map((m) => DropdownMenuItem(value: m, child: Text(m.label)))
+                  .toList(),
+            ),
+          ),
         ],
       ),
     );

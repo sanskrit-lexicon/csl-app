@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/download_service.dart';
 import '../core/database_helper.dart';
 import '../core/dictionary_registry.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Tracks which dictionaries are currently downloaded.
 final availableDictsProvider = FutureProvider<Set<String>>((ref) async {
@@ -23,11 +24,18 @@ final downloadProgressProvider =
 final downloadStatusProvider =
     StateProvider.family<String, String>((ref, dictCode) => '');
 
-/// Remote file size provider.
-final remoteSizeProvider = FutureProvider.family<int?, String>((ref, dictCode) async {
+/// Local dictionary metadata (e.g. download date).
+final localMetadataProvider = FutureProvider.family<DateTime?, String>((ref, dictCode) async {
+  final prefs = await SharedPreferences.getInstance();
+  final iso = prefs.getString('download_date_$dictCode');
+  return iso != null ? DateTime.tryParse(iso) : null;
+});
+
+/// Remote dictionary metadata (size and last modified).
+final remoteMetadataProvider = FutureProvider.family<({int? size, DateTime? lastModified}), String>((ref, dictCode) async {
   final info = DictionaryRegistry.byCode(dictCode);
-  if (info == null) return null;
-  return DownloadService.fetchRemoteSize(info);
+  if (info == null) return (size: null, lastModified: null);
+  return DownloadService.fetchRemoteMetadata(info);
 });
 
 /// Action: download a specific dictionary and refresh available list.
@@ -56,6 +64,14 @@ class DownloadNotifier {
         cancelToken: cancelToken,
       );
     } finally {
+      // Save download date upon success
+      final isAvailable = await DatabaseHelper.isAvailable(dictCode);
+      if (isAvailable) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('download_date_$dictCode', DateTime.now().toIso8601String());
+        _ref.invalidate(localMetadataProvider(dictCode));
+      }
+
       _ref.read(downloadProgressProvider(dictCode).notifier).state = null;
       _ref.invalidate(availableDictsProvider);
     }

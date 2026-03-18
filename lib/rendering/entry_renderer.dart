@@ -213,22 +213,26 @@ class _EntryCard extends StatelessWidget {
               return false;
             },
             customStylesBuilder: (element) {
+              final isDark = theme.brightness == Brightness.dark;
+              final primaryHex = '#${theme.colorScheme.primary.toARGB32().toRadixString(16).substring(2).padLeft(6, '0')}';
+              final secondaryContainerHex = '#${theme.colorScheme.secondaryContainer.toARGB32().toRadixString(16).substring(2).padLeft(6, '0')}';
+              final onSecondaryContainerHex = '#${theme.colorScheme.onSecondaryContainer.toARGB32().toRadixString(16).substring(2).padLeft(6, '0')}';
+              final outlineHex = '#${theme.colorScheme.outline.toARGB32().toRadixString(16).substring(2).padLeft(6, '0')}';
+
               if (element.classes.contains('sanskrit')) {
-                // Subtle color for Sanskrit text, e.g., slightly desaturated greyish-brown
-                // Using a color that is "barely different" but noticeable.
-                return {'color': theme.brightness == Brightness.dark ? '#A0A0A0' : '#555555'};
+                // Subtle color for Sanskrit text
+                return {'color': isDark ? '#B0BEC5' : '#546E7A'}; // Blue-grey variants
               }
               if (element.localName == 'b') {
-                final primaryHex = '#${theme.colorScheme.primary.toARGB32().toRadixString(16).substring(2).padLeft(6, '0')}';
                 return {'color': primaryHex};
               }
               if (element.classes.contains('ls')) {
-                return {'color': '#888888', 'font-style': 'italic'};
+                return {'color': outlineHex, 'font-style': 'italic'};
               }
               if (element.localName == 'mark') {
                 return {
-                  'background-color': '#FFD700',
-                  'color': '#000000',
+                  'background-color': secondaryContainerHex,
+                  'color': onSecondaryContainerHex,
                 };
               }
               return null;

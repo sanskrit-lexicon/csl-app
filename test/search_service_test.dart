@@ -1,8 +1,8 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sanslex/models/app_settings.dart';
-import 'package:sanslex/core/search_service.dart';
-import 'package:sanslex/core/transliteration_service.dart';
+import 'package:sanskrit_lexicon/models/app_settings.dart';
+import 'package:sanskrit_lexicon/core/search_service.dart';
+import 'package:sanskrit_lexicon/core/transliteration_service.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 void main() {

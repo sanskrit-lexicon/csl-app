@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sanslex/rendering/entry_parser.dart';
+import 'package:sanskrit_lexicon/rendering/entry_parser.dart';
 
 void main() {
   group('EntryParser Tests', () {

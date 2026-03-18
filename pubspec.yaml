@@ -1,7 +1,7 @@
-name: sanslex
-description: Cologne Sanskrit Lexicon – offline dictionary app for all platforms.
+name: sanskrit_lexicon
+description: Sanskrit Lexicon - offline dictionary app for the Cologne Digital Sanskrit Dictionaries.
 publish_to: 'none'
-version: 1.0.0+1
+version: 0.1.0+1
 
 environment:
   sdk: '>=3.4.0 <4.0.0'
@@ -34,6 +34,8 @@ dependencies:
 
   # URL launching (PDF / Correction links)
   url_launcher: ^6.3.1
+  intl: ^0.19.0
+  package_info_plus: ^8.1.2
 
   cupertino_icons: ^1.0.8
 

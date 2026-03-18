@@ -1,8 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:sanslex/features/home/home_screen.dart';
-import 'package:sanslex/core/transliteration_service.dart';
+import 'package:sanskrit_lexicon/features/home/home_screen.dart';
+import 'package:sanskrit_lexicon/core/transliteration_service.dart';
+import 'package:sanskrit_lexicon/models/app_settings.dart';
+import 'package:sanskrit_lexicon/providers/settings_provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 Future<void> main() async {
@@ -24,13 +26,16 @@ Future<void> main() async {
   );
 }
 
-class SanslexApp extends StatelessWidget {
+class SanslexApp extends ConsumerWidget {
   const SanslexApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final settings = ref.watch(settingsProvider);
+
     return MaterialApp(
-      title: 'Cologne Sanskrit Lexicon',
+      title: 'Sanskrit Lexicon',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF8B4513), // Saddle brown root color
@@ -45,7 +50,7 @@ class SanslexApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      themeMode: ThemeMode.system,
+      themeMode: settings.themeMode.toThemeMode,
       home: const HomeScreen(),
     );
   }
