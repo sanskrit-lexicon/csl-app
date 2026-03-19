@@ -140,7 +140,7 @@ class DictionaryRegistry {
       bibliographicEntry: 'LANMAN, C. R. (1888). A Sanskrit Reader: with vocabulary and notes. Ginn and Co, Boston.',
     ),
     DictionaryInfo(
-      codeUp: 'LRV', codeLo: 'lrv', year: '2020',
+      codeUp: 'LRV', codeLo: 'lrv', year: '2022',
       name: 'Vaidya Standard Sanskrit-English Dictionary',
       title: 'Vaidya Sanskrit Dictionary 1889',
       hasAccent: false, hasDevaTextOption: true,
