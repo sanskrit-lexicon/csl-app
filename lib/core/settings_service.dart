@@ -22,16 +22,17 @@ class SettingsService {
       definitionSearchMode: SearchModeX.fromValue(
           prefs.getString(_defMode) ?? SearchMode.prefix.name),
 
-      inputTranslit: prefs.getString(_inputTranslit) ?? 'hk',
+      inputTranslit: prefs.getString(_inputTranslit) ?? 'itrans',
       outputTranslit: prefs.getString(_outputTranslit) ?? 'devanagari',
-      showAccent: prefs.getBool(_showAccent) ?? false,
+      showAccent: prefs.getBool(_showAccent) ?? true,
       highlightEnabled: prefs.getBool(_highlight) ?? true,
       maxResults: prefs.getInt(_maxResults) ?? 100,
       activeDictCodes: _decodeList(prefs.getString(_activeDicts)),
       themeMode: AppThemeMode.values.firstWhere(
         (e) => e.name == prefs.getString(_themeMode),
-        orElse: () => AppThemeMode.system,
+        orElse: () => AppThemeMode.light,
       ),
+
     );
   }
 

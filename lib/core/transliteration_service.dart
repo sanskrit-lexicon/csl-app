@@ -68,8 +68,9 @@ class TransliterationService {
       transliterate(text, fromScheme, 'slp1');
 
   /// Convenience: SLP1 DB text → display scheme.
-  static String fromSlp1(String text, String toScheme) =>
-      transliterate(text, 'slp1', toScheme);
+  static String fromSlp1(String text, String toScheme, {bool useAccented = false}) =>
+      transliterate(text, useAccented ? 'slp1_accented' : 'slp1', toScheme);
+
 
   /// Strip SLP1 accent markers.
   /// In key2, '/' appears before an accented vowel (Vedic pitch accent).

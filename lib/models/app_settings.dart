@@ -2,13 +2,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' show ThemeMode;
 
 /// Theme modes for the app.
-enum AppThemeMode { system, light, dark }
+enum AppThemeMode { light, dark }
+
 
 extension AppThemeModeX on AppThemeMode {
   String get label {
     switch (this) {
-      case AppThemeMode.system:
-        return 'System Default';
       case AppThemeMode.light:
         return 'Light';
       case AppThemeMode.dark:
@@ -18,8 +17,6 @@ extension AppThemeModeX on AppThemeMode {
 
   ThemeMode get toThemeMode {
     switch (this) {
-      case AppThemeMode.system:
-        return ThemeMode.system;
       case AppThemeMode.light:
         return ThemeMode.light;
       case AppThemeMode.dark:
@@ -27,6 +24,8 @@ extension AppThemeModeX on AppThemeMode {
     }
   }
 }
+
+
 
 /// Search mode for headword or definition search.
 enum SearchMode { exact, prefix, suffix, substring }
@@ -73,14 +72,15 @@ class AppSettings {
   const AppSettings({
     this.headwordSearchMode = SearchMode.prefix,
     this.definitionSearchMode = SearchMode.prefix,
-    this.inputTranslit = 'hk',
+    this.inputTranslit = 'itrans',
     this.outputTranslit = 'devanagari',
-    this.showAccent = false,
+    this.showAccent = true,
     this.highlightEnabled = true,
     this.maxResults = 100,
     this.activeDictCodes = const [],
-    this.themeMode = AppThemeMode.system,
+    this.themeMode = AppThemeMode.light,
   });
+
 
   AppSettings copyWith({
     SearchMode? headwordSearchMode,
