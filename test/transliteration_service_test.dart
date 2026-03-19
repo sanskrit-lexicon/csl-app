@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sanskrit_lexicon/core/transliteration_service.dart';
+import 'package:cologne_sanskrit_lexicon/core/transliteration_service.dart';
 
 void main() {
   setUpAll(() {

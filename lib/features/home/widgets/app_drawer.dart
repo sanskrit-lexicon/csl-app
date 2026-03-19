@@ -13,18 +13,24 @@ class AppDrawer extends StatelessWidget {
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
-          DrawerHeader(
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.only(top: 60, bottom: 20, left: 16, right: 16),
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.surfaceContainerHighest,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const Icon(Icons.menu_book, size: 48),
+                Image.asset(
+                  'assets/cologne_sanskrit_lexicon_logo.png',
+                  height: 100,
+                ),
                 const SizedBox(height: 16),
                 Text(
                   'Cologne Sanskrit Lexicon',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         color: Theme.of(context).colorScheme.primary,
                         fontWeight: FontWeight.bold,
                       ),

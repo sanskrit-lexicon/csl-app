@@ -2,9 +2,9 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:sanskrit_lexicon/models/app_settings.dart';
-import 'package:sanskrit_lexicon/core/search_service.dart';
-import 'package:sanskrit_lexicon/core/transliteration_service.dart';
+import 'package:cologne_sanskrit_lexicon/models/app_settings.dart';
+import 'package:cologne_sanskrit_lexicon/core/search_service.dart';
+import 'package:cologne_sanskrit_lexicon/core/transliteration_service.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 void main() {

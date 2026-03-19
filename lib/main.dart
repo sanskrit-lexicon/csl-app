@@ -1,10 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:sanskrit_lexicon/features/home/home_screen.dart';
-import 'package:sanskrit_lexicon/core/transliteration_service.dart';
-import 'package:sanskrit_lexicon/models/app_settings.dart';
-import 'package:sanskrit_lexicon/providers/settings_provider.dart';
+import 'package:cologne_sanskrit_lexicon/features/home/home_screen.dart';
+import 'package:cologne_sanskrit_lexicon/core/transliteration_service.dart';
+import 'package:cologne_sanskrit_lexicon/models/app_settings.dart';
+import 'package:cologne_sanskrit_lexicon/providers/settings_provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 Future<void> main() async {
