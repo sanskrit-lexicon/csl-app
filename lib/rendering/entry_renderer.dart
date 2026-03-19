@@ -40,7 +40,9 @@ class EntryRenderer {
     // 2. Build headword display string
     final slp1Key = _resolveHeadwordSlp1(entry);
     final displayKey =
-        TransliterationService.fromSlp1(slp1Key, settings.outputTranslit);
+        TransliterationService.fromSlp1(slp1Key, settings.outputTranslit, useAccented: settings.showAccent, dictCode: dictCode);
+
+
 
     // 3. Process body HTML
     final isEnglish = ['ae', 'mwe', 'bor'].contains(dictCode.toLowerCase());
@@ -50,7 +52,8 @@ class EntryRenderer {
             : TransliterationService.toSlp1(highlightTerm, settings.inputTranslit))
         : null;
 
-    final processedHtml = _buildBodyHtml(entry.bodyHtml, abbrCache, highlightSlp1, highlightTerm);
+    final processedHtml = _buildBodyHtml(entry.bodyHtml, abbrCache, highlightSlp1, highlightTerm, dictCode);
+
 
     return _EntryCard(
       displayKey: displayKey,
@@ -69,14 +72,15 @@ class EntryRenderer {
 
   String _resolveHeadwordSlp1(ParsedEntry entry) {
     if (settings.showAccent && entry.key2Slp1 != null) {
-      // Strip SLP1 accent '/' markers before transliterating
-      return TransliterationService.stripSLP1Accents(entry.key2Slp1!);
+      return entry.key2Slp1!;
     }
     return entry.key1Slp1;
   }
 
+
   String _buildBodyHtml(
-      String bodyHtml, Map<String, String> abbreviationCache, String? highlightSlp1, String? rawHighlightTerm) {
+      String bodyHtml, Map<String, String> abbreviationCache, String? highlightSlp1, String? rawHighlightTerm, String dictCode) {
+
     // Replace <s> and <SA> Sanskrit inline text with transliterated output
     String html = bodyHtml;
 
@@ -88,8 +92,12 @@ class EntryRenderer {
         
         String process(String text) {
           if (text.isEmpty) return '';
-          return TransliterationService.fromSlp1(text, settings.outputTranslit);
+          return TransliterationService.fromSlp1(text, settings.outputTranslit, useAccented: settings.showAccent, dictCode: dictCode);
         }
+
+
+
+
 
         String result;
         if (highlightSlp1 != null && highlightSlp1.isNotEmpty) {

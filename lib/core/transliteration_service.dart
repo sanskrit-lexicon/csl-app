@@ -68,8 +68,29 @@ class TransliterationService {
       transliterate(text, fromScheme, 'slp1');
 
   /// Convenience: SLP1 DB text → display scheme.
-  static String fromSlp1(String text, String toScheme, {bool useAccented = false}) =>
-      transliterate(text, useAccented ? 'slp1_accented' : 'slp1', toScheme);
+  static String fromSlp1(String text, String toScheme, {bool useAccented = false, String? dictCode}) {
+    String out = transliterate(text, useAccented ? 'slp1_accented' : 'slp1', toScheme);
+    
+    // Fallback: if accents are requested for Devanagari but ASCII markers remained, 
+    // manually replace them with Vedic Unicode characters.
+    if (useAccented && toScheme == 'devanagari') {
+      out = out
+          .replaceAll('\\', '॒') // Anudatta
+          .replaceAll('^', '᳙');  // Svarita (Yajurvedic)
+      // Note: '/' is usually correctly handled by slp1_accented to ꣡ or ॑
+
+      // Dictionary-specific PW/PWG overrides to match printed book style
+      final d = dictCode?.toLowerCase();
+      if (d == 'pw' || d == 'pwg') {
+        out = out
+            .replaceAll('\uA8E1', '\uA8EB') // ꣡ -> ꣫ (Digit 3)
+            .replaceAll('\u1CD9', '\u0951'); // ᳙ -> ॑ (Uvarita/Vertical Svarita)
+      }
+    }
+    return out;
+  }
+
+
 
 
   /// Strip SLP1 accent markers.
