@@ -51,6 +51,7 @@ class ManageDictionariesScreen extends ConsumerWidget {
             });
 
           return ReorderableListView.builder(
+            buildDefaultDragHandles: false,
             itemCount: sortedDicts.length,
             onReorder: (oldIndex, newIndex) {
               if (newIndex > oldIndex) newIndex -= 1;
@@ -58,7 +59,6 @@ class ManageDictionariesScreen extends ConsumerWidget {
               final item = list.removeAt(oldIndex);
               list.insert(newIndex, item);
               settingsNotifier.reorderDicts(list.map((d) => d.codeLo).toList());
-
             },
             itemBuilder: (context, index) {
               final info = sortedDicts[index];
@@ -72,9 +72,13 @@ class ManageDictionariesScreen extends ConsumerWidget {
 
               return ListTile(
                 key: ValueKey(info.codeLo),
-                leading: const Icon(Icons.drag_handle),
+                leading: ReorderableDragStartListener(
+                  index: index,
+                  child: const Icon(Icons.drag_handle),
+                ),
                 title: Text(info.name,
                     style: const TextStyle(fontWeight: FontWeight.bold)),
+
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
