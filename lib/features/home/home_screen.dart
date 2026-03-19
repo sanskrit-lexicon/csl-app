@@ -26,18 +26,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     super.initState();
     _hwController.addListener(() {
       final text = _hwController.text.trim();
-      if (text.length >= 3) {
-        ref.read(headwordQueryProvider.notifier).state = text;
-        ref.read(closedTabsProvider.notifier).state = {};
-      }
+      ref.read(headwordQueryProvider.notifier).state = text;
+      ref.read(closedTabsProvider.notifier).state = {};
     });
     _defController.addListener(() {
       final text = _defController.text.trim();
-      if (text.length >= 3) {
-        ref.read(definitionQueryProvider.notifier).state = text;
-        ref.read(closedTabsProvider.notifier).state = {};
-      }
+      ref.read(definitionQueryProvider.notifier).state = text;
+      ref.read(closedTabsProvider.notifier).state = {};
     });
+
   }
 
   @override
