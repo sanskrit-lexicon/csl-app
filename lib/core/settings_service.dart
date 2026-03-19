@@ -20,7 +20,8 @@ class SettingsService {
       headwordSearchMode: SearchModeX.fromValue(
           prefs.getString(_hwMode) ?? SearchMode.prefix.name),
       definitionSearchMode: SearchModeX.fromValue(
-          prefs.getString(_defMode) ?? SearchMode.substring.name),
+          prefs.getString(_defMode) ?? SearchMode.prefix.name),
+
       inputTranslit: prefs.getString(_inputTranslit) ?? 'hk',
       outputTranslit: prefs.getString(_outputTranslit) ?? 'devanagari',
       showAccent: prefs.getBool(_showAccent) ?? false,

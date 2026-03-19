@@ -72,7 +72,7 @@ class AppSettings {
 
   const AppSettings({
     this.headwordSearchMode = SearchMode.prefix,
-    this.definitionSearchMode = SearchMode.substring,
+    this.definitionSearchMode = SearchMode.prefix,
     this.inputTranslit = 'hk',
     this.outputTranslit = 'devanagari',
     this.showAccent = false,
