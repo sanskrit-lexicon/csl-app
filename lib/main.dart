@@ -34,7 +34,7 @@ class SanslexApp extends ConsumerWidget {
     final settings = ref.watch(settingsProvider);
 
     return MaterialApp(
-      title: 'Sanskrit Lexicon',
+      title: 'Cologne Sanskrit Lexicon',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(

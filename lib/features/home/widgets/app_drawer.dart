@@ -23,7 +23,7 @@ class AppDrawer extends StatelessWidget {
                 const Icon(Icons.menu_book, size: 48),
                 const SizedBox(height: 16),
                 Text(
-                  'Sanskrit Lexicon',
+                  'Cologne Sanskrit Lexicon',
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                         color: Theme.of(context).colorScheme.primary,
                         fontWeight: FontWeight.bold,
@@ -86,7 +86,7 @@ class AppDrawer extends StatelessWidget {
                     children: [
                       const Text(
                         'Offline dictionary application for the Cologne '
-                        'Sanskrit Lexicon.',
+                        'Cologne Sanskrit Lexicon.',
                       ),
                       const SizedBox(height: 16),
                       const Text('License: GNU GPL v3.0'),

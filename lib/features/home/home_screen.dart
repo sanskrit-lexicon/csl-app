@@ -68,7 +68,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sanskrit Lexicon'),
+        title: const Text('Cologne Sanskrit Lexicon'),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(130),
           child: Column(
