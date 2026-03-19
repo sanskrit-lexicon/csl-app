@@ -174,7 +174,7 @@ class SearchService {
   }
 
   /// Fetch abbreviation expansion from {dict}ab database.
-  /// Returns expanded text (extracted from <disp>...</disp>) or null.
+  /// Returns expanded text (extracted from `<disp>...</disp>`) or null.
   static Future<String?> fetchAbbreviation({
     required String dictCode,
     required String abbr,

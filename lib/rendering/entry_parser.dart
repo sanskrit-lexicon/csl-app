@@ -61,13 +61,13 @@ class EntryParser {
   /// Convert the body HTML to a form suitable for flutter_widget_from_html.
   ///
   /// Transformations applied:
-  ///   <ab>text</ab>     → <abbr title="expansion">text</abbr>  (expansion from cache)
-  ///   <s>slp1</s>       → <span class="sa">transliterated</span>
-  ///   <SA>slp1</SA>     → <span class="sa">transliterated</span>
-  ///   <ls n="...">t</ls>→ <span class="ls">t</span>
-  ///   <ls n="..."/>     → <span class="ls">[ref]</span>
-  ///   <F>...</F>        → <small>...</small>
-  ///   <hom>n</hom>      → removed (shown in headword)
+  ///   `<ab>text</ab>`     → `<abbr title="expansion">text</abbr>`  (expansion from cache)
+  ///   `<s>slp1</s>`       → `<span class="sa">transliterated</span>`
+  ///   `<SA>slp1</SA>`     → `<span class="sa">transliterated</span>`
+  ///   `<ls n="...">t</ls>`→ `<span class="ls">t</span>`
+  ///   `<ls n="..."/>`     → `<span class="ls">[ref]</span>`
+  ///   `<F>...</F>`        → `<small>...</small>`
+  ///   `<hom>n</hom>`      → removed (shown in headword)
   static String processBodyHtml({
     required String bodyHtml,
     required String outputTranslit,
