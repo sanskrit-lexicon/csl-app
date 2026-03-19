@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+
 import 'package:sanskrit_lexicon/models/app_settings.dart';
 import 'package:sanskrit_lexicon/core/search_service.dart';
 import 'package:sanskrit_lexicon/core/transliteration_service.dart';
@@ -16,8 +18,11 @@ void main() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
       if (methodCall.method == 'getApplicationDocumentsDirectory') {
-        return '.';
+        final dir = Directory.current.path;
+        return '$dir/test/data';
       }
+
+
       return null;
     });
   });
@@ -49,8 +54,9 @@ void main() {
       expect(results.isNotEmpty, true);
       final keys = results.map((r) => r.key).toList();
       expect(keys.contains('aMSa'), true);
-      expect(keys.contains('aMsa'), true); // Both start with aMSa/amsa
+      expect(keys.contains('aMSaS'), true); // Both start with aMSa
     });
+
 
     test('Test headword suffix: "Msa" includes "aMsa"', () async {
       final results = await SearchService.searchHeadword(

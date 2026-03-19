@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/dictionary_registry.dart';
 import '../../core/download_service.dart';
+import '../../models/dictionary_info.dart';
+
 import '../../providers/dictionaries_provider.dart';
 import '../../providers/settings_provider.dart';
 import 'package:intl/intl.dart';
@@ -32,17 +34,32 @@ class ManageDictionariesScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, _) => Center(child: Text('Error loading status: $err')),
         data: (availableCodes) {
-          // Sort dictionaries: Active ones first, then alphabetical by name
-          final sortedDicts = List.of(DictionaryRegistry.all)..sort((a, b) {
-              final aActive = settings.activeDictCodes.contains(a.codeLo);
-              final bActive = settings.activeDictCodes.contains(b.codeLo);
-              if (aActive && !bActive) return -1;
-              if (!aActive && bActive) return 1;
-              return a.name.compareTo(b.name);
+          // Sort dictionaries based on user preference (dictOrder)
+          final orderedCodes = settings.dictOrder;
+          final sortedDicts = List.of(DictionaryRegistry.all)
+            ..sort((a, b) {
+              final idxA = orderedCodes.indexOf(a.codeLo);
+              final idxB = orderedCodes.indexOf(b.codeLo);
+              
+              // If both not in order, fallback to alphabetical
+              if (idxA == -1 && idxB == -1) return a.name.compareTo(b.name);
+              // If one not in order, put it at the end
+              if (idxA == -1) return 1;
+              if (idxB == -1) return -1;
+              
+              return idxA.compareTo(idxB);
             });
 
-          return ListView.builder(
+          return ReorderableListView.builder(
             itemCount: sortedDicts.length,
+            onReorder: (oldIndex, newIndex) {
+              if (newIndex > oldIndex) newIndex -= 1;
+              final list = List<DictionaryInfo>.from(sortedDicts);
+              final item = list.removeAt(oldIndex);
+              list.insert(newIndex, item);
+              settingsNotifier.reorderDicts(list.map((d) => d.codeLo).toList());
+
+            },
             itemBuilder: (context, index) {
               final info = sortedDicts[index];
               final isAvailable = availableCodes.contains(info.codeLo);
@@ -54,6 +71,8 @@ class ManageDictionariesScreen extends ConsumerWidget {
               final isDownloading = progress != null;
 
               return ListTile(
+                key: ValueKey(info.codeLo),
+                leading: const Icon(Icons.drag_handle),
                 title: Text(info.name,
                     style: const TextStyle(fontWeight: FontWeight.bold)),
                 subtitle: Column(
@@ -161,6 +180,7 @@ class ManageDictionariesScreen extends ConsumerWidget {
               );
             },
           );
+
         },
       ),
     );

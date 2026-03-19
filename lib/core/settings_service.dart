@@ -12,7 +12,9 @@ class SettingsService {
   static const _highlight = 'highlight_enabled';
   static const _maxResults = 'max_results';
   static const _activeDicts = 'active_dicts';
+  static const _dictOrder = 'dict_order';
   static const _themeMode = 'theme_mode';
+
 
   static Future<AppSettings> load() async {
     final prefs = await SharedPreferences.getInstance();
@@ -28,10 +30,12 @@ class SettingsService {
       highlightEnabled: prefs.getBool(_highlight) ?? true,
       maxResults: prefs.getInt(_maxResults) ?? 100,
       activeDictCodes: _decodeList(prefs.getString(_activeDicts)),
+      dictOrder: _decodeList(prefs.getString(_dictOrder)),
       themeMode: AppThemeMode.values.firstWhere(
         (e) => e.name == prefs.getString(_themeMode),
         orElse: () => AppThemeMode.light,
       ),
+
 
     );
   }
@@ -46,7 +50,9 @@ class SettingsService {
     await prefs.setBool(_highlight, s.highlightEnabled);
     await prefs.setInt(_maxResults, s.maxResults);
     await prefs.setString(_activeDicts, jsonEncode(s.activeDictCodes));
+    await prefs.setString(_dictOrder, jsonEncode(s.dictOrder));
     await prefs.setString(_themeMode, s.themeMode.name);
+
   }
 
   static List<String> _decodeList(String? raw) {

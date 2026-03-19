@@ -26,5 +26,25 @@ void main() {
       final result = TransliterationService.stripSLP1Accents('a/MSa');
       expect(result, 'aMSa');
     });
+
+    test('fromSlp1 handles Vedic accents in Devanagari', () {
+      // General Devanagari fallback logic
+      final result1 = TransliterationService.fromSlp1('a/ni/', 'devanagari', useAccented: true);
+      expect(result1, 'अ꣡नि꣡'); // slp1 / -> devanagari udatta (꣡) from indic_transliteration
+
+      final result2 = TransliterationService.fromSlp1('a^ni', 'devanagari', useAccented: true);
+      expect(result2, 'अ᳙नि'); // slp1 ^ -> svarita fallback
+    });
+
+    test('fromSlp1 handles PWG specific accent overrides', () {
+      // dictionary specific overrides: ꣡ -> ꣫, ᳙ -> ॑
+      final result = TransliterationService.fromSlp1('a/ni^', 'devanagari', useAccented: true, dictCode: 'pwg');
+      // expect 'अ꣫नि॑'
+      // a/ -> अ + ꣫ (mapped from ꣡ or /)
+      // i^ -> ि + ॑ (mapped from ᳙ or ^)
+      expect(result, 'अ꣫नि॑');
+    });
   });
 }
+
+

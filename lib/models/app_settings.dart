@@ -67,7 +67,9 @@ class AppSettings {
   final bool highlightEnabled;
   final int maxResults;
   final List<String> activeDictCodes; 
+  final List<String> dictOrder; // Order of all dictionary codes
   final AppThemeMode themeMode;
+
 
   const AppSettings({
     this.headwordSearchMode = SearchMode.prefix,
@@ -78,8 +80,10 @@ class AppSettings {
     this.highlightEnabled = true,
     this.maxResults = 100,
     this.activeDictCodes = const [],
+    this.dictOrder = const [],
     this.themeMode = AppThemeMode.light,
   });
+
 
 
   AppSettings copyWith({
@@ -91,8 +95,10 @@ class AppSettings {
     bool? highlightEnabled,
     int? maxResults,
     List<String>? activeDictCodes,
+    List<String>? dictOrder,
     AppThemeMode? themeMode,
   }) {
+
     return AppSettings(
       headwordSearchMode: headwordSearchMode ?? this.headwordSearchMode,
       definitionSearchMode: definitionSearchMode ?? this.definitionSearchMode,
@@ -102,7 +108,9 @@ class AppSettings {
       highlightEnabled: highlightEnabled ?? this.highlightEnabled,
       maxResults: maxResults ?? this.maxResults,
       activeDictCodes: activeDictCodes ?? this.activeDictCodes,
+      dictOrder: dictOrder ?? this.dictOrder,
       themeMode: themeMode ?? this.themeMode,
     );
+
   }
 }

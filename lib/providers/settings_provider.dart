@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/settings_service.dart';
 import '../models/app_settings.dart';
+import '../core/dictionary_registry.dart';
+
 
 /// Provides and persists [AppSettings] globally.
 class SettingsNotifier extends StateNotifier<AppSettings> {
@@ -9,8 +11,17 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
   }
 
   Future<void> _load() async {
-    state = await SettingsService.load();
+    final loaded = await SettingsService.load();
+    // If dictOrder is empty, initialize with default registry order
+    if (loaded.dictOrder.isEmpty) {
+      state = loaded.copyWith(
+        dictOrder: DictionaryRegistry.all.map((d) => d.codeLo).toList(),
+      );
+    } else {
+      state = loaded;
+    }
   }
+
 
   Future<void> update(AppSettings newSettings) async {
     state = newSettings;
@@ -19,13 +30,17 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
 
   Future<void> addActiveDict(String code) async {
     if (!state.activeDictCodes.contains(code)) {
-      await update(
-        state.copyWith(
-          activeDictCodes: [...state.activeDictCodes, code],
-        ),
-      );
+      final newList = [...state.activeDictCodes, code];
+      // Sort new active list based on master dictOrder
+      newList.sort((a, b) {
+        final idxA = state.dictOrder.indexOf(a);
+        final idxB = state.dictOrder.indexOf(b);
+        return idxA.compareTo(idxB);
+      });
+      await update(state.copyWith(activeDictCodes: newList));
     }
   }
+
 
   Future<void> removeActiveDict(String code) async {
     await update(
@@ -35,7 +50,20 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
       ),
     );
   }
+
+  Future<void> reorderDicts(List<String> newOrder) async {
+    final activeCodes = List<String>.from(state.activeDictCodes);
+    // Re-sort active codes whenever the master order changes
+    activeCodes.sort((a, b) {
+      final idxA = newOrder.indexOf(a);
+      final idxB = newOrder.indexOf(b);
+      return idxA.compareTo(idxB);
+    });
+    await update(state.copyWith(dictOrder: newOrder, activeDictCodes: activeCodes));
+  }
 }
+
+
 
 final settingsProvider =
     StateNotifierProvider<SettingsNotifier, AppSettings>(
