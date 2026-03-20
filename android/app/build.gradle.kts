@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -16,6 +18,7 @@ android {
     }
 
     kotlinOptions {
+        @Suppress("DEPRECATION")
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
 
@@ -30,24 +33,24 @@ android {
         versionName = flutter.versionName
     }
 
+    val keystoreProperties = Properties()
     val keystorePropertiesFile = rootProject.projectDir.resolve("key.properties")
-    val keystoreProperties = java.util.Properties()
     if (keystorePropertiesFile.exists()) {
-        keystoreProperties.load(keystorePropertiesFile.inputStream())
+        keystorePropertiesFile.inputStream().use { keystoreProperties.load(it) }
     }
 
     signingConfigs {
         create("release") {
-            keyAlias = keystoreProperties["keyAlias"] as String?
-            keyPassword = keystoreProperties["keyPassword"] as String?
-            storeFile = keystoreProperties["storeFile"]?.let { file(it) }
-            storePassword = keystoreProperties["storePassword"] as String?
+            keyAlias = keystoreProperties.getProperty("keyAlias")
+            keyPassword = keystoreProperties.getProperty("keyPassword")
+            storeFile = keystoreProperties.getProperty("storeFile")?.let { file(it) }
+            storePassword = keystoreProperties.getProperty("storePassword")
         }
     }
 
     buildTypes {
         release {
-            signingConfig = if (keystoreProperties["keyAlias"] != null) {
+            signingConfig = if (keystoreProperties.getProperty("keyAlias") != null) {
                 signingConfigs.getByName("release")
             } else {
                 signingConfigs.getByName("debug")
