@@ -45,7 +45,7 @@ class BasicAdjust {
     // Convert <pc>Page...<pc> to <pc>...<pc>
     xml = xml.replaceAllMapped(
       RegExp(r'<pc>Page(.*?)</pc>'),
-      (m) => '<pc>${m.group(1)}</pc>',
+      (m) => '<pc>${m.group(1)?.trim()}</pc>',
     );
 
     // Handle <s> tags - convert SLP1 content
