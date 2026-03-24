@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.3] - 2026-03-24
+
+### Added
+- **Cologne Theme**: Your favourite colour theme from Colgne website.
+- **Custom Themes**: Choose your colours. Make it your own.
+
+
 ## [0.1.2] - 2026-03-24
 
 ### Added

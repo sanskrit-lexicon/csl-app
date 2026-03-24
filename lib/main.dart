@@ -139,7 +139,6 @@ class SanslexApp extends ConsumerWidget {
   ThemeData _buildCustomTheme(AppSettings settings) {
     final primary = settings.customPrimary;
     final background = settings.customBackground;
-    final surface = settings.customHeadword;
 
     return ThemeData(
       useMaterial3: true,
@@ -147,7 +146,7 @@ class SanslexApp extends ConsumerWidget {
         seedColor: primary,
         brightness: Brightness.light,
         primary: primary,
-        surface: surface,
+        surface: background,
       ),
       scaffoldBackgroundColor: background,
       appBarTheme: AppBarTheme(
@@ -172,12 +171,12 @@ class SanslexApp extends ConsumerWidget {
           borderSide: BorderSide(color: primary, width: 2),
         ),
         filled: true,
-        fillColor: Colors.white,
+        fillColor: background,
       ),
       dropdownMenuTheme: DropdownMenuThemeData(
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
-          fillColor: surface,
+          fillColor: background,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(8)),
             borderSide: BorderSide(color: Colors.grey),
