@@ -54,14 +54,14 @@ Use the preset buttons to start with existing themes, then tweak the colors to y
 - **Cologne**: Light blue theme matching the Cologne website
 - **Light**: Classic light theme
 - **Dark**: Dark mode for low-light environments
-- **White**: Clean white theme with blue accents
+- **Whitr**: Clean white theme with blue
 
 ## Search Modes Explained
 
 | Mode | Description |
 |------|-------------|
+| **Prefix** (default) | Matches words starting with your query |
 | **Exact** | Matches the exact word only |
-| **Prefix** | Matches words starting with your query |
 | **Suffix** | Matches words ending with your query |
 | **Substring** | Matches words containing your query anywhere |
 
@@ -69,7 +69,7 @@ Use the preset buttons to start with existing themes, then tweak the colors to y
 
 | Scheme | Example ( Sanskrit ) |
 |--------|---------------------|
-| ITRANS | surya |
+| ITRANS (default)| surya |
 | Harvard-Kyoto | sUrya |
 | SLP1 | sUrya |
 | Devanagari | सूर्य |
