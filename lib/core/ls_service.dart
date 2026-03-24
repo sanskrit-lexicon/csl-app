@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'database_helper.dart';
 
 class LsResult {
@@ -82,6 +83,20 @@ class LsService {
     'Nir.': 'nir',
     'Naigh.': 'naigh',
     'Nigh.': 'naigh',
+    // PWG-specific uppercase abbreviations
+    'H.': 'h',
+    'an.': 'an',
+    'MED.': 'med',
+    'ŚĀK.': 'shakuntala_pwg',
+    'RĀJA-TAR.': 'rajatar_pwg',
+    'RĀJAT.': 'rajatar_pwg',
+    'RAGH.': 'ragh_pwg',
+    'RAGH. ed. ST.': 'ragh_st',
+    'RAGH. ed. Calc.': 'ragh_pwg',
+    'MĀRK. P.': 'markp_pwg',
+    'BHAG.': 'bhag_pwg',
+    'YĀJÑ.': 'yajn_pwg',
+    'AIT. BR.': 'aitbr_pwg',
   };
 
   static const Map<String, Map<String, String>> _dictSpecificPrefixes = {
@@ -195,7 +210,12 @@ class LsService {
   static String? generateHref(
       String dict, String key, String? nAttribute, String data) {
     final pfx = getPrefix(dict, key);
-    if (pfx == null) return null;
+    debugPrint('=== LS HREF DEBUG: dict=$dict, key=$key, pfx=$pfx');
+    if (pfx == null) {
+      debugPrint(
+          '=== LS HREF DEBUG: No prefix found for key="$key", returning null');
+      return null;
+    }
 
     String data1;
     if (nAttribute != null && nAttribute.isNotEmpty) {
@@ -253,8 +273,31 @@ class LsService {
       return hrefSpruch(data1);
     } else if (pfx == 'verzoxf') {
       return hrefVerzOxf(data1);
+    } else if (pfx == 'AK.') {
+      return hrefAmarakoSa(data1);
+    } else if (pfx == 'h') {
+      return hrefHemacandra(data1);
+    } else if (pfx == 'an') {
+      return hrefAnekartha(data1);
+    } else if (pfx == 'med') {
+      return hrefMedini(data1);
+    } else if (pfx == 'shakuntala_pwg') {
+      return hrefShakuntalaPwg(data1);
+    } else if (pfx == 'rajatar_pwg') {
+      return hrefRajatarPwg(data1);
+    } else if (pfx == 'ragh_pwg' || pfx == 'ragh_st') {
+      return hrefRaghPwg(data1, pfx);
+    } else if (pfx == 'markp_pwg') {
+      return hrefMarkandeyaPuranaPwg(data1);
+    } else if (pfx == 'bhag_pwg') {
+      return hrefBhagavadGitaPwg(data1);
+    } else if (pfx == 'yajn_pwg') {
+      return hrefYajnavalkya(data1);
+    } else if (pfx == 'aitbr_pwg') {
+      return hrefAitareyaBrahmana(data1);
     }
 
+    debugPrint('=== LS HREF DEBUG: pfx="$pfx" not handled, returning null');
     return null;
   }
 
@@ -628,6 +671,149 @@ class LsService {
     return null;
   }
 
+  // PWG-specific href generators
+  static String? hrefAmarakoSa(String data1) {
+    final regex = RegExp(r'^AK\. *([0-9]+), *([0-9]+), *([0-9]+), *([0-9]+)');
+    final match = regex.firstMatch(data1);
+    if (match != null) {
+      final khanda = match.group(1)!;
+      final adhyaya = match.group(2)!;
+      final verse = match.group(3)!;
+      return 'https://sanskrit-lexicon-scans.github.io/amarakosha/app1?$khanda,$adhyaya,$verse';
+    }
+    return null;
+  }
+
+  static String? hrefHemacandra(String data1) {
+    final regex = RegExp(r'^H\. *([0-9]+)');
+    final match = regex.firstMatch(data1);
+    if (match != null) {
+      final entry = match.group(1)!;
+      return 'https://sanskrit-lexicon-scans.github.io/anekarthasamgraha/app1?$entry';
+    }
+    return null;
+  }
+
+  static String? hrefAnekartha(String data1) {
+    final regex = RegExp(r'^an\. *([0-9]+), *([0-9]+)');
+    final match = regex.firstMatch(data1);
+    if (match != null) {
+      final entry = match.group(1)!;
+      final sub = match.group(2)!;
+      return 'https://sanskrit-lexicon-scans.github.io/anekarthasamgraha/app1?$entry,$sub';
+    }
+    return null;
+  }
+
+  static String? hrefMedini(String data1) {
+    final regex = RegExp(r'^MED\. *([a-z]), *([0-9]+)');
+    final match = regex.firstMatch(data1);
+    if (match != null) {
+      final startLetter = match.group(1)!;
+      final entry = match.group(2)!;
+      return 'https://sanskrit-lexicon-scans.github.io/medini/app1?$startLetter,$entry';
+    }
+    return null;
+  }
+
+  static String? hrefShakuntalaPwg(String data1) {
+    var regex = RegExp(r'^ŚĀK\. *([0-9]+), *([0-9]+), *([0-9]+)');
+    var match = regex.firstMatch(data1);
+    if (match != null) {
+      final page = match.group(1)!;
+      final line = match.group(2)!;
+      final col = match.group(3)!;
+      return 'https://sanskrit-lexicon-scans.github.io/shakuntala/app2?$page,$line,$col';
+    }
+    regex = RegExp(r'^ŚĀK\. *([0-9]+)');
+    match = regex.firstMatch(data1);
+    if (match != null) {
+      final verse = match.group(1)!;
+      return 'https://sanskrit-lexicon-scans.github.io/shakuntala/app1?$verse';
+    }
+    return null;
+  }
+
+  static String? hrefRajatarPwg(String data1) {
+    final regex = RegExp(r'^(RĀJA-TAR\.|RĀJAT\.) *([0-9]+), *([0-9]+)');
+    final match = regex.firstMatch(data1);
+    if (match != null) {
+      final taranga = match.group(2)!;
+      final shloka = match.group(3)!;
+      if (taranga == '7' || taranga == '8') {
+        return 'https://sanskrit-lexicon-scans.github.io/rajatarcalc/app1?$taranga,$shloka';
+      }
+      return 'https://sanskrit-lexicon-scans.github.io/rajatar/app1?$taranga,$shloka';
+    }
+    return null;
+  }
+
+  static String? hrefRaghPwg(String data1, String pfx) {
+    final regex = RegExp(r'^(RAGH\..*?) *([0-9]+), *([0-9]+)');
+    final match = regex.firstMatch(data1);
+    if (match != null) {
+      final sarga = match.group(2)!;
+      final shloka = match.group(3)!;
+      if (pfx == 'ragh_st' || data1.contains('ST.')) {
+        return 'https://sanskrit-lexicon-scans.github.io/raghuvamsa/app1?$sarga,$shloka';
+      }
+      return 'https://sanskrit-lexicon-scans.github.io/raghuvamsacalc/app1?$sarga,$shloka';
+    }
+    return null;
+  }
+
+  static String? hrefMarkandeyaPuranaPwg(String data1) {
+    final regex = RegExp(r'^(MĀRK\. P\.) *([0-9]+), *([0-9]+)');
+    final match = regex.firstMatch(data1);
+    if (match != null) {
+      final adhyaya = match.group(2)!;
+      final shloka = match.group(3)!;
+      return 'https://sanskrit-lexicon-scans.github.io/markandeyapurana/app1?$adhyaya,$shloka';
+    }
+    return null;
+  }
+
+  static String? hrefBhagavadGitaPwg(String data1) {
+    final regex = RegExp(r'^(BHAG\.) *([0-9]+), *([0-9]+)');
+    final match = regex.firstMatch(data1);
+    if (match != null) {
+      final adhyaya = match.group(2)!;
+      final shloka = match.group(3)!;
+      return 'https://sanskrit-lexicon-scans.github.io/bhagavadgita/app1?$adhyaya,$shloka';
+    }
+    return null;
+  }
+
+  static String? hrefYajnavalkya(String data1) {
+    final regex = RegExp(r'^(YĀJÑ\.) *([0-9]+), *([0-9]+)');
+    final match = regex.firstMatch(data1);
+    if (match != null) {
+      final adhyaya = match.group(2)!;
+      final verse = match.group(3)!;
+      return 'https://sanskrit-lexicon-scans.github.io/yajnavalkya/app1?$adhyaya,$verse';
+    }
+    return null;
+  }
+
+  static String? hrefAitareyaBrahmana(String data1) {
+    var regex = RegExp(r'^(AIT\. BR\.) *([0-9]+), *([0-9]+), *([0-9]+)');
+    var match = regex.firstMatch(data1);
+    if (match != null) {
+      final pancika = match.group(2)!;
+      final kandika = match.group(3)!;
+      final kanda = match.group(4)!;
+      return 'https://sanskrit-lexicon-scans.github.io/aitbr_auf/app1?$pancika,$kandika,$kanda';
+    }
+    regex = RegExp(r'^(AIT\. BR\.) *([0-9]+), *([0-9]+)');
+    match = regex.firstMatch(data1);
+    if (match != null) {
+      final pancika = match.group(2)!;
+      final kandika = match.group(3)!;
+      return 'https://sanskrit-lexicon-scans.github.io/aitbr_auf/app1?$pancika,$kandika';
+    }
+    return null;
+  }
+
   // Main processLs method
   static Future<LsResult?> processLs({
     required String dictCode,
@@ -644,10 +830,15 @@ class LsService {
     }
 
     final key = extractFirstKey(data);
+    debugPrint(
+        '=== LS PROCESS DEBUG: dict=$dict, data="$data", extracted key="$key"');
     if (key == null) return null;
 
     final expansion = await _fetchExpansion(dict, data);
+    debugPrint(
+        '=== LS PROCESS DEBUG: expansion="${expansion?.substring(0, expansion.length > 50 ? 50 : expansion.length)}..."');
     final href = generateHref(dict, key, nAttribute, lsContent);
+    debugPrint('=== LS PROCESS DEBUG: href="$href"');
 
     return LsResult(
       expansion: expansion,
@@ -679,14 +870,21 @@ class LsService {
       String dict, String keyPrefix, String data) async {
     try {
       final db = await DatabaseHelper.openAuthTooltips(dict);
-      if (db == null) return null;
+      if (db == null) {
+        debugPrint('=== LS DB DEBUG: $dict not in authtooltips (no db)');
+        return null;
+      }
 
       final table = '${dict}authtooltips';
+      debugPrint(
+          '=== LS DB DEBUG: querying $table with keyPrefix="$keyPrefix"');
       final rows = await db.rawQuery(
         'SELECT * FROM $table WHERE key LIKE ?',
         [keyPrefix],
       );
 
+      debugPrint(
+          '=== LS DB DEBUG: found ${rows.length} rows for keyPrefix="$keyPrefix"');
       if (rows.isEmpty) return null;
 
       String? bestMatch;
@@ -694,7 +892,9 @@ class LsService {
 
       for (final row in rows) {
         final code = row['key'] as String?;
+        debugPrint('=== LS DB DEBUG: checking row key="$code"');
         if (code != null && data.startsWith(code)) {
+          debugPrint('=== LS DB DEBUG: MATCH - data starts with "$code"');
           if (code.length > maxLen) {
             maxLen = code.length;
             final dataCol = row['data'] as String?;
@@ -710,6 +910,7 @@ class LsService {
 
       return bestMatch;
     } catch (e) {
+      debugPrint('=== LS DB DEBUG: error querying authtooltips: $e');
       return null;
     }
   }
@@ -718,14 +919,21 @@ class LsService {
       String dict, String keyPrefix, String data) async {
     try {
       final db = await DatabaseHelper.openBib(dict);
-      if (db == null) return null;
+      if (db == null) {
+        debugPrint('=== LS DB DEBUG: $dict not in bib (no db)');
+        return null;
+      }
 
       final table = '${dict}bib';
+      debugPrint(
+          '=== LS DB DEBUG: querying $table with keyPrefix="$keyPrefix"');
       final rows = await db.rawQuery(
         'SELECT * FROM $table WHERE code LIKE ?',
         [keyPrefix],
       );
 
+      debugPrint(
+          '=== LS DB DEBUG: found ${rows.length} rows for keyPrefix="$keyPrefix"');
       if (rows.isEmpty) return null;
 
       String? bestMatch;
@@ -733,7 +941,9 @@ class LsService {
 
       for (final row in rows) {
         final code = row['code'] as String?;
+        debugPrint('=== LS DB DEBUG: checking row code="$code"');
         if (code != null && data.startsWith(code)) {
+          debugPrint('=== LS DB DEBUG: MATCH - data starts with "$code"');
           if (code.length > maxLen) {
             maxLen = code.length;
             final dataCol = row['data'] as String?;
@@ -749,6 +959,7 @@ class LsService {
 
       return bestMatch;
     } catch (e) {
+      debugPrint('=== LS DB DEBUG: error querying bib: $e');
       return null;
     }
   }

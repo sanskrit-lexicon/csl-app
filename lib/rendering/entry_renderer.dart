@@ -69,9 +69,14 @@ class EntryRenderer {
         final cacheKey = ref.nAttribute ?? ref.text;
         if (result.expansion != null) {
           lsCache[cacheKey] = result.expansion!;
+          debugPrint('=== LS DEBUG: Stored in lsCache: key="$cacheKey"');
         }
         if (result.href != null) {
           lsHrefs[cacheKey] = result.href!;
+          debugPrint(
+              '=== LS DEBUG: Stored in lsHrefs: key="$cacheKey" => href="${result.href}"');
+        } else {
+          debugPrint('=== LS DEBUG: No href for key="$cacheKey"');
         }
       }
     }
@@ -130,7 +135,7 @@ class EntryRenderer {
       String bodyHtml,
       Map<String, String> abbreviationCache,
       Map<String, String> lsCache,
-      Map<String, String> lsHrefs,
+      Map<String, String> lsHrefsParam,
       String? highlightSlp1,
       String? rawHighlightTerm,
       String dictCode) {
@@ -154,13 +159,13 @@ class EntryRenderer {
         abbreviationCache: abbreviationCache,
         highlightTerm: rawHighlightTerm,
         highlightEnabled: settings.highlightEnabled,
-        lsHrefs: lsHrefs,
+        lsHrefs: lsHrefsParam, // parameter from _buildBodyHtml
       );
     }
 
     // Always apply transliteration (handles <s> and <SA> tags)
     // This is needed regardless of BasicDisplay toggle
-    html = _applyTransliteration(html, abbreviationCache, lsCache,
+    html = _applyTransliteration(html, abbreviationCache, lsCache, lsHrefsParam,
         highlightSlp1, rawHighlightTerm, dictCode);
 
     // Wrap in a div for styling
@@ -172,6 +177,7 @@ class EntryRenderer {
       String html,
       Map<String, String> abbreviationCache,
       Map<String, String> lsCache,
+      Map<String, String> lsHrefs,
       String? highlightSlp1,
       String? rawHighlightTerm,
       String dictCode) {
@@ -242,29 +248,37 @@ class EntryRenderer {
     );
 
     // Style <ls> references (if not already handled by BasicDisplay)
-    // Preserve n attribute as title for tooltip
-    // Also handle already-transformed <span class="ls" title="...">
+    // Priority: external URL if available, otherwise tooltip via sanslex:// URL
+    final lsHrefsMap = lsHrefs;
     html = html.replaceAllMapped(
       RegExp(r'<ls\s+n="([^"]*)">(.*?)</ls>', dotAll: true),
       (m) {
         final code = m.group(1) ?? '';
         final text = m.group(2) ?? '';
-        debugPrint(
-            '=== LS DEBUG: Matched <ls n="$code">$text</ls>, lsCache lookup: ${lsCache[code]}');
         final tooltip = lsCache[code] ?? code;
-        final encoded = Uri.encodeComponent(tooltip);
-        return '<a href="sanslex://tooltip/ls/$encoded" class="ls" title="$code">$text</a>';
+        final externalHref = lsHrefsMap[code];
+
+        if (externalHref != null && externalHref.isNotEmpty) {
+          return '<a href="$externalHref"><span class="ls" title="$tooltip">$text</span></a>';
+        } else {
+          final encoded = Uri.encodeComponent(tooltip);
+          return '<a href="sanslex://tooltip/ls/$encoded" class="ls" title="$code">$text</a>';
+        }
       },
     );
     html = html.replaceAllMapped(
       RegExp(r'<ls\s+n="([^"]*)"\s*/>'),
       (m) {
         final code = m.group(1) ?? '';
-        debugPrint(
-            '=== LS DEBUG: Matched <ls n="$code"/>, lsCache lookup: ${lsCache[code]}');
         final tooltip = lsCache[code] ?? code;
-        final encoded = Uri.encodeComponent(tooltip);
-        return '<a href="sanslex://tooltip/ls/$encoded" class="ls" title="$code">[$code]</a>';
+        final externalHref = lsHrefsMap[code];
+
+        if (externalHref != null && externalHref.isNotEmpty) {
+          return '<a href="$externalHref"><span class="ls" title="$tooltip">[$code]</span></a>';
+        } else {
+          final encoded = Uri.encodeComponent(tooltip);
+          return '<a href="sanslex://tooltip/ls/$encoded" class="ls" title="$code">[$code]</a>';
+        }
       },
     );
     // Handle already-transformed <span class="ls" title="..."> elements (from BasicDisplay)
@@ -274,12 +288,16 @@ class EntryRenderer {
       (m) {
         final code = m.group(1) ?? '';
         final text = m.group(2) ?? '';
-        debugPrint(
-            '=== LS DEBUG: Matched <span class="ls" title="$code">$text</span>, lsCache lookup: ${lsCache[code]}');
         if (code.isNotEmpty && text.isNotEmpty) {
           final tooltip = lsCache[code] ?? code;
-          final encoded = Uri.encodeComponent(tooltip);
-          return '<a href="sanslex://tooltip/ls/$encoded" class="ls" title="$code">$text</a>';
+          final externalHref = lsHrefsMap[code];
+
+          if (externalHref != null && externalHref.isNotEmpty) {
+            return '<a href="$externalHref"><span class="ls" title="$tooltip">$text</span></a>';
+          } else {
+            final encoded = Uri.encodeComponent(tooltip);
+            return '<a href="sanslex://tooltip/ls/$encoded" class="ls" title="$code">$text</a>';
+          }
         }
         return m.group(0) ?? '';
       },
@@ -406,7 +424,7 @@ class _EntryCard extends StatelessWidget {
                 height: 1.6,
                 color: theme.colorScheme.onSurface,
               ),
-              onTapUrl: (url) {
+              onTapUrl: (url) async {
                 if (url.startsWith('sanslex://lookup/')) {
                   final word = url.substring('sanslex://lookup/'.length);
                   onWordTap(word);
@@ -443,6 +461,14 @@ class _EntryCard extends StatelessWidget {
                     );
                   }
                   return true;
+                }
+                // Handle external http/https URLs - open in browser
+                if (url.startsWith('http://') || url.startsWith('https://')) {
+                  final uri = Uri.parse(url);
+                  if (await canLaunchUrl(uri)) {
+                    await launchUrl(uri, mode: LaunchMode.externalApplication);
+                    return true;
+                  }
                 }
                 return false;
               },
