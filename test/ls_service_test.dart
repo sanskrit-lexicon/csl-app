@@ -56,6 +56,67 @@ void main() {
     test('romanInt handles invalid roman numeral', () {
       expect(LsService.romanInt('abc'), equals(0));
     });
+
+    test('romanInt converts uppercase I', () {
+      expect(LsService.romanInt('I'), equals(1));
+    });
+
+    test('romanInt converts uppercase II', () {
+      expect(LsService.romanInt('II'), equals(2));
+    });
+
+    test('romanInt converts uppercase V', () {
+      expect(LsService.romanInt('V'), equals(5));
+    });
+
+    test('romanInt converts uppercase X', () {
+      expect(LsService.romanInt('X'), equals(10));
+    });
+
+    test('romanInt converts iv (lowercase)', () {
+      expect(LsService.romanInt('iv'), equals(4));
+    });
+
+    test('romanInt converts XII', () {
+      expect(LsService.romanInt('XII'), equals(12));
+    });
+  });
+
+  group('LsService - URL Generation with Roman Numerals', () {
+    test('PWG: PAÑCAT. with Roman numeral I converts to 1', () {
+      final result =
+          LsService.generateHref('pwg', 'PAÑCAT.', null, 'PAÑCAT. I, 1');
+      expect(
+          result,
+          equals(
+              'https://sanskrit-lexicon-scans.github.io/pantankose/app1?1,1'));
+    });
+
+    test('PWG: PAÑCAT. with Roman numeral II converts to 2', () {
+      final result =
+          LsService.generateHref('pwg', 'PAÑCAT.', null, 'PAÑCAT. II, 3');
+      expect(
+          result,
+          equals(
+              'https://sanskrit-lexicon-scans.github.io/pantankose/app1?2,3'));
+    });
+
+    test('PWG: HIT. with Roman numeral I converts to 1', () {
+      final result = LsService.generateHref('pwg', 'HIT.', null, 'HIT. I, 5');
+      expect(
+          result,
+          equals(
+              'https://sanskrit-lexicon-scans.github.io/hitopadesha/app1?1,5'));
+    });
+
+    test('MW: Pañcat. with Roman numeral I converts to 1', () {
+      final result =
+          LsService.generateHref('mw', 'Pañcat.', null, 'Pañcat. I, 1, 2');
+      expect(
+          result,
+          equals(
+              'https://sanskrit-lexicon-scans.github.io/pantankose/app1?1,1,2'));
+    });
   });
 
   group('LsService - Prefix Resolution', () {
@@ -375,22 +436,22 @@ void main() {
     });
 
     test('PWG: PAÑCAT. roman numeral pattern', () {
-      // Note: Roman numeral conversion not yet implemented - "I" stays as "I"
+      // Roman numeral "I" should be converted to 1
       final result =
           LsService.generateHref('pwg', 'PAÑCAT.', null, 'PAÑCAT. I, 1');
       expect(
           result,
           equals(
-              'https://sanskrit-lexicon-scans.github.io/pantankose/app1?I,1'));
+              'https://sanskrit-lexicon-scans.github.io/pantankose/app1?1,1'));
     });
 
     test('PWG: HIT. roman numeral pattern', () {
-      // Note: Roman numeral conversion not yet implemented - "I" stays as "I"
+      // Roman numeral "I" should be converted to 1
       final result = LsService.generateHref('pwg', 'HIT.', null, 'HIT. I, 1');
       expect(
           result,
           equals(
-              'https://sanskrit-lexicon-scans.github.io/hitopadesha/app1?I,1'));
+              'https://sanskrit-lexicon-scans.github.io/hitopadesha/app1?1,1'));
     });
 
     test('PWG: AK. 3 param pattern', () {
@@ -574,11 +635,11 @@ void main() {
     test('MW: Pañcat. pattern', () {
       final result =
           LsService.generateHref('mw', 'Pañcat.', null, 'Pañcat. I, 1, 2');
-      // Note: Roman numeral conversion not yet implemented, so "I" stays as "I"
+      // Roman numeral "I" should be converted to 1
       expect(
           result,
           equals(
-              'https://sanskrit-lexicon-scans.github.io/pantankose/app1?I,1,2'));
+              'https://sanskrit-lexicon-scans.github.io/pantankose/app1?1,1,2'));
     });
   });
 }

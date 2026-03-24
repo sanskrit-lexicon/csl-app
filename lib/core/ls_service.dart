@@ -343,9 +343,14 @@ class LsService {
           if (url.contains('(') && url.contains('?') && url.contains(':"')) {
             url = _evaluateConditional(url, match);
           } else {
-            // Simple replacement
+            // Simple replacement with Roman numeral conversion
             for (int i = 1; i <= match.groupCount; i++) {
-              final replacement = match.group(i) ?? '';
+              var replacement = match.group(i) ?? '';
+              // Convert Roman numerals to integers
+              final romanVal = romanInt(replacement);
+              if (romanVal > 0) {
+                replacement = romanVal.toString();
+              }
               url = url.replaceAll('\$$i', replacement);
             }
           }
