@@ -126,10 +126,13 @@ class BasicDisplay {
       (m) => '<span class="ls" title="${m.group(1)}">[ref]</span>',
     );
 
-    // <ls>text</ls> without n attribute
+    // <ls>text</ls> without n attribute - use text as title
     html = html.replaceAllMapped(
       RegExp(r'<ls>(.*?)</ls>', dotAll: true),
-      (m) => '<span class="ls">${m.group(1)}</span>',
+      (m) {
+        final text = m.group(1) ?? '';
+        return '<span class="ls" title="$text">$text</span>';
+      },
     );
 
     return html;

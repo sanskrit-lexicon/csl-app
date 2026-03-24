@@ -47,7 +47,8 @@ class SearchService {
 
     final List<Map<String, dynamic>> rows;
     if (kDebugMode) {
-      debugPrint('SQL Query [$dictCode]: SELECT key, lnum, data FROM $table WHERE key ${mode == SearchMode.exact ? "=" : "LIKE"} "$pattern"');
+      debugPrint(
+          'SQL Query [$dictCode]: SELECT key, lnum, data FROM $table WHERE key ${mode == SearchMode.exact ? "=" : "LIKE"} "$pattern"');
     }
 
     if (mode == SearchMode.exact) {
@@ -61,7 +62,7 @@ class SearchService {
         [pattern, maxResults],
       );
     }
-    
+
     if (kDebugMode) {
       debugPrint('SQL Result [$dictCode]: ${rows.length} rows');
     }
@@ -95,7 +96,8 @@ class SearchService {
     final pattern = '%$searchWord%';
 
     if (kDebugMode) {
-      debugPrint('SQL Query [$dictCode]: SELECT key, lnum, data FROM $table WHERE data LIKE "$pattern"');
+      debugPrint(
+          'SQL Query [$dictCode]: SELECT key, lnum, data FROM $table WHERE data LIKE "$pattern"');
     }
 
     final rows = await db.rawQuery(
@@ -135,7 +137,8 @@ class SearchService {
     final defPattern = '%$defSlp%';
 
     if (kDebugMode) {
-      debugPrint('SQL Query [$dictCode]: SELECT ... FROM $table WHERE key LIKE "$hwPattern" AND data LIKE "$defPattern"');
+      debugPrint(
+          'SQL Query [$dictCode]: SELECT ... FROM $table WHERE key LIKE "$hwPattern" AND data LIKE "$defPattern"');
     }
 
     final List<Map<String, dynamic>> rows;
@@ -150,7 +153,7 @@ class SearchService {
         [hwPattern, defPattern, maxResults],
       );
     }
-    
+
     if (kDebugMode) {
       debugPrint('SQL Result [$dictCode]: ${rows.length} rows');
     }
@@ -191,6 +194,48 @@ class SearchService {
       // Extract text from <disp>...</disp>
       final match = RegExp(r'<disp>(.*?)</disp>').firstMatch(raw);
       return match?.group(1)?.trim();
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Fetch literary source expansion from {dict}authtooltips database.
+  /// Returns full name (e.g., "Whitney's Grammar, section 502") or null if not found.
+  static Future<String?> fetchLsExpansion({
+    required String dictCode,
+    required String code,
+  }) async {
+    try {
+      final db = await DatabaseHelper.openAuthTooltips(dictCode);
+      if (db == null) return null;
+
+      final table = '${dictCode.toLowerCase()}authtooltips';
+
+      // Try MW format first: columns are cid, code, title, type
+      var rows = await db.rawQuery(
+        'SELECT title, type FROM $table WHERE code = ? LIMIT 1',
+        [code],
+      );
+      if (rows.isNotEmpty) {
+        final title = rows.first['title'] as String?;
+        final type = rows.first['type'] as String?;
+        if (title != null && type != null) {
+          return '$title ($type)';
+        } else if (title != null) {
+          return title;
+        }
+      }
+
+      // Fallback to simpler format: columns are code, text
+      rows = await db.rawQuery(
+        'SELECT text FROM $table WHERE code = ? LIMIT 1',
+        [code],
+      );
+      if (rows.isNotEmpty) {
+        return rows.first['text'] as String?;
+      }
+
+      return null;
     } catch (_) {
       return null;
     }

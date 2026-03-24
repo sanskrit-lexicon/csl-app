@@ -58,6 +58,24 @@ class EntryParser {
         .toList();
   }
 
+  /// Extract all LS (literary source) reference codes from body HTML.
+  /// Returns the 'n' attribute values from <ls n="..."> tags.
+  static List<String> extractLsReferences(String bodyHtml) {
+    final codes = <String>{};
+    // Match <ls n="code">text</ls>
+    for (final m
+        in RegExp(r'<ls\s+n="([^"]*)"', dotAll: true).allMatches(bodyHtml)) {
+      final code = m.group(1)?.trim() ?? '';
+      if (code.isNotEmpty) codes.add(code);
+    }
+    // Match <ls n="code"/>
+    for (final m in RegExp(r'<ls\s+n="([^"]*)"\s*/>').allMatches(bodyHtml)) {
+      final code = m.group(1)?.trim() ?? '';
+      if (code.isNotEmpty) codes.add(code);
+    }
+    return codes.toList();
+  }
+
   /// Convert the body HTML to a form suitable for flutter_widget_from_html.
   ///
   /// Transformations applied:
@@ -100,18 +118,20 @@ class EntryParser {
       },
     );
 
-    // Replace <ls n="ref">text</ls> with styled reference
+    // Replace <ls n="ref">text</ls> with styled reference (preserve n as title)
     html = html.replaceAllMapped(
       RegExp(r'<ls\s+n="([^"]*)">(.*?)</ls>', dotAll: true),
       (m) {
+        final n = m.group(1) ?? '';
         final text = m.group(2) ?? '';
-        return '<span class="ls">$text</span>';
+        return '<span class="ls" title="$n">$text</span>';
       },
     );
     // Self-closing <ls n="..."/>
     html = html.replaceAllMapped(
       RegExp(r'<ls\s+n="([^"]*)"\s*/>'),
-      (m) => '<span class="ls">[${m.group(1) ?? ''}]</span>',
+      (m) =>
+          '<span class="ls" title="${m.group(1) ?? ''}">[${m.group(1) ?? ''}]</span>',
     );
 
     // Replace <F>...</F> (footnotes) with small text

@@ -48,6 +48,17 @@ class EntryRenderer {
       if (exp != null) abbrCache[abbr] = exp;
     }
 
+    // 2. Pre-fetch LS (literary source) expansions
+    final lsCodes = EntryParser.extractLsReferences(entry.bodyHtml);
+    final lsCache = <String, String>{};
+    for (final code in lsCodes) {
+      final exp = await SearchService.fetchLsExpansion(
+        dictCode: dictCode,
+        code: code,
+      );
+      if (exp != null) lsCache[code] = exp;
+    }
+
     // DEBUG: Log raw entry HTML structure
     AppLogger.entry(dictCode, lnum, entry.key1Slp1, entry.bodyHtml);
 
@@ -77,6 +88,8 @@ class EntryRenderer {
       pageCol: entry.pageCol,
       lnum: lnum,
       dictCodeUp: dictCodeUp,
+      lsCache: lsCache,
+      abbrCache: abbrCache,
       onWordTap: onWordTap,
       onCopy: onCopy,
       outputTranslit: settings.outputTranslit,
@@ -186,13 +199,16 @@ class EntryRenderer {
     );
 
     // Style <ls> references (if not already handled by BasicDisplay)
+    // Preserve n attribute as title for tooltip
     html = html.replaceAllMapped(
       RegExp(r'<ls\s+n="([^"]*)">(.*?)</ls>', dotAll: true),
-      (m) => '<small><i>${m.group(2)}</i></small>',
+      (m) =>
+          '<span class="ls" title="${m.group(1)}"><small><i>${m.group(2)}</i></small></span>',
     );
     html = html.replaceAllMapped(
       RegExp(r'<ls\s+n="([^"]*)"\s*/>'),
-      (m) => '<small><i>[${m.group(1)}]</i></small>',
+      (m) =>
+          '<span class="ls" title="${m.group(1)}"><small><i>[${m.group(1)}]</i></small></span>',
     );
 
     // Clean remaining custom tags that HtmlWidget won't know
@@ -221,6 +237,8 @@ class _EntryCard extends StatelessWidget {
   final String? pageCol;
   final double lnum;
   final String dictCodeUp;
+  final Map<String, String> lsCache;
+  final Map<String, String> abbrCache;
   final void Function(String slp1Word) onWordTap;
   final VoidCallback onCopy;
   final String outputTranslit;
@@ -237,6 +255,8 @@ class _EntryCard extends StatelessWidget {
     this.pageCol,
     required this.lnum,
     required this.dictCodeUp,
+    required this.lsCache,
+    required this.abbrCache,
     required this.onWordTap,
     required this.onCopy,
     required this.outputTranslit,
@@ -374,6 +394,31 @@ class _EntryCard extends StatelessWidget {
                     'background-color': secondaryContainerHex,
                     'color': onSecondaryContainerHex,
                   };
+                }
+                return null;
+              },
+              customWidgetBuilder: (element) {
+                // Tooltip for <span class="ls" title="...">
+                if (element.classes.contains('ls') &&
+                    element.attributes.containsKey('title')) {
+                  final code = element.attributes['title'] ?? '';
+                  final message = lsCache[code] ?? code;
+                  return Tooltip(
+                    message: message,
+                    child: Text(element.text),
+                    waitDuration: const Duration(milliseconds: 500),
+                  );
+                }
+                // Tooltip for <abbr title="...">
+                if (element.localName == 'abbr' &&
+                    element.attributes.containsKey('title')) {
+                  final abbr = element.text.trim();
+                  final message = abbrCache[abbr] ?? abbr;
+                  return Tooltip(
+                    message: message,
+                    child: Text(element.text),
+                    waitDuration: const Duration(milliseconds: 500),
+                  );
                 }
                 return null;
               },

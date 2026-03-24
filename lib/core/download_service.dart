@@ -41,7 +41,8 @@ class DownloadService {
       chunks.add(chunk);
       received += chunk.length;
       if (total > 0) {
-        onProgress(received / total * 0.9, 'Downloading… ${_fmtBytes(received)} / ${_fmtBytes(total)}');
+        onProgress(received / total * 0.9,
+            'Downloading… ${_fmtBytes(received)} / ${_fmtBytes(total)}');
       } else {
         onProgress(0.5, 'Downloading… ${_fmtBytes(received)}');
       }
@@ -67,6 +68,8 @@ class DownloadService {
     final targets = {
       'web/sqlite/$codeLo.sqlite': p.join(docsDir, '$codeLo.sqlite'),
       'web/sqlite/${codeLo}ab.sqlite': p.join(docsDir, '${codeLo}ab.sqlite'),
+      'web/sqlite/${codeLo}authtooltips.sqlite':
+          p.join(docsDir, '${codeLo}authtooltips.sqlite'),
     };
 
     for (final file in archive) {
@@ -75,22 +78,32 @@ class DownloadService {
       final fileName = p.basename(file.name);
       final isMain = fileName == '$codeLo.sqlite';
       final isAb = fileName == '${codeLo}ab.sqlite';
+      final isAuth = fileName == '${codeLo}authtooltips.sqlite';
 
-      if ((isMain || isAb) && file.isFile) {
-        final dest = isMain ? targets['web/sqlite/$codeLo.sqlite']! : targets['web/sqlite/${codeLo}ab.sqlite']!;
+      if ((isMain || isAb || isAuth) && file.isFile) {
+        String dest;
+        if (isMain) {
+          dest = targets['web/sqlite/$codeLo.sqlite']!;
+        } else if (isAb) {
+          dest = targets['web/sqlite/${codeLo}ab.sqlite']!;
+        } else {
+          dest = targets['web/sqlite/${codeLo}authtooltips.sqlite']!;
+        }
         final outFile = File(dest);
         await outFile.writeAsBytes(file.content as List<int>);
       }
     }
 
-    // Verify main file was extracted. Abbreviation file might not exist in some zips.
+    // Verify main file was extracted. Abbreviation/AuthTooltips files might not exist in some zips.
     for (final key in targets.keys) {
       final dest = targets[key]!;
       if (!await File(dest).exists()) {
-        if (key.endsWith('ab.sqlite')) {
-           debugPrint('Note: ${p.basename(dest)} not found in zip. This is normal for some dictionaries.');
+        if (key.endsWith('ab.sqlite') || key.endsWith('authtooltips.sqlite')) {
+          debugPrint(
+              'Note: ${p.basename(dest)} not found in zip. This is normal for some dictionaries.');
         } else {
-           debugPrint('Extraction error: ${p.basename(dest)} not found in expected path in zip');
+          debugPrint(
+              'Extraction error: ${p.basename(dest)} not found in expected path in zip');
         }
       }
     }
@@ -98,30 +111,39 @@ class DownloadService {
     onProgress(1.0, 'Done');
   }
 
-  /// Delete both sqlite files and close any cached DB connections.
+  /// Delete all sqlite files and close any cached DB connections.
   static Future<void> deleteDictionary(String dictCode) async {
     await DatabaseHelper.closeDict(dictCode);
     final mainPath = await DatabaseHelper.dbPath(dictCode);
     final abPath = await DatabaseHelper.abDbPath(dictCode);
+    final authPath = await DatabaseHelper.authTooltipsDbPath(dictCode);
     final main = File(mainPath);
     final ab = File(abPath);
+    final auth = File(authPath);
     if (await main.exists()) await main.delete();
     if (await ab.exists()) await ab.delete();
+    if (await auth.exists()) await auth.delete();
   }
 
   /// Returns combined file size in bytes, or null if not downloaded.
   static Future<int?> downloadedSize(String dictCode) async {
     final mainPath = await DatabaseHelper.dbPath(dictCode);
     final abPath = await DatabaseHelper.abDbPath(dictCode);
+    final authPath = await DatabaseHelper.authTooltipsDbPath(dictCode);
     final main = File(mainPath);
     final ab = File(abPath);
+    final auth = File(authPath);
     if (!await main.exists()) return null;
-    
+
     final mainStat = await main.stat();
     int totalSize = mainStat.size;
     if (await ab.exists()) {
       final abStat = await ab.stat();
       totalSize += abStat.size;
+    }
+    if (await auth.exists()) {
+      final authStat = await auth.stat();
+      totalSize += authStat.size;
     }
     return totalSize;
   }
@@ -132,13 +154,14 @@ class DownloadService {
   }
 
   /// Fetches the remote zip file size and last-modified date using a HEAD request.
-  static Future<({int? size, DateTime? lastModified})> fetchRemoteMetadata(DictionaryInfo info) async {
+  static Future<({int? size, DateTime? lastModified})> fetchRemoteMetadata(
+      DictionaryInfo info) async {
     try {
       final response = await http.head(Uri.parse(info.downloadUrl));
       if (response.statusCode == 200) {
         final len = response.headers['content-length'];
         final modified = response.headers['last-modified'];
-        
+
         return (
           size: len != null ? int.tryParse(len) : null,
           lastModified: modified != null ? _parseHttpDate(modified) : null,
@@ -150,7 +173,7 @@ class DownloadService {
 
   static DateTime? _parseHttpDate(String dateStr) {
     try {
-      // http.head returns dates in RFC 1123 format usually, 
+      // http.head returns dates in RFC 1123 format usually,
       // e.g. "Wed, 21 Oct 2015 07:28:00 GMT"
       // HttpDate.parse handles this but requires dart:io
       return HttpDate.parse(dateStr);
