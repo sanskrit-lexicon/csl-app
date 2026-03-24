@@ -6,6 +6,7 @@ import '../models/dictionary_info.dart';
 import '../core/dictionary_registry.dart';
 import '../core/transliteration_service.dart';
 import '../core/search_service.dart';
+import '../core/logger.dart';
 import 'entry_parser.dart';
 
 /// Renders a [ParsedEntry] as a Flutter widget.
@@ -13,11 +14,15 @@ class EntryRenderer {
   final AppSettings settings;
   final String dictCode;
   final bool useCologneTheme;
+  final Color? customAccentColor;
+  final Color? customHeadwordColor;
 
   EntryRenderer(
       {required this.settings,
       required this.dictCode,
-      this.useCologneTheme = false});
+      this.useCologneTheme = false,
+      this.customAccentColor,
+      this.customHeadwordColor});
 
   /// Build the full entry widget including headword, body, and page ref.
   Future<Widget> buildEntryWidget({
@@ -40,6 +45,9 @@ class EntryRenderer {
       );
       if (exp != null) abbrCache[abbr] = exp;
     }
+
+    // DEBUG: Log raw entry HTML structure
+    AppLogger.entry(dictCode, lnum, entry.key1Slp1, entry.bodyHtml);
 
     // 2. Build headword display string
     final slp1Key = _resolveHeadwordSlp1(entry);
@@ -71,6 +79,8 @@ class EntryRenderer {
       outputTranslit: settings.outputTranslit,
       dictInfo: dictInfo,
       useCologneTheme: useCologneTheme,
+      customAccentColor: customAccentColor,
+      customHeadwordColor: customHeadwordColor,
     );
   }
 
@@ -180,6 +190,8 @@ class _EntryCard extends StatelessWidget {
   final String outputTranslit;
   final DictionaryInfo dictInfo;
   final bool useCologneTheme;
+  final Color? customAccentColor;
+  final Color? customHeadwordColor;
 
   const _EntryCard({
     required this.displayKey,
@@ -193,7 +205,19 @@ class _EntryCard extends StatelessWidget {
     required this.outputTranslit,
     required this.dictInfo,
     this.useCologneTheme = false,
+    this.customAccentColor,
+    this.customHeadwordColor,
   });
+
+  Color _getHeadwordColor(ThemeData theme) {
+    if (useCologneTheme) {
+      return const Color(0xFF36648B); // Cologne blue
+    }
+    if (customHeadwordColor != null) {
+      return customHeadwordColor!;
+    }
+    return theme.colorScheme.onSurface;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -217,7 +241,7 @@ class _EntryCard extends StatelessWidget {
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: isDevanagari ? 18 : 16,
-                        color: theme.colorScheme.onSurface,
+                        color: _getHeadwordColor(theme),
                       ),
                     ),
                     if (homonym != null)
@@ -272,9 +296,26 @@ class _EntryCard extends StatelessWidget {
                   if (useCologneTheme) {
                     return {'color': '#339933'}; // Green for Cologne theme
                   }
+                  if (customAccentColor != null) {
+                    final hex =
+                        '#${customAccentColor!.toARGB32().toRadixString(16).substring(2).padLeft(6, '0')}';
+                    return {'color': hex}; // Custom accent color
+                  }
                   return {
                     'color': isDark ? '#B0BEC5' : '#546E7A'
                   }; // Blue-grey variants
+                }
+                if (element.classes.contains('words')) {
+                  // Headwords within definitions
+                  if (useCologneTheme) {
+                    return {'color': '#36648B'}; // Cologne blue for headwords
+                  }
+                  if (customHeadwordColor != null) {
+                    final hex =
+                        '#${customHeadwordColor!.toARGB32().toRadixString(16).substring(2).padLeft(6, '0')}';
+                    return {'color': hex}; // Custom headword color
+                  }
+                  return {'color': primaryHex};
                 }
                 if (element.localName == 'b') {
                   return {'color': primaryHex};

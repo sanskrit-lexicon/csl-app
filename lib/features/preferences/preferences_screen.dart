@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flex_color_picker/flex_color_picker.dart';
 import '../../core/transliteration_service.dart';
 import '../../models/app_settings.dart';
 import '../../providers/settings_provider.dart';
@@ -134,6 +135,94 @@ class PreferencesScreen extends ConsumerWidget {
                   .toList(),
             ),
           ),
+          // 9. Custom Theme Colors (only show when Custom theme is selected)
+          if (settings.themeMode == AppThemeMode.custom) ...[
+            const Divider(),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: Text(
+                'Custom Theme Colors',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
+                'Start with a preset or pick your own colors:',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ),
+            const SizedBox(height: 12),
+            // Preset buttons
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Wrap(
+                spacing: 8,
+                children: CustomThemePresets.all.map((preset) {
+                  return OutlinedButton(
+                    onPressed: () {
+                      notifier.update(settings.copyWith(
+                        customPrimaryColor: preset.primary.toARGB32(),
+                        customBackgroundColor: preset.background.toARGB32(),
+                        customHeadwordColor: preset.headword.toARGB32(),
+                        customSanskritTextColor: preset.sanskritText.toARGB32(),
+                      ));
+                    },
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 8),
+                    ),
+                    child: Text(preset.name),
+                  );
+                }).toList(),
+              ),
+            ),
+            const SizedBox(height: 16),
+            // Color pickers
+            _ColorPickerTile(
+              label: 'Primary Color',
+              subtitle: 'App bar, buttons, links',
+              color: settings.customPrimary,
+              onColorChanged: (color) {
+                notifier.update(settings.copyWith(
+                  customPrimaryColor: color.toARGB32(),
+                ));
+              },
+            ),
+            _ColorPickerTile(
+              label: 'Background Color',
+              subtitle: 'Main screen background',
+              color: settings.customBackground,
+              onColorChanged: (color) {
+                notifier.update(settings.copyWith(
+                  customBackgroundColor: color.toARGB32(),
+                ));
+              },
+            ),
+            _ColorPickerTile(
+              label: 'Headword Color',
+              subtitle: 'Headwords within definitions',
+              color: settings.customHeadword,
+              onColorChanged: (color) {
+                notifier.update(settings.copyWith(
+                  customHeadwordColor: color.toARGB32(),
+                ));
+              },
+            ),
+            _ColorPickerTile(
+              label: 'Sanskrit Text Color',
+              subtitle: 'Sanskrit text in definitions',
+              color: settings.customSanskritText,
+              onColorChanged: (color) {
+                notifier.update(settings.copyWith(
+                  customSanskritTextColor: color.toARGB32(),
+                ));
+              },
+            ),
+          ],
+          const SizedBox(height: 32),
         ],
       ),
     );
@@ -163,6 +252,89 @@ class _SearchModeSelector extends StatelessWidget {
         selected: {currentMode},
         onSelectionChanged: (selection) => onChanged(selection.first),
       ),
+    );
+  }
+}
+
+class _ColorPickerTile extends StatelessWidget {
+  final String label;
+  final String subtitle;
+  final Color color;
+  final void Function(Color) onColorChanged;
+
+  const _ColorPickerTile({
+    required this.label,
+    required this.subtitle,
+    required this.color,
+    required this.onColorChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(label),
+      subtitle: Text(subtitle),
+      trailing: GestureDetector(
+        onTap: () => _showColorPicker(context),
+        child: Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.grey),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showColorPicker(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        Color selectedColor = color;
+        return AlertDialog(
+          title: Text('Pick $label'),
+          content: SingleChildScrollView(
+            child: ColorPicker(
+              color: selectedColor,
+              onColorChanged: (color) => selectedColor = color,
+              pickersEnabled: const <ColorPickerType, bool>{
+                ColorPickerType.both: false,
+                ColorPickerType.primary: true,
+                ColorPickerType.accent: true,
+                ColorPickerType.custom: true,
+                ColorPickerType.wheel: true,
+              },
+              enableShadesSelection: true,
+              showColorCode: true,
+              colorCodeHasColor: true,
+              heading: Text(
+                'Select color',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              subheading: Text(
+                'Select shade',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                onColorChanged(selectedColor);
+                Navigator.pop(context);
+              },
+              child: const Text('Apply'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart' show ThemeMode;
+import 'package:flutter/material.dart' show ThemeMode, Color;
 
 /// Theme modes for the app.
-enum AppThemeMode { cologne, light, dark }
+enum AppThemeMode { cologne, light, dark, custom }
 
 extension AppThemeModeX on AppThemeMode {
   String get label {
@@ -13,6 +13,8 @@ extension AppThemeModeX on AppThemeMode {
         return 'Light';
       case AppThemeMode.dark:
         return 'Dark';
+      case AppThemeMode.custom:
+        return 'Custom';
     }
   }
 
@@ -24,8 +26,64 @@ extension AppThemeModeX on AppThemeMode {
         return ThemeMode.light;
       case AppThemeMode.dark:
         return ThemeMode.dark;
+      case AppThemeMode.custom:
+        return ThemeMode.light;
     }
   }
+}
+
+/// Custom theme color presets.
+class CustomThemePreset {
+  final String name;
+  final Color primary;
+  final Color background;
+  final Color headword;
+  final Color sanskritText;
+
+  const CustomThemePreset({
+    required this.name,
+    required this.primary,
+    required this.background,
+    required this.headword,
+    required this.sanskritText,
+  });
+}
+
+/// Predefined custom theme presets.
+class CustomThemePresets {
+  static const cologne = CustomThemePreset(
+    name: 'Cologne',
+    primary: Color(0xFF36648B),
+    background: Color(0xFFFFFFFF),
+    headword: Color(0xFFDBE4ED),
+    sanskritText: Color(0xFF339933),
+  );
+
+  static const light = CustomThemePreset(
+    name: 'Light',
+    primary: Color(0xFF8B4513),
+    background: Color(0xFFFFFFFF),
+    headword: Color(0xFFFFFFFF),
+    sanskritText: Color(0xFF546E7A),
+  );
+
+  static const dark = CustomThemePreset(
+    name: 'Dark',
+    primary: Color(0xFF8B4513),
+    background: Color(0xFF121212),
+    headword: Color(0xFF1E1E1E),
+    sanskritText: Color(0xFFB0BEC5),
+  );
+
+  static const white = CustomThemePreset(
+    name: 'White',
+    primary: Color(0xFF0000FF),
+    background: Color(0xFFFFFFFF),
+    headword: Color(0xFFFFFFFF),
+    sanskritText: Color(0xFF008000),
+  );
+
+  static const List<CustomThemePreset> all = [cologne, light, dark, white];
 }
 
 /// Search mode for headword or definition search.
@@ -70,6 +128,10 @@ class AppSettings {
   final List<String> activeDictCodes;
   final List<String> dictOrder; // Order of all dictionary codes
   final AppThemeMode themeMode;
+  final int customPrimaryColor;
+  final int customBackgroundColor;
+  final int customHeadwordColor;
+  final int customSanskritTextColor;
 
   const AppSettings({
     this.headwordSearchMode = SearchMode.prefix,
@@ -82,6 +144,10 @@ class AppSettings {
     this.activeDictCodes = const [],
     this.dictOrder = const [],
     this.themeMode = AppThemeMode.cologne,
+    this.customPrimaryColor = 0xFF36648B,
+    this.customBackgroundColor = 0xFFFFFFFF,
+    this.customHeadwordColor = 0xFFDBE4ED,
+    this.customSanskritTextColor = 0xFF339933,
   });
 
   AppSettings copyWith({
@@ -95,6 +161,10 @@ class AppSettings {
     List<String>? activeDictCodes,
     List<String>? dictOrder,
     AppThemeMode? themeMode,
+    int? customPrimaryColor,
+    int? customBackgroundColor,
+    int? customHeadwordColor,
+    int? customSanskritTextColor,
   }) {
     return AppSettings(
       headwordSearchMode: headwordSearchMode ?? this.headwordSearchMode,
@@ -107,6 +177,17 @@ class AppSettings {
       activeDictCodes: activeDictCodes ?? this.activeDictCodes,
       dictOrder: dictOrder ?? this.dictOrder,
       themeMode: themeMode ?? this.themeMode,
+      customPrimaryColor: customPrimaryColor ?? this.customPrimaryColor,
+      customBackgroundColor:
+          customBackgroundColor ?? this.customBackgroundColor,
+      customHeadwordColor: customHeadwordColor ?? this.customHeadwordColor,
+      customSanskritTextColor:
+          customSanskritTextColor ?? this.customSanskritTextColor,
     );
   }
+
+  Color get customPrimary => Color(customPrimaryColor);
+  Color get customBackground => Color(customBackgroundColor);
+  Color get customHeadword => Color(customHeadwordColor);
+  Color get customSanskritText => Color(customSanskritTextColor);
 }

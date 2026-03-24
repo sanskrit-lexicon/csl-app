@@ -35,6 +35,12 @@ class EntryCardWidget extends ConsumerWidget {
       settings: settings,
       dictCode: dictCode,
       useCologneTheme: settings.themeMode == AppThemeMode.cologne,
+      customAccentColor: settings.themeMode == AppThemeMode.custom
+          ? settings.customSanskritText
+          : null,
+      customHeadwordColor: settings.themeMode == AppThemeMode.custom
+          ? settings.customHeadword
+          : null,
     );
 
     return FutureBuilder<Widget>(

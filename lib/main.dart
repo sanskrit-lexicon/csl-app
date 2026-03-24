@@ -136,41 +136,156 @@ class SanslexApp extends ConsumerWidget {
     );
   }
 
+  ThemeData _buildCustomTheme(AppSettings settings) {
+    final primary = settings.customPrimary;
+    final background = settings.customBackground;
+    final surface = settings.customHeadword;
+
+    return ThemeData(
+      useMaterial3: true,
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: primary,
+        brightness: Brightness.light,
+        primary: primary,
+        surface: surface,
+      ),
+      scaffoldBackgroundColor: background,
+      appBarTheme: AppBarTheme(
+        backgroundColor: primary,
+        foregroundColor: Colors.white,
+        elevation: 2,
+        titleTextStyle: const TextStyle(
+          color: Colors.white,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      tabBarTheme: TabBarThemeData(
+        labelColor: primary,
+        unselectedLabelColor: Colors.grey,
+        indicatorColor: primary,
+        dividerColor: Colors.transparent,
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        border: OutlineInputBorder(),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: primary, width: 2),
+        ),
+        filled: true,
+        fillColor: Colors.white,
+      ),
+      dropdownMenuTheme: DropdownMenuThemeData(
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: surface,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(8)),
+            borderSide: BorderSide(color: Colors.grey),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(8)),
+            borderSide: BorderSide(color: Colors.grey),
+          ),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        ),
+        menuStyle: MenuStyle(
+          elevation: WidgetStatePropertyAll(4),
+        ),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: primary,
+          foregroundColor: Colors.white,
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: primary,
+        ),
+      ),
+      switchTheme: SwitchThemeData(
+        thumbColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return primary;
+          }
+          return Colors.grey;
+        }),
+        trackColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return primary.withAlpha(128);
+          }
+          return Colors.grey.shade300;
+        }),
+      ),
+      segmentedButtonTheme: SegmentedButtonThemeData(
+        style: ButtonStyle(
+          backgroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.selected)) {
+              return primary;
+            }
+            return Colors.white;
+          }),
+          foregroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.selected)) {
+              return Colors.white;
+            }
+            return primary;
+          }),
+          side: WidgetStateProperty.all(BorderSide(color: primary)),
+        ),
+      ),
+      listTileTheme: ListTileThemeData(
+        iconColor: primary,
+      ),
+      dividerTheme: DividerThemeData(
+        color: primary,
+        thickness: 0.5,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingsProvider);
 
+    ThemeData? theme;
+    if (settings.themeMode == AppThemeMode.cologne) {
+      theme = _buildCologneTheme();
+    } else if (settings.themeMode == AppThemeMode.custom) {
+      theme = _buildCustomTheme(settings);
+    }
+
     return MaterialApp(
       title: 'Cologne Sanskrit Lexicon',
       debugShowCheckedModeBanner: false,
-      theme: settings.themeMode == AppThemeMode.cologne
-          ? _buildCologneTheme()
-          : ThemeData(
-              colorScheme: ColorScheme.fromSeed(
-                seedColor: const Color(0xFF8B4513),
-                brightness: Brightness.light,
+      theme: theme ??
+          ThemeData(
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: const Color(0xFF8B4513),
+              brightness: Brightness.light,
+            ),
+            useMaterial3: true,
+            dropdownMenuTheme: const DropdownMenuThemeData(
+              inputDecorationTheme: InputDecorationTheme(
+                filled: true,
+                fillColor: Color(0xFFF5F5F5),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(8)),
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(8)),
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               ),
-              useMaterial3: true,
-              dropdownMenuTheme: const DropdownMenuThemeData(
-                inputDecorationTheme: InputDecorationTheme(
-                  filled: true,
-                  fillColor: Color(0xFFF5F5F5),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(8)),
-                    borderSide: BorderSide(color: Colors.grey),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(8)),
-                    borderSide: BorderSide(color: Colors.grey),
-                  ),
-                  contentPadding:
-                      EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                ),
-                menuStyle: MenuStyle(
-                  elevation: WidgetStatePropertyAll(4),
-                ),
+              menuStyle: MenuStyle(
+                elevation: WidgetStatePropertyAll(4),
               ),
             ),
+          ),
       darkTheme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF8B4513),

@@ -14,6 +14,10 @@ class SettingsService {
   static const _activeDicts = 'active_dicts';
   static const _dictOrder = 'dict_order';
   static const _themeMode = 'theme_mode';
+  static const _customPrimaryColor = 'custom_primary_color';
+  static const _customBackgroundColor = 'custom_background_color';
+  static const _customHeadwordColor = 'custom_headword_color';
+  static const _customSanskritTextColor = 'custom_sanskrit_text_color';
 
   static Future<AppSettings> load() async {
     final prefs = await SharedPreferences.getInstance();
@@ -33,6 +37,11 @@ class SettingsService {
         (e) => e.name == prefs.getString(_themeMode),
         orElse: () => AppThemeMode.cologne,
       ),
+      customPrimaryColor: prefs.getInt(_customPrimaryColor) ?? 0xFF36648B,
+      customBackgroundColor: prefs.getInt(_customBackgroundColor) ?? 0xFFFFFFFF,
+      customHeadwordColor: prefs.getInt(_customHeadwordColor) ?? 0xFFDBE4ED,
+      customSanskritTextColor:
+          prefs.getInt(_customSanskritTextColor) ?? 0xFF339933,
     );
   }
 
@@ -48,6 +57,10 @@ class SettingsService {
     await prefs.setString(_activeDicts, jsonEncode(s.activeDictCodes));
     await prefs.setString(_dictOrder, jsonEncode(s.dictOrder));
     await prefs.setString(_themeMode, s.themeMode.name);
+    await prefs.setInt(_customPrimaryColor, s.customPrimaryColor);
+    await prefs.setInt(_customBackgroundColor, s.customBackgroundColor);
+    await prefs.setInt(_customHeadwordColor, s.customHeadwordColor);
+    await prefs.setInt(_customSanskritTextColor, s.customSanskritTextColor);
   }
 
   static List<String> _decodeList(String? raw) {

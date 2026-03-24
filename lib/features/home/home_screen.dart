@@ -93,7 +93,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             ),
           Expanded(
             child: Container(
-              color: settings.themeMode == AppThemeMode.cologne
+              color: (settings.themeMode == AppThemeMode.cologne ||
+                      settings.themeMode == AppThemeMode.custom)
                   ? Colors.white
                   : null,
               child: _buildBody(settings, settings.headwordSearchMode,
