@@ -71,6 +71,7 @@ class EntryRenderer {
 
     return _EntryCard(
       displayKey: displayKey,
+      slp1Key: slp1Key,
       homonym: entry.homonym,
       processedHtml: processedHtml,
       pageCol: entry.pageCol,
@@ -178,9 +179,9 @@ class EntryRenderer {
         final abbr = m.group(1)?.trim() ?? '';
         final expansion = abbreviationCache[abbr];
         if (expansion != null) {
-          return '<abbr title="$expansion"><i>$abbr</i></abbr>';
+          return '<abbr title="$expansion">$abbr</abbr>';
         }
-        return '<i>$abbr</i>';
+        return abbr;
       },
     );
 
@@ -214,6 +215,7 @@ class EntryRenderer {
 /// Stateless widget that renders a single dictionary entry card.
 class _EntryCard extends StatelessWidget {
   final String displayKey;
+  final String slp1Key;
   final int? homonym;
   final String processedHtml;
   final String? pageCol;
@@ -229,6 +231,7 @@ class _EntryCard extends StatelessWidget {
 
   const _EntryCard({
     required this.displayKey,
+    required this.slp1Key,
     this.homonym,
     required this.processedHtml,
     this.pageCol,
@@ -322,8 +325,8 @@ class _EntryCard extends StatelessWidget {
                     '#${theme.colorScheme.secondaryContainer.toARGB32().toRadixString(16).substring(2).padLeft(6, '0')}';
                 final onSecondaryContainerHex =
                     '#${theme.colorScheme.onSecondaryContainer.toARGB32().toRadixString(16).substring(2).padLeft(6, '0')}';
-                final outlineHex =
-                    '#${theme.colorScheme.outline.toARGB32().toRadixString(16).substring(2).padLeft(6, '0')}';
+                final primaryLightHex =
+                    '${primaryHex.substring(0, 1)}0${primaryHex.substring(2)}';
 
                 if (element.classes.contains('sanskrit')) {
                   // Subtle color for Sanskrit text
@@ -354,8 +357,17 @@ class _EntryCard extends StatelessWidget {
                 if (element.localName == 'b') {
                   return {'color': primaryHex};
                 }
+                if (element.localName == 'abbr') {
+                  return {
+                    'color': 'inherit',
+                    'text-decoration': 'underline dotted',
+                  };
+                }
                 if (element.classes.contains('ls')) {
-                  return {'color': outlineHex, 'font-style': 'italic'};
+                  return {
+                    'color': primaryLightHex,
+                    'text-decoration': 'underline dotted',
+                  };
                 }
                 if (element.localName == 'mark') {
                   return {
@@ -370,32 +382,30 @@ class _EntryCard extends StatelessWidget {
 
           // Footer links
           const SizedBox(height: 6),
-          Row(
+          Wrap(
+            spacing: 16,
+            runSpacing: 4,
             children: [
               _linkText(
                 context,
                 'PDF',
                 dictInfo.pdfUrl(pageCol ?? ''),
               ),
-              const SizedBox(width: 16),
               _linkText(
                 context,
                 'Correction',
-                dictInfo.correctionBaseUrl,
+                '${dictInfo.correctionBaseUrl}&lnum=${lnum.toStringAsFixed(0)}&hw=$slp1Key',
               ),
-              const Spacer(),
-              if (pageCol != null) ...[
+              if (pageCol != null)
                 Text(
-                  pageCol!,
+                  'page:${pageCol!}',
                   style: TextStyle(
                     fontSize: 11,
                     color: theme.colorScheme.outline,
                   ),
                 ),
-                const SizedBox(width: 8),
-              ],
               Text(
-                'ID=${lnum.toStringAsFixed(0)}',
+                'ID:${lnum.toStringAsFixed(0)}',
                 style: TextStyle(
                   fontSize: 11,
                   color: theme.colorScheme.outline,

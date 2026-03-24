@@ -393,9 +393,9 @@ class BasicDisplay {
         final abbr = m.group(1)?.trim() ?? '';
         final expansion = abbreviationCache[abbr];
         if (expansion != null) {
-          return '<abbr title="$expansion"><i>$abbr</i></abbr>';
+          return '<abbr title="$expansion">$abbr</abbr>';
         }
-        return '<i>$abbr</i>';
+        return abbr;
       },
     );
   }
