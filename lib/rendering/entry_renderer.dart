@@ -421,13 +421,21 @@ class _EntryCard extends StatelessWidget {
                   if (parts.length >= 5) {
                     final encoded = parts[4];
                     final message = Uri.decodeComponent(encoded);
+                    // Clean HTML-encoded characters from tooltip text
+                    final cleanedMessage = message
+                        .replaceAll('&#13;', '')
+                        .replaceAll('&#10;', '\n')
+                        .replaceAll('&amp;', '&')
+                        .replaceAll('&lt;', '<')
+                        .replaceAll('&gt;', '>')
+                        .replaceAll('&quot;', '"');
                     debugPrint(
-                        '=== TOOLTIP DEBUG: Showing message: "$message"');
+                        '=== TOOLTIP DEBUG: Showing message: "$cleanedMessage"');
                     // Remove any existing SnackBar immediately and show new one
                     ScaffoldMessenger.of(context).removeCurrentSnackBar();
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text(message),
+                        content: Text(cleanedMessage),
                         duration: const Duration(seconds: 2),
                         behavior: SnackBarBehavior.floating,
                         margin: const EdgeInsets.all(16),
