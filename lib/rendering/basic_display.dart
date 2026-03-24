@@ -14,6 +14,7 @@ class BasicDisplay {
   /// - abbreviationCache: Map of abbreviation to expansion
   /// - highlightTerm: Optional term to highlight
   /// - highlightEnabled: Whether highlighting is enabled
+  /// - lsHrefs: Optional map of LS reference keys to external URLs
   ///
   /// Returns the processed HTML string ready for Flutter rendering.
   static String processHtml({
@@ -23,6 +24,7 @@ class BasicDisplay {
     Map<String, String> abbreviationCache = const {},
     String? highlightTerm,
     bool highlightEnabled = false,
+    Map<String, String> lsHrefs = const {},
   }) {
     String result = html;
 
@@ -31,6 +33,9 @@ class BasicDisplay {
 
     // Apply abbreviations
     result = _applyAbbreviations(result, abbreviationCache);
+
+    // Apply LS hrefs
+    result = _applyLsHrefs(result, lsHrefs);
 
     // Apply highlighting
     if (highlightEnabled && highlightTerm != null && highlightTerm.isNotEmpty) {
@@ -132,6 +137,28 @@ class BasicDisplay {
       (m) {
         final text = m.group(1) ?? '';
         return '<span class="ls" title="$text">$text</span>';
+      },
+    );
+
+    return html;
+  }
+
+  /// Apply LS hrefs to elements that have matching keys
+  static String _applyLsHrefs(String html, Map<String, String> lsHrefs) {
+    if (lsHrefs.isEmpty) return html;
+
+    // Transform <span class="ls" title="key">...</span> to include href if available
+    html = html.replaceAllMapped(
+      RegExp(r'<span class="ls" title="([^"]*)">(.*?)</span>', dotAll: true),
+      (m) {
+        final key = m.group(1) ?? '';
+        final text = m.group(2) ?? '';
+        final href = lsHrefs[key];
+
+        if (href != null && href.isNotEmpty) {
+          return '<a href="$href"><span class="ls" title="$key">$text</span></a>';
+        }
+        return '<span class="ls" title="$key">$text</span>';
       },
     );
 

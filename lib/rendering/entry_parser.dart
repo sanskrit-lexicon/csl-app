@@ -1,3 +1,12 @@
+/// LS reference data extracted from HTML
+class LsRef {
+  final String? nAttribute;
+  final String text;
+  final String fullMatch;
+
+  LsRef({this.nAttribute, required this.text, required this.fullMatch});
+}
+
 /// Structured representation of a parsed dictionary entry.
 class ParsedEntry {
   final String key1Slp1; // from <key1> — headword in SLP1
@@ -81,6 +90,36 @@ class EntryParser {
       if (code.isNotEmpty) codes.add(code);
     }
     return codes.toList();
+  }
+
+  /// Extract all LS references with full details (n attribute and text content).
+  /// Returns list of LsRef objects for processing with LsService.
+  static List<LsRef> extractLsRefsWithDetails(String bodyHtml) {
+    final refs = <LsRef>[];
+
+    // Match <ls n="code">text</ls>
+    for (final m in RegExp(r'<ls\s+n="([^"]*)">(.*?)</ls>', dotAll: true)
+        .allMatches(bodyHtml)) {
+      final nAttr = m.group(1)?.trim() ?? '';
+      final text = m.group(2)?.trim() ?? '';
+      refs.add(
+          LsRef(nAttribute: nAttr, text: text, fullMatch: m.group(0) ?? ''));
+    }
+
+    // Match <ls n="code"/>
+    for (final m in RegExp(r'<ls\s+n="([^"]*)"\s*/>').allMatches(bodyHtml)) {
+      final nAttr = m.group(1)?.trim() ?? '';
+      refs.add(LsRef(nAttribute: nAttr, text: '', fullMatch: m.group(0) ?? ''));
+    }
+
+    // Match <ls>text</ls> without n attribute
+    for (final m
+        in RegExp(r'<ls>([^<]*)</ls>', dotAll: true).allMatches(bodyHtml)) {
+      final text = m.group(1)?.trim() ?? '';
+      refs.add(LsRef(text: text, fullMatch: m.group(0) ?? ''));
+    }
+
+    return refs;
   }
 
   /// Convert the body HTML to a form suitable for flutter_widget_from_html.

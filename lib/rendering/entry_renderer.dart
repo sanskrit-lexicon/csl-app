@@ -6,6 +6,7 @@ import '../models/dictionary_info.dart';
 import '../core/dictionary_registry.dart';
 import '../core/transliteration_service.dart';
 import '../core/search_service.dart';
+import '../core/ls_service.dart';
 import '../core/logger.dart';
 import 'entry_parser.dart';
 import 'basic_adjust.dart';
@@ -48,20 +49,34 @@ class EntryRenderer {
       if (exp != null) abbrCache[abbr] = exp;
     }
 
-    // 2. Pre-fetch LS (literary source) expansions
-    final lsCodes = EntryParser.extractLsReferences(entry.bodyHtml);
-    debugPrint('=== LS DEBUG: Dict=$dictCode, Extracted codes: $lsCodes');
+    // 2. Pre-fetch LS (literary source) expansions using LsService
+    final lsRefs = EntryParser.extractLsRefsWithDetails(entry.bodyHtml);
+    debugPrint(
+        '=== LS DEBUG: Dict=$dictCode, Extracted refs: ${lsRefs.length}');
     final lsCache = <String, String>{};
-    for (final code in lsCodes) {
-      debugPrint('=== LS DEBUG: Fetching expansion for code: "$code"');
-      final exp = await SearchService.fetchLsExpansion(
+    final lsHrefs = <String, String>{};
+
+    for (final ref in lsRefs) {
+      debugPrint(
+          '=== LS DEBUG: Processing n="${ref.nAttribute}", text="${ref.text}"');
+      final result = await LsService.processLs(
         dictCode: dictCode,
-        code: code,
+        lsContent: ref.text,
+        nAttribute: ref.nAttribute,
       );
-      debugPrint('=== LS DEBUG: Got expansion: "$exp"');
-      if (exp != null) lsCache[code] = exp;
+
+      if (result != null) {
+        final cacheKey = ref.nAttribute ?? ref.text;
+        if (result.expansion != null) {
+          lsCache[cacheKey] = result.expansion!;
+        }
+        if (result.href != null) {
+          lsHrefs[cacheKey] = result.href!;
+        }
+      }
     }
     debugPrint('=== LS DEBUG: Final lsCache: $lsCache');
+    debugPrint('=== LS DEBUG: Final lsHrefs: $lsHrefs');
 
     // DEBUG: Log raw entry HTML structure
     AppLogger.entry(dictCode, lnum, entry.key1Slp1, entry.bodyHtml);
@@ -82,7 +97,7 @@ class EntryRenderer {
         : null;
 
     final processedHtml = _buildBodyHtml(entry.bodyHtml, abbrCache, lsCache,
-        highlightSlp1, highlightTerm, dictCode);
+        lsHrefs, highlightSlp1, highlightTerm, dictCode);
 
     return _EntryCard(
       displayKey: displayKey,
@@ -115,6 +130,7 @@ class EntryRenderer {
       String bodyHtml,
       Map<String, String> abbreviationCache,
       Map<String, String> lsCache,
+      Map<String, String> lsHrefs,
       String? highlightSlp1,
       String? rawHighlightTerm,
       String dictCode) {
@@ -138,6 +154,7 @@ class EntryRenderer {
         abbreviationCache: abbreviationCache,
         highlightTerm: rawHighlightTerm,
         highlightEnabled: settings.highlightEnabled,
+        lsHrefs: lsHrefs,
       );
     }
 
