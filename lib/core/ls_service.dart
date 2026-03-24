@@ -158,7 +158,8 @@ class LsService {
 
   static const Set<String> _bibDicts = {'pwg', 'pw', 'pwkvn'};
 
-  static int _romanInt(String roman) {
+  // Public methods for testing
+  static int romanInt(String roman) {
     final romanNums = {
       'i': 1,
       'ii': 2,
@@ -176,12 +177,12 @@ class LsService {
     return romanNums[roman.toLowerCase()] ?? 0;
   }
 
-  static String? _extractFirstKey(String data) {
-    final match = RegExp(r"^([^ .,']+)").firstMatch(data);
+  static String? extractFirstKey(String data) {
+    final match = RegExp(r"^([^ .,']+\.?)").firstMatch(data);
     return match?.group(1);
   }
 
-  static String? _getPrefix(String dict, String key) {
+  static String? getPrefix(String dict, String key) {
     if (_dictSpecificPrefixes.containsKey(dict)) {
       final dictPrefixes = _dictSpecificPrefixes[dict]!;
       if (dictPrefixes.containsKey(key)) {
@@ -191,6 +192,443 @@ class LsService {
     return _codeToPfx[key];
   }
 
+  static String? generateHref(
+      String dict, String key, String? nAttribute, String data) {
+    final pfx = getPrefix(dict, key);
+    if (pfx == null) return null;
+
+    String data1;
+    if (nAttribute != null && nAttribute.isNotEmpty) {
+      data1 = '$nAttribute $data';
+    } else {
+      data1 = data;
+    }
+
+    if (pfx == 'rv' || pfx == 'av') {
+      return hrefRvAv(pfx, data1, dict);
+    } else if (pfx == 'p') {
+      return hrefPanini(data1, dict);
+    } else if (pfx == 'R' || pfx == 'ramayana') {
+      return hrefRamayana(data1, dict);
+    } else if (pfx == 'ramayanabom') {
+      return hrefRamayanaBombay(data1);
+    } else if (pfx == 'RG' || pfx == 'rgorr') {
+      return hrefRamayanaGorresio(data1);
+    } else if (pfx == 'MBH.' ||
+        pfx == 'MBHC' ||
+        pfx == 'MBHB' ||
+        pfx == 'MBH') {
+      return hrefMahabharata(data1, pfx);
+    } else if (pfx == 'Pañcat.') {
+      return hrefPancatantra(data1);
+    } else if (pfx == 'Hariv.') {
+      return hrefHarivamsa(data1);
+    } else if (pfx == 'BhP.' || pfx == 'bhagp') {
+      return hrefBhagavataPurana(data1);
+    } else if (pfx == 'Ragh.' || pfx == 'raghuvamsacalc') {
+      return hrefRaghuvamsa(data1, pfx);
+    } else if (pfx == 'VS.') {
+      return hrefVajasansamhita(data1);
+    } else if (pfx == 'TS.') {
+      return hrefTaittiriyaSamhita(data1);
+    } else if (pfx == 'ŚBr.' || pfx == 'Śat. Br.' || pfx == 'shatapathabr') {
+      return hrefSatapathaBrahmana(data1);
+    } else if (pfx == 'Megh.') {
+      return hrefMeghaduta(data1);
+    } else if (pfx == 'Kum.' || pfx == 'Kumāras.' || pfx == 'kumaras') {
+      return hrefKumarasambhava(data1);
+    } else if (pfx == 'Mālav.') {
+      return hrefMalavikagnimitra(data1);
+    } else if (pfx == 'Vikr.' || pfx == 'vikramor') {
+      return hrefVikramorvashiya(data1);
+    } else if (pfx == 'Bhag.') {
+      return hrefBhagavadGita(data1);
+    } else if (pfx == 'Mn.' || pfx == 'M.') {
+      return hrefManu(data1);
+    } else if (pfx == 'Nir.') {
+      return hrefNirukta(data1);
+    } else if (pfx == 'kathas') {
+      return hrefKathasaritsagara(data1);
+    } else if (pfx == 'spr') {
+      return hrefSpruch(data1);
+    } else if (pfx == 'verzoxf') {
+      return hrefVerzOxf(data1);
+    }
+
+    return null;
+  }
+
+  // Public href generators
+  static String? hrefRvAv(String pfx, String data1, String dict) {
+    RegExpMatch? match;
+
+    if (dict == 'ap90') {
+      final regex =
+          RegExp(r'^(.*?)[.] *([0-9]+)[.] +([0-9]+)[.] +([0-9]+)(.*)$');
+      match = regex.firstMatch(data1);
+      if (match != null) {
+        final imandala = int.parse(match.group(2)!);
+        final ihymn = int.parse(match.group(3)!);
+        final iverse = int.parse(match.group(4)!);
+
+        final hymnFilePfx =
+            '${pfx == 'rv' ? 'rv' : 'av'}${imandala.toString().padLeft(2, '0')}.${ihymn.toString().padLeft(3, '0')}';
+        final anchor = '${hymnFilePfx}.${iverse.toString().padLeft(2, '0')}';
+        final dir =
+            'https://sanskrit-lexicon.github.io/${pfx}links/${pfx}hymns';
+        return '$dir/${hymnFilePfx}.html#$anchor';
+      }
+    }
+
+    final regex = RegExp(r'^(.*?)\. *([^ ,]+)[ ,]+([0-9]+)[ ,]+([0-9]+)(.*)$');
+    match = regex.firstMatch(data1);
+
+    if (match != null) {
+      final mandala = match.group(2)!;
+      final imandala = romanInt(mandala);
+      final ihymn = int.parse(match.group(3)!);
+      final iverse = int.parse(match.group(4)!);
+
+      if (imandala > 0) {
+        final hymnFilePfx =
+            '${pfx == 'rv' ? 'rv' : 'av'}${imandala.toString().padLeft(2, '0')}.${ihymn.toString().padLeft(3, '0')}';
+        final anchor = '${hymnFilePfx}.${iverse.toString().padLeft(2, '0')}';
+        final dir =
+            'https://sanskrit-lexicon.github.io/${pfx}links/${pfx}hymns';
+        return '$dir/${hymnFilePfx}.html#$anchor';
+      }
+    }
+
+    final regex2 = RegExp(r'^(.*?)\. *([^ ,]+)[ ,]+([0-9]+)(.*)$');
+    match = regex2.firstMatch(data1);
+    if (match != null) {
+      final mandala = match.group(2)!;
+      final imandala = romanInt(mandala);
+      final ihymn = int.parse(match.group(3)!);
+
+      if (imandala > 0) {
+        final hymnFilePfx =
+            '${pfx == 'rv' ? 'rv' : 'av'}${imandala.toString().padLeft(2, '0')}.${ihymn.toString().padLeft(3, '0')}';
+        final anchor = '${hymnFilePfx}.01';
+        final dir =
+            'https://sanskrit-lexicon.github.io/${pfx}links/${pfx}hymns';
+        return '$dir/${hymnFilePfx}.html#$anchor';
+      }
+    }
+
+    return null;
+  }
+
+  static String? hrefPanini(String data1, String dict) {
+    RegExpMatch? match;
+
+    if (dict == 'ap90') {
+      final regex =
+          RegExp(r'^(.*?)[.] *([IV]+)[.] +([0-9]+)[.] +([0-9]+)(.*)$');
+      match = regex.firstMatch(data1);
+      if (match != null) {
+        final roman = match.group(2)!;
+        final romanlo = roman.toLowerCase();
+        final ic = romanInt(romanlo);
+        final is1 = int.parse(match.group(3)!);
+        final iv = int.parse(match.group(4)!);
+
+        if (ic > 0) {
+          return 'https://ashtadhyayi.com/sutraani/$ic/$is1/$iv';
+        }
+      }
+    }
+
+    final regex = RegExp(r'^(.*?)\. *([iv]+)[ ,]+([0-9]+)[ ,]+([0-9]+)(.*)$');
+    match = regex.firstMatch(data1);
+    if (match == null) return null;
+
+    final romanlo = match.group(2)!;
+    final ic = romanInt(romanlo);
+    final is1 = int.parse(match.group(3)!);
+    final iv = int.parse(match.group(4)!);
+
+    if (ic > 0) {
+      return 'https://ashtadhyayi.com/sutraani/$ic/$is1/$iv';
+    }
+    return null;
+  }
+
+  static String? hrefRamayana(String data1, String dict) {
+    final data2 = data1.replaceFirst(RegExp(r'^R\. *'), '');
+
+    final regex = RegExp(r' *([iv]+)[ ,]+([0-9]+)[ ,]+([0-9]+)(.*)$');
+    final match = regex.firstMatch(data2);
+    if (match == null) return null;
+
+    final romanlo = match.group(1)!;
+    final ic = romanInt(romanlo);
+    final is1 = int.parse(match.group(2)!);
+    final iv = int.parse(match.group(3)!);
+
+    String dir = 'https://sanskrit-lexicon-scans.github.io/ramayanagorr';
+    if (dict == 'mw' && (ic == 1 || ic == 2)) {
+      dir = 'https://sanskrit-lexicon-scans.github.io/ramayanaschl';
+    }
+
+    return '$dir/?$ic,$is1,$iv';
+  }
+
+  static String? hrefRamayanaBombay(String data1) {
+    final data2 = data1.replaceFirst(RegExp(r'^R\.?.*? *'), '');
+
+    final regex = RegExp(r' *([iv]+)[ ,]+([0-9]+)[ ,]+([0-9]+)(.*)$');
+    final match = regex.firstMatch(data2);
+    if (match == null) return null;
+
+    final romanlo = match.group(1)!;
+    final k = romanInt(romanlo);
+    final s = int.parse(match.group(2)!);
+    final v = int.parse(match.group(3)!);
+
+    return 'https://sanskrit-lexicon-scans.github.io/ramayanabom/app1/?$k,$s,$v';
+  }
+
+  static String? hrefRamayanaGorresio(String data1) {
+    final data2 = data1.replaceFirst(RegExp(r'^R\.?.*? *'), '');
+
+    final regex = RegExp(r' *([iv]+)[ ,]+([0-9]+)[ ,]+([0-9]+)(.*)$');
+    final match = regex.firstMatch(data2);
+    if (match == null) return null;
+
+    final romanlo = match.group(1)!;
+    final k = romanInt(romanlo);
+    final s = int.parse(match.group(2)!);
+    final v = int.parse(match.group(3)!);
+
+    return 'https://sanskrit-lexicon-scans.github.io/ramayanagorr/?$k,$s,$v';
+  }
+
+  static String? hrefMahabharata(String data1, String pfx) {
+    final regex = RegExp(r'([0-9]+)[ ,]+([0-9]+)[ ,]+([0-9]+)');
+    final match = regex.firstMatch(data1);
+    if (match == null) return null;
+
+    final adhyaya = match.group(1)!;
+    final bhaga = match.group(2)!;
+    final shloka = match.group(3)!;
+
+    if (pfx == 'MBHC') {
+      return 'https://sanskrit-lexicon-scans.github.io/mahabharata/calc/?$adhyaya,$bhaga,$shloka';
+    } else if (pfx == 'MBHB') {
+      return 'https://sanskrit-lexicon-scans.github.io/mahabharata/bomb/?$adhyaya,$bhaga,$shloka';
+    }
+    return null;
+  }
+
+  static String? hrefPancatantra(String data1) {
+    var regex = RegExp(r'^(Pañcat\.) *([0-9]+), *([0-9]+)');
+    var match = regex.firstMatch(data1);
+    if (match != null) {
+      final t = match.group(2)!;
+      final s = match.group(3)!;
+      return 'https://sanskrit-lexicon-scans.github.io/pantankose/app2?$t,$s';
+    }
+
+    regex = RegExp(r'^(Pañcat\.) ([vi]+), *([0-9]+), *([0-9]+)');
+    match = regex.firstMatch(data1);
+    if (match != null) {
+      final adhyaya = romanInt(match.group(2)!);
+      final page = match.group(3)!;
+      final line = match.group(4)!;
+      if (adhyaya > 0) {
+        return 'https://sanskrit-lexicon-scans.github.io/pantankose/app1?$adhyaya,$page,$line';
+      }
+    }
+
+    return null;
+  }
+
+  static String? hrefHarivamsa(String data1) {
+    final regex = RegExp(r'([0-9]+)[ ,]+([0-9]+)[ ,]+([0-9]+)');
+    final match = regex.firstMatch(data1);
+    if (match == null) return null;
+
+    final adhyaya = match.group(1)!;
+    final verse = match.group(2)!;
+    final line = match.group(3)!;
+
+    return 'https://sanskrit-lexicon-scans.github.io/harivamsa/app1?$adhyaya,$verse,$line';
+  }
+
+  static String? hrefBhagavataPurana(String data1) {
+    final regex = RegExp(r'([0-9]+)[ ,]+([0-9]+)[ ,]+([0-9]+)');
+    final match = regex.firstMatch(data1);
+    if (match == null) return null;
+
+    final skandha = match.group(1)!;
+    final adhyaya = match.group(2)!;
+    final shloka = match.group(3)!;
+
+    return 'https://sanskrit-lexicon-scans.github.io/bhagavatapurana/app1?$skandha,$adhyaya,$shloka';
+  }
+
+  static String? hrefRaghuvamsa(String data1, String pfx) {
+    final regex = RegExp(r'([0-9]+)[ ,]+([0-9]+)[ ,]+([0-9]+)');
+    final match = regex.firstMatch(data1);
+    if (match == null) return null;
+
+    final sarga = match.group(1)!;
+    final shloka = match.group(2)!;
+    final line = match.group(3)!;
+
+    if (pfx == 'raghuvamsacalc') {
+      return 'https://sanskrit-lexicon-scans.github.io/raghuvamsacalc/app1?$sarga,$shloka,$line';
+    }
+    return null;
+  }
+
+  static String? hrefVajasansamhita(String data1) {
+    final regex = RegExp(r'([0-9]+)[ ,]+([0-9]+)[ ,]+([0-9]+)');
+    final match = regex.firstMatch(data1);
+    if (match == null) return null;
+
+    final adhyaya = match.group(1)!;
+    final anuvaka = match.group(2)!;
+    final mantra = match.group(3)!;
+
+    return 'https://sanskrit-lexicon-scans.github.io/vajasasa/app1?$adhyaya,$anuvaka,$mantra';
+  }
+
+  static String? hrefTaittiriyaSamhita(String data1) {
+    final regex = RegExp(r'([0-9]+)[ ,]+([0-9]+)[ ,]+([0-9]+)');
+    final match = regex.firstMatch(data1);
+    if (match == null) return null;
+
+    final prapathaka = match.group(1)!;
+    final anuvaka = match.group(2)!;
+    final mantra = match.group(3)!;
+
+    return 'https://sanskrit-lexicon-scans.github.io/taittiriyas/app1?$prapathaka,$anuvaka,$mantra';
+  }
+
+  static String? hrefSatapathaBrahmana(String data1) {
+    final regex = RegExp(r'([0-9]+)[ ,]+([0-9]+)[ ,]+([0-9]+)');
+    final match = regex.firstMatch(data1);
+    if (match == null) return null;
+
+    final adhyaya = match.group(1)!;
+    final brahmana = match.group(2)!;
+    final mantra = match.group(3)!;
+
+    return 'https://sanskrit-lexicon-scans.github.io/shatapathabr/app1?$adhyaya,$brahmana,$mantra';
+  }
+
+  static String? hrefMeghaduta(String data1) {
+    final regex = RegExp(r'([0-9]+)[ ,]+([0-9]+)');
+    final match = regex.firstMatch(data1);
+    if (match == null) return null;
+
+    final stanza = match.group(1)!;
+    final verse = match.group(2)!;
+
+    return 'https://sanskrit-lexicon-scans.github.io/meghaduta/app1?$stanza,$verse';
+  }
+
+  static String? hrefKumarasambhava(String data1) {
+    final regex = RegExp(r'([0-9]+)[ ,]+([0-9]+)[ ,]+([0-9]+)');
+    final match = regex.firstMatch(data1);
+    if (match == null) return null;
+
+    final sarga = match.group(1)!;
+    final shloka = match.group(2)!;
+    final line = match.group(3)!;
+
+    return 'https://sanskrit-lexicon-scans.github.io/kumaras/app1?$sarga,$shloka,$line';
+  }
+
+  static String? hrefMalavikagnimitra(String data1) {
+    final regex = RegExp(r'([0-9]+)[ ,]+([0-9]+)');
+    final match = regex.firstMatch(data1);
+    if (match == null) return null;
+
+    final act = match.group(1)!;
+    final shloka = match.group(2)!;
+
+    return 'https://sanskrit-lexicon-scans.github.io/malavikagni/app1?$act,$shloka';
+  }
+
+  static String? hrefVikramorvashiya(String data1) {
+    final regex = RegExp(r'([0-9]+)[ ,]+([0-9]+)');
+    final match = regex.firstMatch(data1);
+    if (match == null) return null;
+
+    final act = match.group(1)!;
+    final verse = match.group(2)!;
+
+    return 'https://sanskrit-lexicon-scans.github.io/vikramor/app1?$act,$verse';
+  }
+
+  static String? hrefBhagavadGita(String data1) {
+    final regex = RegExp(r'([0-9]+)[ ,]+([0-9]+)');
+    final match = regex.firstMatch(data1);
+    if (match == null) return null;
+
+    final adhyaya = match.group(1)!;
+    final shloka = match.group(2)!;
+
+    return 'https://sanskrit-lexicon-scans.github.io/bhagavadgita/app1?$adhyaya,$shloka';
+  }
+
+  static String? hrefManu(String data1) {
+    final regex = RegExp(r'([0-9]+)[ ,]+([0-9]+)');
+    final match = regex.firstMatch(data1);
+    if (match == null) return null;
+
+    final adhyaya = match.group(1)!;
+    final verse = match.group(2)!;
+
+    return 'https://sanskrit-lexicon-scans.github.io/manusmriti/app1?$adhyaya,$verse';
+  }
+
+  static String? hrefNirukta(String data1) {
+    final regex = RegExp(r'([0-9]+)[ ,]+([0-9]+)');
+    final match = regex.firstMatch(data1);
+    if (match == null) return null;
+
+    final adhyaya = match.group(1)!;
+    final verse = match.group(2)!;
+
+    return 'https://sanskrit-lexicon-scans.github.io/nirukta/app1?$adhyaya,$verse';
+  }
+
+  static String? hrefKathasaritsagara(String data1) {
+    final regex = RegExp(r'^(Kathās\.) *([0-9]+), *([0-9]+)');
+    final match = regex.firstMatch(data1);
+    if (match != null) {
+      final t = match.group(2)!;
+      final s = match.group(3)!;
+      return 'https://sanskrit-lexicon-scans.github.io/kss/index.html?$t,$s';
+    }
+    return null;
+  }
+
+  static String? hrefSpruch(String data1) {
+    final regex = RegExp(r'^(Spr\.) *([0-9]+)');
+    final match = regex.firstMatch(data1);
+    if (match != null) {
+      final verse = match.group(2)!;
+      return 'https://sanskrit-lexicon-scans.github.io/boesp2/web1/boesp.html?$verse';
+    }
+    return null;
+  }
+
+  static String? hrefVerzOxf(String data1) {
+    final regex = RegExp(r'^(Verz\. d\. Oxf\. H\.?) *([0-9]+)');
+    final match = regex.firstMatch(data1);
+    if (match != null) {
+      final page = match.group(2)!;
+      return 'https://sanskrit-lexicon-scans.github.io/Oxf_Cat_Aufrecht/index.html?$page';
+    }
+    return null;
+  }
+
+  // Main processLs method
   static Future<LsResult?> processLs({
     required String dictCode,
     required String lsContent,
@@ -205,11 +643,11 @@ class LsService {
       data = lsContent;
     }
 
-    final key = _extractFirstKey(data);
+    final key = extractFirstKey(data);
     if (key == null) return null;
 
     final expansion = await _fetchExpansion(dict, data);
-    final href = _generateHref(dict, key, nAttribute, lsContent);
+    final href = generateHref(dict, key, nAttribute, lsContent);
 
     return LsResult(
       expansion: expansion,
@@ -219,7 +657,7 @@ class LsService {
   }
 
   static Future<String?> _fetchExpansion(String dict, String data) async {
-    final key = _extractFirstKey(data);
+    final key = extractFirstKey(data);
     if (key == null) return null;
 
     final keyPrefix = '$key%';
@@ -313,441 +751,6 @@ class LsService {
     } catch (e) {
       return null;
     }
-  }
-
-  static String? _generateHref(
-      String dict, String key, String? nAttribute, String data) {
-    final pfx = _getPrefix(dict, key);
-    if (pfx == null) return null;
-
-    String data1;
-    if (nAttribute != null && nAttribute.isNotEmpty) {
-      data1 = '$nAttribute $data';
-    } else {
-      data1 = data;
-    }
-
-    if (pfx == 'rv' || pfx == 'av') {
-      return _hrefRvAv(pfx, data1, dict);
-    } else if (pfx == 'p') {
-      return _hrefPanini(data1, dict);
-    } else if (pfx == 'R' || pfx == 'ramayana') {
-      return _hrefRamayana(data1, dict);
-    } else if (pfx == 'ramayanabom') {
-      return _hrefRamayanaBombay(data1);
-    } else if (pfx == 'RG' || pfx == 'rgorr') {
-      return _hrefRamayanaGorresio(data1);
-    } else if (pfx == 'MBH.' ||
-        pfx == 'MBHC' ||
-        pfx == 'MBHB' ||
-        pfx == 'MBH') {
-      return _hrefMahabharata(data1, pfx);
-    } else if (pfx == 'Pañcat.') {
-      return _hrefPancatantra(data1);
-    } else if (pfx == 'Hariv.') {
-      return _hrefHarivamsa(data1);
-    } else if (pfx == 'BhP.' || pfx == 'bhagp') {
-      return _hrefBhagavataPurana(data1);
-    } else if (pfx == 'Ragh.' || pfx == 'raghuvamsacalc') {
-      return _hrefRaghuvamsa(data1, pfx);
-    } else if (pfx == 'VS.') {
-      return _hrefVajasansamhita(data1);
-    } else if (pfx == 'TS.') {
-      return _hrefTaittiriyaSamhita(data1);
-    } else if (pfx == 'ŚBr.' || pfx == 'Śat. Br.' || pfx == 'shatapathabr') {
-      return _hrefSatapathaBrahmana(data1);
-    } else if (pfx == 'Megh.') {
-      return _hrefMeghaduta(data1);
-    } else if (pfx == 'Kum.' || pfx == 'Kumāras.' || pfx == 'kumaras') {
-      return _hrefKumarasambhava(data1);
-    } else if (pfx == 'Mālav.') {
-      return _hrefMalavikagnimitra(data1);
-    } else if (pfx == 'Vikr.' || pfx == 'vikramor') {
-      return _hrefVikramorvashiya(data1);
-    } else if (pfx == 'Bhag.') {
-      return _hrefBhagavadGita(data1);
-    } else if (pfx == 'Mn.' || pfx == 'M.') {
-      return _hrefManu(data1);
-    } else if (pfx == 'Nir.') {
-      return _hrefNirukta(data1);
-    } else if (pfx == 'kathas') {
-      return _hrefKathasaritsagara(data1);
-    } else if (pfx == 'spr') {
-      return _hrefSpruch(data1);
-    } else if (pfx == 'verzoxf') {
-      return _hrefVerzOxf(data1);
-    }
-
-    return null;
-  }
-
-  static String? _hrefRvAv(String pfx, String data1, String dict) {
-    RegExpMatch? match;
-
-    if (dict == 'ap90') {
-      final regex =
-          RegExp(r'^(.*?)[.] *([0-9]+)[.] +([0-9]+)[.] +([0-9]+)(.*)$');
-      match = regex.firstMatch(data1);
-      if (match != null) {
-        final imandala = int.parse(match.group(2)!);
-        final ihymn = int.parse(match.group(3)!);
-        final iverse = int.parse(match.group(4)!);
-
-        final hymnFilePfx =
-            '${pfx == 'rv' ? 'rv' : 'av'}${imandala.toString().padLeft(2, '0')}.${ihymn.toString().padLeft(3, '0')}';
-        final anchor = '${hymnFilePfx}.${iverse.toString().padLeft(2, '0')}';
-        final dir =
-            'https://sanskrit-lexicon.github.io/${pfx}links/${pfx}hymns';
-        return '$dir/${hymnFilePfx}.html#$anchor';
-      }
-    }
-
-    final regex = RegExp(r'^(.*?)\. *([^ ,]+)[ ,]+([0-9]+)[ ,]+([0-9]+)(.*)$');
-    match = regex.firstMatch(data1);
-
-    if (match != null) {
-      final mandala = match.group(2)!;
-      final imandala = _romanInt(mandala);
-      final ihymn = int.parse(match.group(3)!);
-      final iverse = int.parse(match.group(4)!);
-
-      if (imandala > 0) {
-        final hymnFilePfx =
-            '${pfx == 'rv' ? 'rv' : 'av'}${imandala.toString().padLeft(2, '0')}.${ihymn.toString().padLeft(3, '0')}';
-        final anchor = '${hymnFilePfx}.${iverse.toString().padLeft(2, '0')}';
-        final dir =
-            'https://sanskrit-lexicon.github.io/${pfx}links/${pfx}hymns';
-        return '$dir/${hymnFilePfx}.html#$anchor';
-      }
-    }
-
-    final regex2 = RegExp(r'^(.*?)\. *([^ ,]+)[ ,]+([0-9]+)(.*)$');
-    match = regex2.firstMatch(data1);
-    if (match != null) {
-      final mandala = match.group(2)!;
-      final imandala = _romanInt(mandala);
-      final ihymn = int.parse(match.group(3)!);
-
-      if (imandala > 0) {
-        final hymnFilePfx =
-            '${pfx == 'rv' ? 'rv' : 'av'}${imandala.toString().padLeft(2, '0')}.${ihymn.toString().padLeft(3, '0')}';
-        final anchor = '${hymnFilePfx}.01';
-        final dir =
-            'https://sanskrit-lexicon.github.io/${pfx}links/${pfx}hymns';
-        return '$dir/${hymnFilePfx}.html#$anchor';
-      }
-    }
-
-    return null;
-  }
-
-  static String? _hrefPanini(String data1, String dict) {
-    RegExpMatch? match;
-
-    if (dict == 'ap90') {
-      final regex =
-          RegExp(r'^(.*?)[.] *([IV]+)[.] +([0-9]+)[.] +([0-9]+)(.*)$');
-      match = regex.firstMatch(data1);
-      if (match != null) {
-        final roman = match.group(2)!;
-        final romanlo = roman.toLowerCase();
-        final ic = _romanInt(romanlo);
-        final is1 = int.parse(match.group(3)!);
-        final iv = int.parse(match.group(4)!);
-
-        if (ic > 0) {
-          return 'https://ashtadhyayi.com/sutraani/$ic/$is1/$iv';
-        }
-      }
-    }
-
-    final regex = RegExp(r'^(.*?)\. *([iv]+)[ ,]+([0-9]+)[ ,]+([0-9]+)(.*)$');
-    match = regex.firstMatch(data1);
-    if (match == null) return null;
-
-    final romanlo = match.group(2)!;
-    final ic = _romanInt(romanlo);
-    final is1 = int.parse(match.group(3)!);
-    final iv = int.parse(match.group(4)!);
-
-    if (ic > 0) {
-      return 'https://ashtadhyayi.com/sutraani/$ic/$is1/$iv';
-    }
-    return null;
-  }
-
-  static String? _hrefRamayana(String data1, String dict) {
-    final data2 = data1.replaceFirst(RegExp(r'^R\. *'), '');
-
-    final regex = RegExp(r' *([iv]+)[ ,]+([0-9]+)[ ,]+([0-9]+)(.*)$');
-    final match = regex.firstMatch(data2);
-    if (match == null) return null;
-
-    final romanlo = match.group(1)!;
-    final ic = _romanInt(romanlo);
-    final is1 = int.parse(match.group(2)!);
-    final iv = int.parse(match.group(3)!);
-
-    String dir = 'https://sanskrit-lexicon-scans.github.io/ramayanagorr';
-    if (dict == 'mw' && (ic == 1 || ic == 2)) {
-      dir = 'https://sanskrit-lexicon-scans.github.io/ramayanaschl';
-    }
-
-    return '$dir/?$ic,$is1,$iv';
-  }
-
-  static String? _hrefRamayanaBombay(String data1) {
-    final data2 = data1.replaceFirst(RegExp(r'^R\.?.*? *'), '');
-
-    final regex = RegExp(r' *([iv]+)[ ,]+([0-9]+)[ ,]+([0-9]+)(.*)$');
-    final match = regex.firstMatch(data2);
-    if (match == null) return null;
-
-    final romanlo = match.group(1)!;
-    final k = _romanInt(romanlo);
-    final s = int.parse(match.group(2)!);
-    final v = int.parse(match.group(3)!);
-
-    return 'https://sanskrit-lexicon-scans.github.io/ramayanabom/app1/?$k,$s,$v';
-  }
-
-  static String? _hrefRamayanaGorresio(String data1) {
-    final data2 = data1.replaceFirst(RegExp(r'^R\.?.*? *'), '');
-
-    final regex = RegExp(r' *([iv]+)[ ,]+([0-9]+)[ ,]+([0-9]+)(.*)$');
-    final match = regex.firstMatch(data2);
-    if (match == null) return null;
-
-    final romanlo = match.group(1)!;
-    final k = _romanInt(romanlo);
-    final s = int.parse(match.group(2)!);
-    final v = int.parse(match.group(3)!);
-
-    return 'https://sanskrit-lexicon-scans.github.io/ramayanagorr/?$k,$s,$v';
-  }
-
-  static String? _hrefMahabharata(String data1, String pfx) {
-    final regex = RegExp(r'([0-9]+)[ ,]+([0-9]+)[ ,]+([0-9]+)');
-    final match = regex.firstMatch(data1);
-    if (match == null) return null;
-
-    final adhyaya = match.group(1)!;
-    final bhaga = match.group(2)!;
-    final shloka = match.group(3)!;
-
-    if (pfx == 'MBHC') {
-      return 'https://sanskrit-lexicon-scans.github.io/mahabharata/calc/?$adhyaya,$bhaga,$shloka';
-    } else if (pfx == 'MBHB') {
-      return 'https://sanskrit-lexicon-scans.github.io/mahabharata/bomb/?$adhyaya,$bhaga,$shloka';
-    }
-    return null;
-  }
-
-  static String? _hrefPancatantra(String data1) {
-    var regex = RegExp(r'^(Pañcat\.) *([0-9]+), *([0-9]+)');
-    var match = regex.firstMatch(data1);
-    if (match != null) {
-      final t = match.group(2)!;
-      final s = match.group(3)!;
-      return 'https://sanskrit-lexicon-scans.github.io/pantankose/app2?$t,$s';
-    }
-
-    regex = RegExp(r'^(Pañcat\.) ([vi]+), *([0-9]+), *([0-9]+)');
-    match = regex.firstMatch(data1);
-    if (match != null) {
-      final adhyaya = _romanInt(match.group(2)!);
-      final page = match.group(3)!;
-      final line = match.group(4)!;
-      if (adhyaya > 0) {
-        return 'https://sanskrit-lexicon-scans.github.io/pantankose/app1?$adhyaya,$page,$line';
-      }
-    }
-
-    return null;
-  }
-
-  static String? _hrefHarivamsa(String data1) {
-    final regex = RegExp(r'([0-9]+)[ ,]+([0-9]+)[ ,]+([0-9]+)');
-    final match = regex.firstMatch(data1);
-    if (match == null) return null;
-
-    final adhyaya = match.group(1)!;
-    final verse = match.group(2)!;
-    final line = match.group(3)!;
-
-    return 'https://sanskrit-lexicon-scans.github.io/harivamsa/app1?$adhyaya,$verse,$line';
-  }
-
-  static String? _hrefBhagavataPurana(String data1) {
-    final regex = RegExp(r'([0-9]+)[ ,]+([0-9]+)[ ,]+([0-9]+)');
-    final match = regex.firstMatch(data1);
-    if (match == null) return null;
-
-    final skandha = match.group(1)!;
-    final adhyaya = match.group(2)!;
-    final shloka = match.group(3)!;
-
-    return 'https://sanskrit-lexicon-scans.github.io/bhagavatapurana/app1?$skandha,$adhyaya,$shloka';
-  }
-
-  static String? _hrefRaghuvamsa(String data1, String pfx) {
-    final regex = RegExp(r'([0-9]+)[ ,]+([0-9]+)[ ,]+([0-9]+)');
-    final match = regex.firstMatch(data1);
-    if (match == null) return null;
-
-    final sarga = match.group(1)!;
-    final shloka = match.group(2)!;
-    final line = match.group(3)!;
-
-    if (pfx == 'raghuvamsacalc') {
-      return 'https://sanskrit-lexicon-scans.github.io/raghuvamsacalc/app1?$sarga,$shloka,$line';
-    }
-    return null;
-  }
-
-  static String? _hrefVajasansamhita(String data1) {
-    final regex = RegExp(r'([0-9]+)[ ,]+([0-9]+)[ ,]+([0-9]+)');
-    final match = regex.firstMatch(data1);
-    if (match == null) return null;
-
-    final adhyaya = match.group(1)!;
-    final anuvaka = match.group(2)!;
-    final mantra = match.group(3)!;
-
-    return 'https://sanskrit-lexicon-scans.github.io/vajasasa/app1?$adhyaya,$anuvaka,$mantra';
-  }
-
-  static String? _hrefTaittiriyaSamhita(String data1) {
-    final regex = RegExp(r'([0-9]+)[ ,]+([0-9]+)[ ,]+([0-9]+)');
-    final match = regex.firstMatch(data1);
-    if (match == null) return null;
-
-    final prapathaka = match.group(1)!;
-    final anuvaka = match.group(2)!;
-    final mantra = match.group(3)!;
-
-    return 'https://sanskrit-lexicon-scans.github.io/taittiriyas/app1?$prapathaka,$anuvaka,$mantra';
-  }
-
-  static String? _hrefSatapathaBrahmana(String data1) {
-    final regex = RegExp(r'([0-9]+)[ ,]+([0-9]+)[ ,]+([0-9]+)');
-    final match = regex.firstMatch(data1);
-    if (match == null) return null;
-
-    final adhyaya = match.group(1)!;
-    final brahmana = match.group(2)!;
-    final mantra = match.group(3)!;
-
-    return 'https://sanskrit-lexicon-scans.github.io/shatapathabr/app1?$adhyaya,$brahmana,$mantra';
-  }
-
-  static String? _hrefMeghaduta(String data1) {
-    final regex = RegExp(r'([0-9]+)[ ,]+([0-9]+)');
-    final match = regex.firstMatch(data1);
-    if (match == null) return null;
-
-    final stanza = match.group(1)!;
-    final verse = match.group(2)!;
-
-    return 'https://sanskrit-lexicon-scans.github.io/meghaduta/app1?$stanza,$verse';
-  }
-
-  static String? _hrefKumarasambhava(String data1) {
-    final regex = RegExp(r'([0-9]+)[ ,]+([0-9]+)[ ,]+([0-9]+)');
-    final match = regex.firstMatch(data1);
-    if (match == null) return null;
-
-    final sarga = match.group(1)!;
-    final shloka = match.group(2)!;
-    final line = match.group(3)!;
-
-    return 'https://sanskrit-lexicon-scans.github.io/kumaras/app1?$sarga,$shloka,$line';
-  }
-
-  static String? _hrefMalavikagnimitra(String data1) {
-    final regex = RegExp(r'([0-9]+)[ ,]+([0-9]+)');
-    final match = regex.firstMatch(data1);
-    if (match == null) return null;
-
-    final act = match.group(1)!;
-    final shloka = match.group(2)!;
-
-    return 'https://sanskrit-lexicon-scans.github.io/malavikagni/app1?$act,$shloka';
-  }
-
-  static String? _hrefVikramorvashiya(String data1) {
-    final regex = RegExp(r'([0-9]+)[ ,]+([0-9]+)');
-    final match = regex.firstMatch(data1);
-    if (match == null) return null;
-
-    final act = match.group(1)!;
-    final verse = match.group(2)!;
-
-    return 'https://sanskrit-lexicon-scans.github.io/vikramor/app1?$act,$verse';
-  }
-
-  static String? _hrefBhagavadGita(String data1) {
-    final regex = RegExp(r'([0-9]+)[ ,]+([0-9]+)');
-    final match = regex.firstMatch(data1);
-    if (match == null) return null;
-
-    final adhyaya = match.group(1)!;
-    final shloka = match.group(2)!;
-
-    return 'https://sanskrit-lexicon-scans.github.io/bhagavadgita/app1?$adhyaya,$shloka';
-  }
-
-  static String? _hrefManu(String data1) {
-    final regex = RegExp(r'([0-9]+)[ ,]+([0-9]+)');
-    final match = regex.firstMatch(data1);
-    if (match == null) return null;
-
-    final adhyaya = match.group(1)!;
-    final verse = match.group(2)!;
-
-    return 'https://sanskrit-lexicon-scans.github.io/manusmriti/app1?$adhyaya,$verse';
-  }
-
-  static String? _hrefNirukta(String data1) {
-    final regex = RegExp(r'([0-9]+)[ ,]+([0-9]+)');
-    final match = regex.firstMatch(data1);
-    if (match == null) return null;
-
-    final adhyaya = match.group(1)!;
-    final verse = match.group(2)!;
-
-    return 'https://sanskrit-lexicon-scans.github.io/nirukta/app1?$adhyaya,$verse';
-  }
-
-  static String? _hrefKathasaritsagara(String data1) {
-    final regex = RegExp(r'^(Kathās\.) *([0-9]+), *([0-9]+)');
-    final match = regex.firstMatch(data1);
-    if (match != null) {
-      final t = match.group(2)!;
-      final s = match.group(3)!;
-      return 'https://sanskrit-lexicon-scans.github.io/kss/index.html?$t,$s';
-    }
-    return null;
-  }
-
-  static String? _hrefSpruch(String data1) {
-    final regex = RegExp(r'^(Spr\.) *([0-9]+)');
-    final match = regex.firstMatch(data1);
-    if (match != null) {
-      final verse = match.group(2)!;
-      return 'https://sanskrit-lexicon-scans.github.io/boesp2/web1/boesp.html?$verse';
-    }
-    return null;
-  }
-
-  static String? _hrefVerzOxf(String data1) {
-    final regex = RegExp(r'^(Verz\. d\. Oxf\. H\.?) *([0-9]+)');
-    final match = regex.firstMatch(data1);
-    if (match != null) {
-      final page = match.group(2)!;
-      return 'https://sanskrit-lexicon-scans.github.io/Oxf_Cat_Aufrecht/index.html?$page';
-    }
-    return null;
   }
 
   static Future<Map<String, LsResult>> batchProcessLs({
