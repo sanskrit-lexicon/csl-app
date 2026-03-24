@@ -109,19 +109,30 @@ class EntryRenderer {
 
   String _buildBodyHtml(String bodyHtml, Map<String, String> abbreviationCache,
       String? highlightSlp1, String? rawHighlightTerm, String dictCode) {
+    // DEBUG: Print original body HTML
+    debugPrint('=== DEBUG: Original bodyHtml ===');
+    debugPrint(bodyHtml);
+
     // Apply BasicAdjust (Feature 5) if enabled
     String html = bodyHtml;
-    if (settings.enableBasicAdjust) {
+    // TEMPORARILY DISABLED FOR TESTING
+    // if (settings.enableBasicAdjust) {
+    if (false) {
       html = BasicAdjust.adjust(
         xmlData: html,
         dictCode: dictCode,
         accent: settings.showAccent,
         outputTranslit: settings.outputTranslit,
       );
+      // DEBUG: Print after BasicAdjust
+      debugPrint('=== DEBUG: After BasicAdjust ===');
+      debugPrint(html);
     }
 
     // Apply BasicDisplay (Feature 4) if enabled
-    if (settings.enableBasicDisplay) {
+    // TEMPORARILY DISABLED FOR TESTING
+    // if (settings.enableBasicDisplay) {
+    if (false) {
       html = BasicDisplay.processHtml(
         html: html,
         dictCode: dictCode,
@@ -130,6 +141,9 @@ class EntryRenderer {
         highlightTerm: rawHighlightTerm,
         highlightEnabled: settings.highlightEnabled,
       );
+      // DEBUG: Print after BasicDisplay
+      debugPrint('=== DEBUG: After BasicDisplay ===');
+      debugPrint(html);
     }
 
     // Always apply transliteration (handles <s> and <SA> tags)
@@ -137,8 +151,16 @@ class EntryRenderer {
     html = _applyTransliteration(
         html, abbreviationCache, highlightSlp1, rawHighlightTerm, dictCode);
 
+    // DEBUG: Print after transliteration
+    debugPrint('=== DEBUG: After transliteration ===');
+    debugPrint(html);
+
+    // DEBUG: Print final HTML
+    debugPrint('=== DEBUG: Final HTML ===');
+    debugPrint('<div style="font-size:15px; line-height:1.6;">$html</div>');
+
     // Wrap in a div for styling
-    return '<div style="font-size:15px; line-height:1.6;">$html</div>';
+    return '<div style="font-size:15px; line-height:1.6; white-space: normal;">$html</div>';
   }
 
   /// Apply transliteration to Sanskrit text within s and SA tags
@@ -202,18 +224,19 @@ class EntryRenderer {
     // Preserve n attribute as title for tooltip
     html = html.replaceAllMapped(
       RegExp(r'<ls\s+n="([^"]*)">(.*?)</ls>', dotAll: true),
-      (m) =>
-          '<span class="ls" title="${m.group(1)}"><small><i>${m.group(2)}</i></small></span>',
+      (m) => '<span class="ls" title="${m.group(1)}">${m.group(2)}</span>',
     );
     html = html.replaceAllMapped(
       RegExp(r'<ls\s+n="([^"]*)"\s*/>'),
-      (m) =>
-          '<span class="ls" title="${m.group(1)}"><small><i>[${m.group(1)}]</i></small></span>',
+      (m) => '<span class="ls" title="${m.group(1)}">[${m.group(1)}]</span>',
     );
 
     // Clean remaining custom tags that HtmlWidget won't know
     html = html.replaceAll(RegExp(r'</?F>'), '');
     html = html.replaceAll(RegExp(r'</?hom>'), '');
+    html = html.replaceAll(RegExp(r'</?info[^>]*>'), '');
+    html = html.replaceAll(RegExp(r'</?lex[^>]*>'), '');
+    html = html.replaceAll(RegExp(r'</?s1[^>]*>'), '');
 
     // Apply highlighting to English/Non-Sanskrit matches
     if (rawHighlightTerm != null && rawHighlightTerm.isNotEmpty) {
@@ -381,12 +404,14 @@ class _EntryCard extends StatelessWidget {
                   return {
                     'color': 'inherit',
                     'text-decoration': 'underline dotted',
+                    'display': 'inline',
                   };
                 }
                 if (element.classes.contains('ls')) {
                   return {
                     'color': primaryLightHex,
                     'text-decoration': 'underline dotted',
+                    'display': 'inline',
                   };
                 }
                 if (element.localName == 'mark') {
@@ -398,28 +423,6 @@ class _EntryCard extends StatelessWidget {
                 return null;
               },
               customWidgetBuilder: (element) {
-                // Tooltip for <span class="ls" title="...">
-                if (element.classes.contains('ls') &&
-                    element.attributes.containsKey('title')) {
-                  final code = element.attributes['title'] ?? '';
-                  final message = lsCache[code] ?? code;
-                  return Tooltip(
-                    message: message,
-                    child: Text(element.text),
-                    waitDuration: const Duration(milliseconds: 500),
-                  );
-                }
-                // Tooltip for <abbr title="...">
-                if (element.localName == 'abbr' &&
-                    element.attributes.containsKey('title')) {
-                  final abbr = element.text.trim();
-                  final message = abbrCache[abbr] ?? abbr;
-                  return Tooltip(
-                    message: message,
-                    child: Text(element.text),
-                    waitDuration: const Duration(milliseconds: 500),
-                  );
-                }
                 return null;
               },
             ),
