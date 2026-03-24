@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'database_helper.dart';
+import 'ls_patterns.dart';
 
 class LsResult {
   final String? expansion;
@@ -209,19 +210,23 @@ class LsService {
 
   static String? generateHref(
       String dict, String key, String? nAttribute, String data) {
-    final pfx = getPrefix(dict, key);
-    debugPrint('=== LS HREF DEBUG: dict=$dict, key=$key, pfx=$pfx');
-    if (pfx == null) {
-      debugPrint(
-          '=== LS HREF DEBUG: No prefix found for key="$key", returning null');
-      return null;
-    }
-
     String data1;
     if (nAttribute != null && nAttribute.isNotEmpty) {
       data1 = '$nAttribute $data';
     } else {
       data1 = data;
+    }
+
+    // First try pattern-driven approach
+    final patternResult = _generateHrefFromPatterns(dict, data1);
+    if (patternResult != null) {
+      return patternResult;
+    }
+
+    // Fall back to old helper methods
+    final pfx = getPrefix(dict, key);
+    if (pfx == null) {
+      return null;
     }
 
     if (pfx == 'rv' || pfx == 'av') {
@@ -297,8 +302,123 @@ class LsService {
       return hrefAitareyaBrahmana(data1);
     }
 
-    debugPrint('=== LS HREF DEBUG: pfx="$pfx" not handled, returning null');
     return null;
+  }
+
+  static String? _generateHrefFromPatterns(String dict, String data1) {
+    final patterns = LsPatterns.getPatternsForDict(dict);
+
+    for (final pattern in patterns) {
+      // Check if this pattern applies to this dictionary
+      if (pattern.dicts != null &&
+          !pattern.dicts!.contains(dict.toLowerCase())) {
+        continue;
+      }
+
+      try {
+        final regex = RegExp(pattern.regex);
+        final match = regex.firstMatch(data1);
+
+        if (match != null) {
+          String url = pattern.urlTemplate;
+
+          // Handle special URL generators
+          if (url == 'rvAvHymnUrl') {
+            final key = extractFirstKey(data1);
+            final pfx =
+                key?.toLowerCase().startsWith('rv') == true ? 'rv' : 'av';
+            return hrefRvAv(pfx, data1, dict);
+          } else if (url == 'rvAvHymnUrl2') {
+            final key = extractFirstKey(data1);
+            final pfx =
+                key?.toLowerCase().startsWith('rv') == true ? 'rv' : 'av';
+            return hrefRvAv2(pfx, data1, dict);
+          } else if (url == 'ramayanaUrl') {
+            return hrefRamayana(data1, dict);
+          } else if (url == 'dhatuUrl') {
+            return hrefDhatu(data1);
+          }
+
+          // Handle conditional expressions
+          if (url.contains('(') && url.contains('?') && url.contains(':"')) {
+            url = _evaluateConditional(url, match);
+          } else {
+            // Simple replacement
+            for (int i = 1; i <= match.groupCount; i++) {
+              final replacement = match.group(i) ?? '';
+              url = url.replaceAll('\$$i', replacement);
+            }
+          }
+
+          if (url.isNotEmpty) {
+            return url;
+          }
+        }
+      } catch (e) {
+        // Silently skip patterns that fail
+      }
+    }
+
+    return null;
+  }
+
+  static String _evaluateConditional(String expr, RegExpMatch match) {
+    try {
+      final ternaryMatch = RegExp(
+              r'^\(?(\$2\s*==\s*"([^"]+)"\)?)\s*\?\s*"([^"]+)"\s*:\s*"([^"]+)"$')
+          .firstMatch(expr);
+      if (ternaryMatch != null) {
+        final varRef = ternaryMatch.group(1)!;
+        final compareVal = ternaryMatch.group(2)!;
+        final urlTrue = ternaryMatch.group(3)!;
+        final urlFalse = ternaryMatch.group(4)!;
+
+        final varNum = int.tryParse(
+            varRef.replaceAll(r'$', '').replaceAll('==', '').trim());
+        if (varNum != null && varNum <= match.groupCount) {
+          final actualVal = match.group(varNum);
+          final resultUrl = (actualVal == compareVal) ? urlTrue : urlFalse;
+          for (int i = 1; i <= match.groupCount; i++) {
+            return resultUrl.replaceAll('\$$i', match.group(i) ?? '');
+          }
+        }
+      }
+    } catch (e) {
+      // Ignore
+    }
+    return '';
+  }
+
+  static String? hrefRvAv2(String pfx, String data1, String dict) {
+    final regex = RegExp(r'^(.*?)\. *([^ ,]+)[ ,]+([0-9]+)(.*)$');
+    final match = regex.firstMatch(data1);
+    if (match == null) return null;
+
+    final mandala = match.group(2)!;
+    final imandala = romanInt(mandala);
+    if (imandala == 0) return null;
+
+    final ihymn = int.parse(match.group(3)!);
+    final iverse = 1;
+
+    final hymnFilePfx =
+        '${pfx == 'rv' ? 'rv' : 'av'}${imandala.toString().padLeft(2, '0')}.${ihymn.toString().padLeft(3, '0')}';
+    final anchor = '${hymnFilePfx}.${iverse.toString().padLeft(2, '0')}';
+    final dir = 'https://sanskrit-lexicon.github.io/${pfx}links/${pfx}hymns';
+    return '$dir/${hymnFilePfx}.html#$anchor';
+  }
+
+  static String? hrefDhatu(String data1) {
+    final regex = RegExp(r'^(.*?[.]) *([0-9]+)[ ,]+([0-9]+)');
+    final match = regex.firstMatch(data1);
+    if (match == null) return null;
+
+    final section = match.group(2)!;
+    if (section == '0') return null;
+
+    final dir =
+        'https://www.sanskrit-lexicon.uni-koeln.de/scans/csl-westergaard/disp/index.php';
+    return '$dir?section=$section';
   }
 
   // Public href generators

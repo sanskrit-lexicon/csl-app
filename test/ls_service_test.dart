@@ -252,4 +252,333 @@ void main() {
       expect(results.length, equals(1));
     });
   });
+
+  group('LsService - PWG Pattern Tests', () {
+    test('PWG: Spr. pattern matches', () {
+      final result = LsService.generateHref('pwg', 'Spr.', null, 'Spr. 123');
+      expect(result,
+          equals('https://sanskrit-lexicon-scans.github.io/boesp1/app1/?123'));
+    });
+
+    test('PWG: MBH. Bombay edition 3 params', () {
+      final result = LsService.generateHref('pwg', 'MBH.', null, 'MBH. 1,2,3');
+      expect(
+          result,
+          equals(
+              'https://sanskrit-lexicon-scans.github.io/mbhbomb/app1?1,2,3'));
+    });
+
+    test('PWG: MBH. Calcutta edition 2 params', () {
+      final result = LsService.generateHref('pwg', 'MBH.', null, 'MBH. 1,2');
+      expect(result,
+          equals('https://sanskrit-lexicon-scans.github.io/mbhcalc?1.2'));
+    });
+
+    test('PWG: HARIV. pattern', () {
+      final result =
+          LsService.generateHref('pwg', 'HARIV.', null, 'HARIV. 123');
+      expect(
+          result, equals('https://sanskrit-lexicon-scans.github.io/hariv?123'));
+    });
+
+    test('PWG: KATHĀS. pattern', () {
+      final result =
+          LsService.generateHref('pwg', 'KATHĀS.', null, 'KATHĀS. 1,2');
+      expect(
+          result,
+          equals(
+              'https://sanskrit-lexicon-scans.github.io/kss/index.html?1,2'));
+    });
+
+    test('PWG: VS. pattern', () {
+      final result = LsService.generateHref('pwg', 'VS.', null, 'VS. 1,2');
+      expect(result,
+          equals('https://sanskrit-lexicon-scans.github.io/vajasasa/app1?1,2'));
+    });
+
+    test('PWG: RĀJAT. pattern', () {
+      final result =
+          LsService.generateHref('pwg', 'RĀJAT.', null, 'RĀJAT. 1,2');
+      expect(result,
+          equals('https://sanskrit-lexicon-scans.github.io/rajatar/app1?1,2'));
+    });
+
+    test('PWG: YĀJÑ. pattern', () {
+      final result = LsService.generateHref('pwg', 'YĀJÑ.', null, 'YĀJÑ. 1,2');
+      expect(
+          result,
+          equals(
+              'https://sanskrit-lexicon-scans.github.io/yajnavalkya/app1?1,2'));
+    });
+
+    test('PWG: RAGH. ST pattern', () {
+      final result = LsService.generateHref('pwg', 'RAGH.', null, 'RAGH. 1,2');
+      expect(
+          result,
+          equals(
+              'https://sanskrit-lexicon-scans.github.io/raghuvamsa/app1?1,2'));
+    });
+
+    test('PWG: MĀRK. P. pattern', () {
+      final result =
+          LsService.generateHref('pwg', 'MĀRK. P.', null, 'MĀRK. P. 1,2');
+      expect(
+          result,
+          equals(
+              'https://sanskrit-lexicon-scans.github.io/markandeyapurana/app1?1,2'));
+    });
+
+    test('PWG: BHAG. pattern', () {
+      final result = LsService.generateHref('pwg', 'BHAG.', null, 'BHAG. 1,2');
+      expect(
+          result,
+          equals(
+              'https://sanskrit-lexicon-scans.github.io/bhagavadgita/app1?1,2'));
+    });
+
+    test('PWG: H. an. pattern', () {
+      final result =
+          LsService.generateHref('pwg', 'H. an.', null, 'H. an. 1,2');
+      expect(
+          result,
+          equals(
+              'https://sanskrit-lexicon-scans.github.io/anekarthasamgraha/app1?1,2'));
+    });
+
+    test('PWG: an. pattern', () {
+      final result = LsService.generateHref('pwg', 'an.', null, 'an. 1,2');
+      expect(
+          result,
+          equals(
+              'https://sanskrit-lexicon-scans.github.io/anekarthasamgraha/app1?1,2'));
+    });
+
+    test('PWG: ŚĀK. pattern with 2 params', () {
+      final result = LsService.generateHref('pwg', 'ŚĀK.', null, 'ŚĀK. 1');
+      expect(result,
+          equals('https://sanskrit-lexicon-scans.github.io/shakuntala/app1?1'));
+    });
+
+    test('PWG: AIT. BR. 2 param pattern', () {
+      final result =
+          LsService.generateHref('pwg', 'AIT. BR.', null, 'AIT. BR. 1,2');
+      expect(result,
+          equals('https://sanskrit-lexicon-scans.github.io/aitbr/app1?1,2'));
+    });
+
+    test('PWG: MĀLAV. 1 param pattern', () {
+      final result = LsService.generateHref('pwg', 'MĀLAV.', null, 'MĀLAV. 1');
+      expect(
+          result,
+          equals(
+              'https://sanskrit-lexicon-scans.github.io/malavikagni/app1?1'));
+    });
+
+    test('PWG: PAÑCAT. roman numeral pattern', () {
+      // Note: Roman numeral conversion not yet implemented - "I" stays as "I"
+      final result =
+          LsService.generateHref('pwg', 'PAÑCAT.', null, 'PAÑCAT. I, 1');
+      expect(
+          result,
+          equals(
+              'https://sanskrit-lexicon-scans.github.io/pantankose/app1?I,1'));
+    });
+
+    test('PWG: HIT. roman numeral pattern', () {
+      // Note: Roman numeral conversion not yet implemented - "I" stays as "I"
+      final result = LsService.generateHref('pwg', 'HIT.', null, 'HIT. I, 1');
+      expect(
+          result,
+          equals(
+              'https://sanskrit-lexicon-scans.github.io/hitopadesha/app1?I,1'));
+    });
+
+    test('PWG: AK. 3 param pattern', () {
+      final result = LsService.generateHref('pwg', 'AK.', null, 'AK. 1,2,3');
+      expect(
+          result,
+          equals(
+              'https://sanskrit-lexicon-scans.github.io/amara_dlc/app1?1,2,3'));
+    });
+
+    test('PWG: AK. 4 param pattern', () {
+      final result = LsService.generateHref('pwg', 'AK.', null, 'AK. 1,2,3,4');
+      expect(
+          result,
+          equals(
+              'https://sanskrit-lexicon-scans.github.io/amara_dlc/app1?1,2,3,4'));
+    });
+
+    test('PWG: NIR. pattern', () {
+      final result = LsService.generateHref('pwg', 'NIR.', null, 'NIR. 1,2');
+      expect(result,
+          equals('https://sanskrit-lexicon-scans.github.io/nirukta/app1?1,2'));
+    });
+
+    test('PWG: VOP. pattern', () {
+      final result = LsService.generateHref('pwg', 'VOP.', null, 'VOP. 1,2');
+      expect(
+          result,
+          equals(
+              'https://sanskrit-lexicon-scans.github.io/mugdhabodha/app1?1,2'));
+    });
+
+    test('PWG: BHAṬṬ. pattern', () {
+      final result =
+          LsService.generateHref('pwg', 'BHAṬṬ.', null, 'BHAṬṬ. 1,2');
+      expect(
+          result,
+          equals(
+              'https://sanskrit-lexicon-scans.github.io/bhattikavya/app1?1,2'));
+    });
+
+    test('PWG: KUMĀRAS. pattern', () {
+      final result =
+          LsService.generateHref('pwg', 'KUMĀRAS.', null, 'KUMĀRAS. 1,2');
+      expect(result,
+          equals('https://sanskrit-lexicon-scans.github.io/kumaras/app1?1,2'));
+    });
+
+    test('PWG: ŚAT. BR. pattern', () {
+      final result =
+          LsService.generateHref('pwg', 'ŚAT. BR.', null, 'ŚAT. BR. 1,2,3,4');
+      expect(
+          result,
+          equals(
+              'https://sanskrit-lexicon-scans.github.io/shatapathabr/app1?1,2,3,4'));
+    });
+
+    test('PWG: TS. pattern', () {
+      final result = LsService.generateHref('pwg', 'TS.', null, 'TS. 1,2,3,4');
+      expect(
+          result,
+          equals(
+              'https://sanskrit-lexicon-scans.github.io/taittiriyas/app1?1,2,3,4'));
+    });
+
+    test('PWG: TBR. pattern', () {
+      final result =
+          LsService.generateHref('pwg', 'TBR.', null, 'TBR. 1,2,3,4');
+      expect(
+          result,
+          equals(
+              'https://sanskrit-lexicon-scans.github.io/taittiriyabr/app1?1,2,3,4'));
+    });
+
+    test('PWG: VIKR. pattern', () {
+      final result = LsService.generateHref('pwg', 'VIKR.', null, 'VIKR. 1');
+      expect(result,
+          equals('https://sanskrit-lexicon-scans.github.io/vikramor/app1?1'));
+    });
+
+    test('PWG: MEGH. pattern', () {
+      final result = LsService.generateHref('pwg', 'MEGH.', null, 'MEGH. 1');
+      expect(result,
+          equals('https://sanskrit-lexicon-scans.github.io/meghasrnga/app1?1'));
+    });
+
+    test('PWG: M. pattern (Manu)', () {
+      final result = LsService.generateHref('pwg', 'M.', null, 'M. 1,2');
+      expect(
+          result,
+          equals(
+              'https://sanskrit-lexicon-scans.github.io/manu/index.html?1,2'));
+    });
+
+    test('PWG: MED. pattern', () {
+      final result = LsService.generateHref('pwg', 'MED.', null, 'MED. k, 1');
+      expect(result,
+          equals('https://sanskrit-lexicon-scans.github.io/medini/app1?k,1'));
+    });
+
+    test('PWG: H. pattern', () {
+      final result = LsService.generateHref('pwg', 'H.', null, 'H. 123');
+      expect(result,
+          equals('https://sanskrit-lexicon-scans.github.io/abch2/app1?123'));
+    });
+
+    test('PWG: CH. pattern (pw only)', () {
+      final result = LsService.generateHref('pw', 'Chr.', null, 'Chr. 123');
+      expect(
+          result,
+          equals(
+              'https://sanskrit-lexicon-scans.github.io/bchrest2/index.html?123'));
+    });
+  });
+
+  group('LsService - MW Pattern Tests', () {
+    test('MW: RV. pattern with 3 params', () {
+      final result = LsService.generateHref('mw', 'RV.', null, 'RV. i, 1, 2');
+      expect(result, contains('sanskrit-lexicon.github.io/rvlinks'));
+    });
+
+    test('MW: R. (Bombay) pattern', () {
+      // Real usage: <ls n="R.">vii, 1, 2</ls> → nAttribute='R.', data='vii, 1, 2'
+      final result = LsService.generateHref('mw', 'R.', 'R.', 'vii, 1, 2');
+      expect(result, contains('ramayanabom'));
+    });
+
+    test('MW: P. pattern (Panini)', () {
+      final result = LsService.generateHref('mw', 'Pāṇ.', null, 'Pāṇ. i, 1, 2');
+      expect(result, contains('ashtadhyayi.com/sutraani'));
+    });
+
+    test('MW: Mn. pattern (Manu)', () {
+      final result = LsService.generateHref('mw', 'Mn.', null, 'Mn. 1,2');
+      expect(
+          result,
+          equals(
+              'https://sanskrit-lexicon-scans.github.io/manusmriti/app1?1,2'));
+    });
+
+    test('MW: BhP. pattern', () {
+      final result = LsService.generateHref('mw', 'BhP.', null, 'BhP. 1,2,3');
+      expect(
+          result,
+          equals(
+              'https://sanskrit-lexicon-scans.github.io/bhagavatapurana/app1?1,2,3'));
+    });
+
+    test('MW: Bhag. pattern', () {
+      final result = LsService.generateHref('mw', 'Bhag.', null, 'Bhag. 1,2');
+      expect(
+          result,
+          equals(
+              'https://sanskrit-lexicon-scans.github.io/bhagavadgita/app1?1,2'));
+    });
+
+    test('MW: Ragh. pattern', () {
+      final result = LsService.generateHref('mw', 'Ragh.', null, 'Ragh. 1,2,3');
+      expect(
+          result,
+          equals(
+              'https://sanskrit-lexicon-scans.github.io/raghuvamsacalc/app1?1,2,3'));
+    });
+
+    test('MW: Megh. pattern', () {
+      final result = LsService.generateHref('mw', 'Megh.', null, 'Megh. 1,2');
+      expect(
+          result,
+          equals(
+              'https://sanskrit-lexicon-scans.github.io/meghaduta/app1?1,2'));
+    });
+
+    test('MW: Kum. pattern', () {
+      final result = LsService.generateHref('mw', 'Kum.', null, 'Kum. 1,2,3');
+      expect(
+          result,
+          equals(
+              'https://sanskrit-lexicon-scans.github.io/kumaras/app1?1,2,3'));
+    });
+
+    test('MW: Pañcat. pattern', () {
+      final result =
+          LsService.generateHref('mw', 'Pañcat.', null, 'Pañcat. I, 1, 2');
+      // Note: Roman numeral conversion not yet implemented, so "I" stays as "I"
+      expect(
+          result,
+          equals(
+              'https://sanskrit-lexicon-scans.github.io/pantankose/app1?I,1,2'));
+    });
+  });
 }
