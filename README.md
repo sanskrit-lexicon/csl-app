@@ -95,34 +95,34 @@ lib/
 ## Technologies Used
 
 ### Core
-- **Flutter**: UI framework
-- **Riverpod**: State management
+- [Flutter](https://pub.dev/packages/flutter): UI framework
+- [Riverpod](https://pub.dev/packages/flutter_riverpod): State management
 
 ### Database & Storage
-- **sqflite**: SQLite database for offline dictionary storage
-- **sqflite_common_ffi**: Cross-platform SQLite support (desktop)
-- **shared_preferences**: User settings persistence
+- [sqflite](https://pub.dev/packages/sqflite): SQLite database for offline dictionary storage
+- [sqflite_common_ffi](https://pub.dev/packages/sqflite_common_ffi): Cross-platform SQLite support (desktop)
+- [shared_preferences](https://pub.dev/packages/shared_preferences): User settings persistence
 
 ### Transliteration & Text Processing
-- **indic_transliteration_dart**: Sanskrit transliteration between various schemes
-- **intl**: Internationalization and date/number formatting
+- [indic_transliteration_dart](https://pub.dev/packages/indic_transliteration_dart): Sanskrit transliteration between various schemes
+- [intl](https://pub.dev/packages/intl): Internationalization and date/number formatting
 
 ### UI Components
-- **flutter_widget_from_html_core**: HTML rendering for dictionary entries
-- **flex_color_picker**: Color picker for custom themes
-- **flutter_markdown_plus**: Markdown rendering for help content
-- **cupertino_icons**: iOS-style icons
+- [flutter_widget_from_html_core](https://pub.dev/packages/flutter_widget_from_html_core): HTML rendering for dictionary entries
+- [flex_color_picker](https://pub.dev/packages/flex_color_picker): Color picker for custom themes
+- [flutter_markdown_plus](https://pub.dev/packages/flutter_markdown_plus): Markdown rendering for help content
+- [cupertino_icons](https://pub.dev/packages/cupertino_icons): iOS-style icons
 
 ### Utilities
-- **path_provider**: Access to device file system paths
-- **http**: HTTP client for downloading dictionaries
-- **archive**: ZIP archive handling for dictionary downloads
-- **url_launcher**: Opening external links (PDF, correction URLs)
-- **package_info_plus**: App version information
+- [path_provider](https://pub.dev/packages/path_provider): Access to device file system paths
+- [http](https://pub.dev/packages/http): HTTP client for downloading dictionaries
+- [archive](https://pub.dev/packages/archive): ZIP archive handling for dictionary downloads
+- [url_launcher](https://pub.dev/packages/url_launcher): Opening external links (PDF, correction URLs)
+- [package_info_plus](https://pub.dev/packages/package_info_plus): App version information
 
 ### Development
-- **flutter_lints**: Code quality checks
-- **flutter_launcher_icons**: App icon generation
+- [flutter_lints](https://pub.dev/packages/flutter_lints): Code quality checks
+- [flutter_launcher_icons](https://pub.dev/packages/flutter_launcher_icons): App icon generation
 
 ## Contributing
 
