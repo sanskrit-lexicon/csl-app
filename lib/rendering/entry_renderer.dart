@@ -118,26 +118,22 @@ class EntryRenderer {
       );
     }
 
-    // If BasicDisplay is disabled, use the original rendering logic
-    if (!settings.enableBasicDisplay) {
-      html = _buildBodyHtmlOriginal(
-          html, abbreviationCache, highlightSlp1, rawHighlightTerm, dictCode);
-    }
+    // Always apply transliteration (handles <s> and <SA> tags)
+    // This is needed regardless of BasicDisplay toggle
+    html = _applyTransliteration(
+        html, abbreviationCache, highlightSlp1, rawHighlightTerm, dictCode);
 
     // Wrap in a div for styling
     return '<div style="font-size:15px; line-height:1.6;">$html</div>';
   }
 
-  /// Original body HTML building logic (used when BasicDisplay is disabled)
-  String _buildBodyHtmlOriginal(
-      String bodyHtml,
+  /// Apply transliteration to Sanskrit text within s and SA tags
+  String _applyTransliteration(
+      String html,
       Map<String, String> abbreviationCache,
       String? highlightSlp1,
       String? rawHighlightTerm,
       String dictCode) {
-    // Replace <s> and <SA> Sanskrit inline text with transliterated output
-    String html = bodyHtml;
-
     html = html.replaceAllMapped(
       RegExp(r'<(?:s|SA)>(.*?)</(?:s|SA)>', dotAll: true),
       (m) {
@@ -171,12 +167,11 @@ class EntryRenderer {
           result = process(slp1);
         }
 
-        // Use a <span> with a specific class for subtle Sanskrit color
         return '<span class="sanskrit">$result</span>';
       },
     );
 
-    // Expand <ab>text</ab> abbreviations
+    // Expand <ab>text</ab> abbreviations (if not already handled by BasicDisplay)
     html = html.replaceAllMapped(
       RegExp(r'<ab>(.*?)</ab>', dotAll: true),
       (m) {
@@ -189,7 +184,7 @@ class EntryRenderer {
       },
     );
 
-    // Style <ls> references as small grey text
+    // Style <ls> references (if not already handled by BasicDisplay)
     html = html.replaceAllMapped(
       RegExp(r'<ls\s+n="([^"]*)">(.*?)</ls>', dotAll: true),
       (m) => '<small><i>${m.group(2)}</i></small>',
@@ -203,11 +198,9 @@ class EntryRenderer {
     html = html.replaceAll(RegExp(r'</?F>'), '');
     html = html.replaceAll(RegExp(r'</?hom>'), '');
 
-    // Apply highlighting to English/Non-Sanskrit matches if term is provided
+    // Apply highlighting to English/Non-Sanskrit matches
     if (rawHighlightTerm != null && rawHighlightTerm.isNotEmpty) {
       final escaped = RegExp.escape(rawHighlightTerm);
-      // We only highlight if it's NOT inside a tag or already highlighted
-      // This regex avoids matching the searched term if it's part of an HTML tag's name or attribute.
       html = html.replaceAllMapped(
         RegExp('(?<!<[^>]*)\\b($escaped)\\b(?![^<]*>)', caseSensitive: false),
         (match) => '<mark>${match.group(1)}</mark>',
@@ -390,8 +383,8 @@ class _EntryCard extends StatelessWidget {
                 'Correction',
                 dictInfo.correctionBaseUrl,
               ),
+              const Spacer(),
               if (pageCol != null) ...[
-                const Spacer(),
                 Text(
                   pageCol!,
                   style: TextStyle(
@@ -399,7 +392,15 @@ class _EntryCard extends StatelessWidget {
                     color: theme.colorScheme.outline,
                   ),
                 ),
+                const SizedBox(width: 8),
               ],
+              Text(
+                'ID=${lnum.toStringAsFixed(0)}',
+                style: TextStyle(
+                  fontSize: 11,
+                  color: theme.colorScheme.outline,
+                ),
+              ),
             ],
           ),
           Divider(color: theme.colorScheme.outlineVariant),

@@ -48,15 +48,9 @@ class BasicDisplay {
     // Remove homonym tags (shown separately in headword)
     result = result.replaceAll(RegExp(r'<hom>.*?</hom>', dotAll: true), '');
 
-    // Transform <s> and <SA> tags (Sanskrit text)
-    result = result.replaceAllMapped(
-      RegExp(r'<(?:s|SA)>(.*?)</(?:s|SA)>', dotAll: true),
-      (m) {
-        final slp1 = m.group(1) ?? '';
-        // Transliteration happens during final rendering
-        return '<span class="sanskrit">$slp1</span>';
-      },
-    );
+    // Note: <s> and <SA> tags are NOT transformed here.
+    // They are handled by the original rendering code in entry_renderer.dart
+    // which performs transliteration.
 
     // Transform <ls> (literary source)
     result = _transformLsElements(result);

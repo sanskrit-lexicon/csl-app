@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 class AppLogger {
-  static bool debugEnabled = false;
+  static bool debugEnabled = true;
 
   static void debug(String message) {
     if (debugEnabled && kDebugMode) {

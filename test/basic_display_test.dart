@@ -13,23 +13,26 @@ void main() {
         expect(result, isNot(contains('<hom>')));
       });
 
-      test('transforms s tags to span with sanskrit class', () {
+      test('preserves s tags for transliteration (handled by entry_renderer)',
+          () {
         const input = '<s>agni</s>';
         final result = BasicDisplay.processHtml(
           html: input,
           dictCode: 'mw',
         );
-        expect(result, contains('class="sanskrit"'));
-        expect(result, contains('agni'));
+        // BasicDisplay should NOT transform s tags - they are handled by entry_renderer
+        expect(result, contains('<s>agni</s>'));
       });
 
-      test('transforms SA tags to span with sanskrit class', () {
+      test('preserves SA tags for transliteration (handled by entry_renderer)',
+          () {
         const input = '<SA>agni</SA>';
         final result = BasicDisplay.processHtml(
           html: input,
           dictCode: 'mw',
         );
-        expect(result, contains('class="sanskrit"'));
+        // BasicDisplay should NOT transform SA tags - they are handled by entry_renderer
+        expect(result, contains('<SA>agni</SA>'));
       });
 
       test('transforms F tags to small footnote', () {
