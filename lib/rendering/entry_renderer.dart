@@ -8,6 +8,8 @@ import '../core/transliteration_service.dart';
 import '../core/search_service.dart';
 import '../core/logger.dart';
 import 'entry_parser.dart';
+import 'basic_adjust.dart';
+import 'basic_display.dart';
 
 /// Renders a [ParsedEntry] as a Flutter widget.
 class EntryRenderer {
@@ -93,6 +95,46 @@ class EntryRenderer {
 
   String _buildBodyHtml(String bodyHtml, Map<String, String> abbreviationCache,
       String? highlightSlp1, String? rawHighlightTerm, String dictCode) {
+    // Apply BasicAdjust (Feature 5) if enabled
+    String html = bodyHtml;
+    if (settings.enableBasicAdjust) {
+      html = BasicAdjust.adjust(
+        xmlData: html,
+        dictCode: dictCode,
+        accent: settings.showAccent,
+        outputTranslit: settings.outputTranslit,
+      );
+    }
+
+    // Apply BasicDisplay (Feature 4) if enabled
+    if (settings.enableBasicDisplay) {
+      html = BasicDisplay.processHtml(
+        html: html,
+        dictCode: dictCode,
+        outputTranslit: settings.outputTranslit,
+        abbreviationCache: abbreviationCache,
+        highlightTerm: rawHighlightTerm,
+        highlightEnabled: settings.highlightEnabled,
+      );
+    }
+
+    // If BasicDisplay is disabled, use the original rendering logic
+    if (!settings.enableBasicDisplay) {
+      html = _buildBodyHtmlOriginal(
+          html, abbreviationCache, highlightSlp1, rawHighlightTerm, dictCode);
+    }
+
+    // Wrap in a div for styling
+    return '<div style="font-size:15px; line-height:1.6;">$html</div>';
+  }
+
+  /// Original body HTML building logic (used when BasicDisplay is disabled)
+  String _buildBodyHtmlOriginal(
+      String bodyHtml,
+      Map<String, String> abbreviationCache,
+      String? highlightSlp1,
+      String? rawHighlightTerm,
+      String dictCode) {
     // Replace <s> and <SA> Sanskrit inline text with transliterated output
     String html = bodyHtml;
 
@@ -172,8 +214,7 @@ class EntryRenderer {
       );
     }
 
-    // Wrap in a div for styling
-    return '<div style="font-size:15px; line-height:1.6;">$html</div>';
+    return html;
   }
 }
 

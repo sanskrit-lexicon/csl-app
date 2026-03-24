@@ -132,6 +132,8 @@ class AppSettings {
   final int customBackgroundColor;
   final int customHeadwordColor;
   final int customSanskritTextColor;
+  final bool enableBasicAdjust; // Feature 5: XML pre-processing
+  final bool enableBasicDisplay; // Feature 4: XML to HTML rendering
 
   const AppSettings({
     this.headwordSearchMode = SearchMode.prefix,
@@ -148,6 +150,8 @@ class AppSettings {
     this.customBackgroundColor = 0xFFFFFFFF,
     this.customHeadwordColor = 0xFFDBE4ED,
     this.customSanskritTextColor = 0xFF339933,
+    this.enableBasicAdjust = true,
+    this.enableBasicDisplay = true,
   });
 
   AppSettings copyWith({
@@ -165,6 +169,8 @@ class AppSettings {
     int? customBackgroundColor,
     int? customHeadwordColor,
     int? customSanskritTextColor,
+    bool? enableBasicAdjust,
+    bool? enableBasicDisplay,
   }) {
     return AppSettings(
       headwordSearchMode: headwordSearchMode ?? this.headwordSearchMode,
@@ -183,6 +189,8 @@ class AppSettings {
       customHeadwordColor: customHeadwordColor ?? this.customHeadwordColor,
       customSanskritTextColor:
           customSanskritTextColor ?? this.customSanskritTextColor,
+      enableBasicAdjust: enableBasicAdjust ?? this.enableBasicAdjust,
+      enableBasicDisplay: enableBasicDisplay ?? this.enableBasicDisplay,
     );
   }
 
