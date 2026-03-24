@@ -25,16 +25,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   @override
   void initState() {
     super.initState();
-    _hwController.addListener(() {
-      final text = _hwController.text.trim();
-      ref.read(headwordQueryProvider.notifier).state = text;
-      ref.read(closedTabsProvider.notifier).state = {};
-    });
-    _defController.addListener(() {
-      final text = _defController.text.trim();
-      ref.read(definitionQueryProvider.notifier).state = text;
-      ref.read(closedTabsProvider.notifier).state = {};
-    });
   }
 
   @override
@@ -78,7 +68,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             TabBar(
               controller: _tabController,
               isScrollable: true,
-              labelColor: Theme.of(context).primaryColor,
+              labelColor: Theme.of(context).colorScheme.primary,
               unselectedLabelColor: Colors.grey,
               tabs: _currentTabs.map((code) {
                 final info = DictionaryRegistry.byCode(code)!;
@@ -102,8 +92,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               }).toList(),
             ),
           Expanded(
-            child: _buildBody(settings, settings.headwordSearchMode,
-                settings.definitionSearchMode),
+            child: Container(
+              color: settings.themeMode == AppThemeMode.cologne
+                  ? Colors.white
+                  : null,
+              child: _buildBody(settings, settings.headwordSearchMode,
+                  settings.definitionSearchMode),
+            ),
           ),
         ],
       ),
@@ -112,72 +107,70 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
   Widget _buildSearchBars() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
       child: Column(
         children: [
           // Headword row
-          Row(
-            children: [
-              const SizedBox(width: 80, child: Text('Headword')),
-              Expanded(
-                child: TextField(
-                  controller: _hwController,
-                  decoration: InputDecoration(
-                    hintText: 'Search headwords...',
-                    isDense: true,
-                    contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    border: const OutlineInputBorder(),
-                    suffixIcon: _hwController.text.isNotEmpty
-                        ? IconButton(
-                            icon: const Icon(Icons.clear, size: 18),
-                            onPressed: () {
-                              _hwController.clear();
-                              ref.read(headwordQueryProvider.notifier).state =
-                                  '';
-                            },
-                          )
-                        : null,
-                  ),
-                  onSubmitted: (val) {
-                    ref.read(headwordQueryProvider.notifier).state = val.trim();
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.grey),
+            ),
+            child: TextField(
+              controller: _hwController,
+              decoration: InputDecoration(
+                hintText: 'Type headword to search',
+                border: InputBorder.none,
+                prefixIcon: const Icon(Icons.search),
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.clear),
+                  onPressed: () {
+                    _hwController.clear();
+                    ref.read(headwordQueryProvider.notifier).state = '';
                   },
                 ),
               ),
-            ],
+              onChanged: (val) {
+                ref.read(headwordQueryProvider.notifier).state = val.trim();
+                ref.read(closedTabsProvider.notifier).state = {};
+              },
+              onSubmitted: (val) {
+                ref.read(headwordQueryProvider.notifier).state = val.trim();
+              },
+            ),
           ),
-          const SizedBox(height: 8),
           // Definition row
-          Row(
-            children: [
-              const SizedBox(width: 80, child: Text('Definition')),
-              Expanded(
-                child: TextField(
-                  controller: _defController,
-                  decoration: InputDecoration(
-                    hintText: 'Search in definition text...',
-                    isDense: true,
-                    contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    border: const OutlineInputBorder(),
-                    suffixIcon: _defController.text.isNotEmpty
-                        ? IconButton(
-                            icon: const Icon(Icons.clear, size: 18),
-                            onPressed: () {
-                              _defController.clear();
-                              ref.read(definitionQueryProvider.notifier).state =
-                                  '';
-                            },
-                          )
-                        : null,
-                  ),
-                  onSubmitted: (val) {
-                    ref.read(definitionQueryProvider.notifier).state =
-                        val.trim();
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.grey),
+            ),
+            child: TextField(
+              controller: _defController,
+              decoration: InputDecoration(
+                hintText: 'Type word to search in definition',
+                border: InputBorder.none,
+                prefixIcon: const Icon(Icons.manage_search),
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.clear),
+                  onPressed: () {
+                    _defController.clear();
+                    ref.read(definitionQueryProvider.notifier).state = '';
                   },
                 ),
               ),
-            ],
+              onChanged: (val) {
+                ref.read(definitionQueryProvider.notifier).state = val.trim();
+                ref.read(closedTabsProvider.notifier).state = {};
+              },
+              onSubmitted: (val) {
+                ref.read(definitionQueryProvider.notifier).state = val.trim();
+              },
+            ),
           ),
         ],
       ),

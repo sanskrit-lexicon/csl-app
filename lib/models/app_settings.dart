@@ -2,11 +2,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' show ThemeMode;
 
 /// Theme modes for the app.
-enum AppThemeMode { light, dark }
+enum AppThemeMode { cologne, light, dark }
 
 extension AppThemeModeX on AppThemeMode {
   String get label {
     switch (this) {
+      case AppThemeMode.cologne:
+        return 'Cologne';
       case AppThemeMode.light:
         return 'Light';
       case AppThemeMode.dark:
@@ -16,6 +18,8 @@ extension AppThemeModeX on AppThemeMode {
 
   ThemeMode get toThemeMode {
     switch (this) {
+      case AppThemeMode.cologne:
+        return ThemeMode.light;
       case AppThemeMode.light:
         return ThemeMode.light;
       case AppThemeMode.dark:
@@ -77,7 +81,7 @@ class AppSettings {
     this.maxResults = 100,
     this.activeDictCodes = const [],
     this.dictOrder = const [],
-    this.themeMode = AppThemeMode.light,
+    this.themeMode = AppThemeMode.cologne,
   });
 
   AppSettings copyWith({

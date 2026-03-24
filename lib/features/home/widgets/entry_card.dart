@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/dictionary_registry.dart';
+import '../../../models/app_settings.dart';
 import '../../../models/search_result.dart';
 import '../../../providers/settings_provider.dart';
 import '../../../rendering/entry_parser.dart';
@@ -30,14 +31,19 @@ class EntryCardWidget extends ConsumerWidget {
     final parsed = EntryParser.parse(searchResult.data, searchResult.lnum);
 
     // Renderer
-    final renderer = EntryRenderer(settings: settings, dictCode: dictCode);
+    final renderer = EntryRenderer(
+      settings: settings,
+      dictCode: dictCode,
+      useCologneTheme: settings.themeMode == AppThemeMode.cologne,
+    );
 
     return FutureBuilder<Widget>(
       future: renderer.buildEntryWidget(
         entry: parsed,
         onWordTap: onWordTap,
         onCopy: () {
-          final text = '${parsed.key1Slp1}\n${parsed.bodyHtml.replaceAll(RegExp(r'<[^>]*>'), '')}';
+          final text =
+              '${parsed.key1Slp1}\n${parsed.bodyHtml.replaceAll(RegExp(r'<[^>]*>'), '')}';
           Clipboard.setData(ClipboardData(text: text));
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Copied to clipboard')),
@@ -66,4 +72,3 @@ class EntryCardWidget extends ConsumerWidget {
     );
   }
 }
-

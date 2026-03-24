@@ -12,8 +12,12 @@ import 'entry_parser.dart';
 class EntryRenderer {
   final AppSettings settings;
   final String dictCode;
+  final bool useCologneTheme;
 
-  EntryRenderer({required this.settings, required this.dictCode});
+  EntryRenderer(
+      {required this.settings,
+      required this.dictCode,
+      this.useCologneTheme = false});
 
   /// Build the full entry widget including headword, body, and page ref.
   Future<Widget> buildEntryWidget({
@@ -39,21 +43,21 @@ class EntryRenderer {
 
     // 2. Build headword display string
     final slp1Key = _resolveHeadwordSlp1(entry);
-    final displayKey =
-        TransliterationService.fromSlp1(slp1Key, settings.outputTranslit, useAccented: settings.showAccent, dictCode: dictCode);
-
-
+    final displayKey = TransliterationService.fromSlp1(
+        slp1Key, settings.outputTranslit,
+        useAccented: settings.showAccent, dictCode: dictCode);
 
     // 3. Process body HTML
     final isEnglish = ['ae', 'mwe', 'bor'].contains(dictCode.toLowerCase());
     final highlightSlp1 = (highlightTerm != null && highlightTerm.isNotEmpty)
         ? (isEnglish
             ? highlightTerm.toLowerCase()
-            : TransliterationService.toSlp1(highlightTerm, settings.inputTranslit))
+            : TransliterationService.toSlp1(
+                highlightTerm, settings.inputTranslit))
         : null;
 
-    final processedHtml = _buildBodyHtml(entry.bodyHtml, abbrCache, highlightSlp1, highlightTerm, dictCode);
-
+    final processedHtml = _buildBodyHtml(
+        entry.bodyHtml, abbrCache, highlightSlp1, highlightTerm, dictCode);
 
     return _EntryCard(
       displayKey: displayKey,
@@ -66,9 +70,9 @@ class EntryRenderer {
       onCopy: onCopy,
       outputTranslit: settings.outputTranslit,
       dictInfo: dictInfo,
+      useCologneTheme: useCologneTheme,
     );
   }
-
 
   String _resolveHeadwordSlp1(ParsedEntry entry) {
     if (settings.showAccent && entry.key2Slp1 != null) {
@@ -77,32 +81,27 @@ class EntryRenderer {
     return entry.key1Slp1;
   }
 
-
-  String _buildBodyHtml(
-      String bodyHtml, Map<String, String> abbreviationCache, String? highlightSlp1, String? rawHighlightTerm, String dictCode) {
-
+  String _buildBodyHtml(String bodyHtml, Map<String, String> abbreviationCache,
+      String? highlightSlp1, String? rawHighlightTerm, String dictCode) {
     // Replace <s> and <SA> Sanskrit inline text with transliterated output
     String html = bodyHtml;
-
 
     html = html.replaceAllMapped(
       RegExp(r'<(?:s|SA)>(.*?)</(?:s|SA)>', dotAll: true),
       (m) {
         final slp1 = m.group(1) ?? '';
-        
+
         String process(String text) {
           if (text.isEmpty) return '';
-          return TransliterationService.fromSlp1(text, settings.outputTranslit, useAccented: settings.showAccent, dictCode: dictCode);
+          return TransliterationService.fromSlp1(text, settings.outputTranslit,
+              useAccented: settings.showAccent, dictCode: dictCode);
         }
-
-
-
-
 
         String result;
         if (highlightSlp1 != null && highlightSlp1.isNotEmpty) {
           final escaped = RegExp.escape(highlightSlp1);
-          final matches = RegExp('($escaped)', caseSensitive: false).allMatches(slp1);
+          final matches =
+              RegExp('($escaped)', caseSensitive: false).allMatches(slp1);
           if (matches.isEmpty) {
             result = process(slp1);
           } else {
@@ -124,7 +123,6 @@ class EntryRenderer {
         return '<span class="sanskrit">$result</span>';
       },
     );
-
 
     // Expand <ab>text</ab> abbreviations
     html = html.replaceAllMapped(
@@ -164,8 +162,6 @@ class EntryRenderer {
       );
     }
 
-
-
     // Wrap in a div for styling
     return '<div style="font-size:15px; line-height:1.6;">$html</div>';
   }
@@ -182,6 +178,8 @@ class _EntryCard extends StatelessWidget {
   final void Function(String slp1Word) onWordTap;
   final VoidCallback onCopy;
   final String outputTranslit;
+  final DictionaryInfo dictInfo;
+  final bool useCologneTheme;
 
   const _EntryCard({
     required this.displayKey,
@@ -194,8 +192,8 @@ class _EntryCard extends StatelessWidget {
     required this.onCopy,
     required this.outputTranslit,
     required this.dictInfo,
+    this.useCologneTheme = false,
   });
-  final DictionaryInfo dictInfo;
 
   @override
   Widget build(BuildContext context) {
@@ -260,14 +258,23 @@ class _EntryCard extends StatelessWidget {
               },
               customStylesBuilder: (element) {
                 final isDark = theme.brightness == Brightness.dark;
-                final primaryHex = '#${theme.colorScheme.primary.toARGB32().toRadixString(16).substring(2).padLeft(6, '0')}';
-                final secondaryContainerHex = '#${theme.colorScheme.secondaryContainer.toARGB32().toRadixString(16).substring(2).padLeft(6, '0')}';
-                final onSecondaryContainerHex = '#${theme.colorScheme.onSecondaryContainer.toARGB32().toRadixString(16).substring(2).padLeft(6, '0')}';
-                final outlineHex = '#${theme.colorScheme.outline.toARGB32().toRadixString(16).substring(2).padLeft(6, '0')}';
+                final primaryHex =
+                    '#${theme.colorScheme.primary.toARGB32().toRadixString(16).substring(2).padLeft(6, '0')}';
+                final secondaryContainerHex =
+                    '#${theme.colorScheme.secondaryContainer.toARGB32().toRadixString(16).substring(2).padLeft(6, '0')}';
+                final onSecondaryContainerHex =
+                    '#${theme.colorScheme.onSecondaryContainer.toARGB32().toRadixString(16).substring(2).padLeft(6, '0')}';
+                final outlineHex =
+                    '#${theme.colorScheme.outline.toARGB32().toRadixString(16).substring(2).padLeft(6, '0')}';
 
                 if (element.classes.contains('sanskrit')) {
                   // Subtle color for Sanskrit text
-                  return {'color': isDark ? '#B0BEC5' : '#546E7A'}; // Blue-grey variants
+                  if (useCologneTheme) {
+                    return {'color': '#339933'}; // Green for Cologne theme
+                  }
+                  return {
+                    'color': isDark ? '#B0BEC5' : '#546E7A'
+                  }; // Blue-grey variants
                 }
                 if (element.localName == 'b') {
                   return {'color': primaryHex};
