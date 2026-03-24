@@ -20,43 +20,39 @@ class PreferencesScreen extends ConsumerWidget {
           ListTile(
             title: const Text('Headword Search Mode'),
             subtitle: const Text('How to match headwords'),
-            trailing: DropdownButton<SearchMode>(
-              value: settings.headwordSearchMode,
-              onChanged: (v) {
-                if (v != null) notifier.update(settings.copyWith(headwordSearchMode: v));
-              },
-              items: SearchMode.values
-                  .map((m) => DropdownMenuItem(value: m, child: Text(m.label)))
-                  .toList(),
+            trailing: _SearchModeSelector(
+              currentMode: settings.headwordSearchMode,
+              onChanged: (v) =>
+                  notifier.update(settings.copyWith(headwordSearchMode: v)),
             ),
           ),
           // 2. Definition Search
           ListTile(
             title: const Text('Definition Search Mode'),
             subtitle: const Text('How to match in dictionary definitions'),
-            trailing: DropdownButton<SearchMode>(
-              value: settings.definitionSearchMode,
-              onChanged: (v) {
-                if (v != null) notifier.update(settings.copyWith(definitionSearchMode: v));
-              },
-              items: SearchMode.values
-                  .map((m) => DropdownMenuItem(value: m, child: Text(m.label)))
-                  .toList(),
+            trailing: _SearchModeSelector(
+              currentMode: settings.definitionSearchMode,
+              onChanged: (v) =>
+                  notifier.update(settings.copyWith(definitionSearchMode: v)),
             ),
           ),
           const Divider(),
           // 3. Input Transliteration
           ListTile(
             title: const Text('Input Transliteration'),
-            subtitle: const Text('Scheme used for typing inside the search box'),
+            subtitle:
+                const Text('Scheme used for typing inside the search box'),
             trailing: DropdownButton<String>(
               value: settings.inputTranslit,
               onChanged: (v) {
-                if (v != null) notifier.update(settings.copyWith(inputTranslit: v));
+                if (v != null) {
+                  notifier.update(settings.copyWith(inputTranslit: v));
+                }
               },
               items: TransliterationService.availableSchemes
                   .map((s) => DropdownMenuItem(
-                      value: s, child: Text(TransliterationService.displayName(s))))
+                      value: s,
+                      child: Text(TransliterationService.displayName(s))))
                   .toList(),
             ),
           ),
@@ -67,11 +63,14 @@ class PreferencesScreen extends ConsumerWidget {
             trailing: DropdownButton<String>(
               value: settings.outputTranslit,
               onChanged: (v) {
-                if (v != null) notifier.update(settings.copyWith(outputTranslit: v));
+                if (v != null) {
+                  notifier.update(settings.copyWith(outputTranslit: v));
+                }
               },
               items: TransliterationService.availableSchemes
                   .map((s) => DropdownMenuItem(
-                      value: s, child: Text(TransliterationService.displayName(s))))
+                      value: s,
+                      child: Text(TransliterationService.displayName(s))))
                   .toList(),
             ),
           ),
@@ -79,22 +78,24 @@ class PreferencesScreen extends ConsumerWidget {
           // 5. Accent show/hide
           SwitchListTile(
             title: const Text('Vedic Accents'),
-            subtitle: const Text('Show pitch accent marks if available in dictionary'),
+            subtitle: const Text(
+                'Show pitch accent marks if available in dictionary'),
             value: settings.showAccent,
             onChanged: (v) => notifier.update(settings.copyWith(showAccent: v)),
           ),
           // 6. Highlight
           SwitchListTile(
             title: const Text('Highlight Search Results'),
-            subtitle: const Text('Visually mark found terms inside definitions'),
+            subtitle:
+                const Text('Visually mark found terms inside definitions'),
             value: settings.highlightEnabled,
-            onChanged: (v) => notifier.update(settings.copyWith(highlightEnabled: v)),
+            onChanged: (v) =>
+                notifier.update(settings.copyWith(highlightEnabled: v)),
           ),
           const Divider(),
           // 7. Max Results
           ListTile(
             title: const Text('Maximum Results'),
-            subtitle: Text('Limit search to ${settings.maxResults} entries'),
             trailing: SizedBox(
               width: 80,
               child: TextFormField(
@@ -115,7 +116,6 @@ class PreferencesScreen extends ConsumerWidget {
           ListTile(
             title: const Text('App Theme'),
             subtitle: const Text('Choose light or dark theme'),
-
             trailing: DropdownButton<AppThemeMode>(
               value: settings.themeMode,
               onChanged: (v) {
@@ -128,6 +128,30 @@ class PreferencesScreen extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _SearchModeSelector extends StatelessWidget {
+  final SearchMode currentMode;
+  final void Function(SearchMode) onChanged;
+
+  const _SearchModeSelector({
+    required this.currentMode,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SegmentedButton<SearchMode>(
+      segments: SearchMode.values
+          .map((mode) => ButtonSegment<SearchMode>(
+                value: mode,
+                label: Text(mode.label, style: const TextStyle(fontSize: 12)),
+              ))
+          .toList(),
+      selected: {currentMode},
+      onSelectionChanged: (selection) => onChanged(selection.first),
     );
   }
 }

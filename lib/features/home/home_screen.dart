@@ -4,6 +4,7 @@ import '../../core/dictionary_registry.dart';
 import '../../models/app_settings.dart';
 import '../../providers/search_provider.dart';
 import '../../providers/settings_provider.dart';
+import '../dictionaries/manage_dictionaries_screen.dart';
 import 'widgets/app_drawer.dart';
 import 'widgets/entry_card.dart';
 
@@ -34,7 +35,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       ref.read(definitionQueryProvider.notifier).state = text;
       ref.read(closedTabsProvider.notifier).state = {};
     });
-
   }
 
   @override
@@ -90,7 +90,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                       const SizedBox(width: 4),
                       GestureDetector(
                         onTap: () {
-                          ref.read(closedTabsProvider.notifier).update((s) => {...s, code});
+                          ref
+                              .read(closedTabsProvider.notifier)
+                              .update((s) => {...s, code});
                         },
                         child: const Icon(Icons.close, size: 14),
                       ),
@@ -100,7 +102,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               }).toList(),
             ),
           Expanded(
-            child: _buildBody(settings, settings.headwordSearchMode, settings.definitionSearchMode),
+            child: _buildBody(settings, settings.headwordSearchMode,
+                settings.definitionSearchMode),
           ),
         ],
       ),
@@ -122,14 +125,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                   decoration: InputDecoration(
                     hintText: 'Search headwords...',
                     isDense: true,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     border: const OutlineInputBorder(),
                     suffixIcon: _hwController.text.isNotEmpty
                         ? IconButton(
                             icon: const Icon(Icons.clear, size: 18),
                             onPressed: () {
                               _hwController.clear();
-                              ref.read(headwordQueryProvider.notifier).state = '';
+                              ref.read(headwordQueryProvider.notifier).state =
+                                  '';
                             },
                           )
                         : null,
@@ -152,20 +157,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                   decoration: InputDecoration(
                     hintText: 'Search in definition text...',
                     isDense: true,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     border: const OutlineInputBorder(),
                     suffixIcon: _defController.text.isNotEmpty
                         ? IconButton(
                             icon: const Icon(Icons.clear, size: 18),
                             onPressed: () {
                               _defController.clear();
-                              ref.read(definitionQueryProvider.notifier).state = '';
+                              ref.read(definitionQueryProvider.notifier).state =
+                                  '';
                             },
                           )
                         : null,
                   ),
                   onSubmitted: (val) {
-                    ref.read(definitionQueryProvider.notifier).state = val.trim();
+                    ref.read(definitionQueryProvider.notifier).state =
+                        val.trim();
                   },
                 ),
               ),
@@ -176,19 +184,34 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     );
   }
 
-  Widget _buildBody(AppSettings settings, SearchMode hwMode, SearchMode defMode) {
+  Widget _buildBody(
+      AppSettings settings, SearchMode hwMode, SearchMode defMode) {
     if (settings.activeDictCodes.isEmpty) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.library_add, size: 64, color: Colors.grey),
-            SizedBox(height: 16),
-            Text('No dictionaries active.'),
-            Text(
-              'Please open the side drawer to download and manage dictionaries.',
+            const Icon(Icons.library_add, size: 64, color: Colors.grey),
+            const SizedBox(height: 16),
+            const Text('No dictionaries active.'),
+            const SizedBox(height: 8),
+            const Text(
+              'Add dictionaries of your choice to start searching!',
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.grey),
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton.icon(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const ManageDictionariesScreen(),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.library_books),
+              label: const Text('Add or Manage Dictionaries'),
             ),
           ],
         ),

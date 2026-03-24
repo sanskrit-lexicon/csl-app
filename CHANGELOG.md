@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.2] - 2026-03-24
+
+### Added
+- **A button to download files**: In case the user does not have any dictionaries installed, a button placed on the home screen for guiding users
+
 ## [0.1.1] - 2026-03-19
 
 ### Added

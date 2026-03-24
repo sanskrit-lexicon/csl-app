@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import '../../preferences/preferences_screen.dart';
 import '../../dictionaries/manage_dictionaries_screen.dart';
+import '../../about/about_us_screen.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
@@ -15,7 +15,8 @@ class AppDrawer extends StatelessWidget {
         children: [
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.only(top: 60, bottom: 20, left: 16, right: 16),
+            padding:
+                const EdgeInsets.only(top: 60, bottom: 20, left: 16, right: 16),
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.surfaceContainerHighest,
             ),
@@ -82,72 +83,10 @@ class AppDrawer extends StatelessWidget {
             leading: const Icon(Icons.info_outline),
             title: const Text('About Us'),
             onTap: () {
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text('Cologne Digital Sanskrit Dictionaries'),
-                  content: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Offline dictionary application for the Cologne '
-                        'Cologne Sanskrit Lexicon.',
-                      ),
-                      const SizedBox(height: 16),
-                      const Text('License: GNU GPL v3.0'),
-                      const SizedBox(height: 16),
-                      RichText(
-                        text: TextSpan(
-                          style: Theme.of(context).textTheme.bodyMedium,
-                          children: [
-                            const TextSpan(
-                              text: 'For bug reports / feature requests or corrections in entries, visit ',
-                            ),
-                            WidgetSpan(
-                              alignment: PlaceholderAlignment.middle,
-                              child: InkWell(
-                                onTap: () => launchUrl(
-                                  Uri.parse('https://github.com/sanskrit-lexicon/csl-app'),
-                                  mode: LaunchMode.externalApplication,
-                                ),
-                                child: Text(
-                                  'GitHub Repository',
-                                  style: TextStyle(
-                                    color: Theme.of(context).colorScheme.primary,
-                                    decoration: TextDecoration.underline,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const TextSpan(text: ' or write to '),
-                            WidgetSpan(
-                              alignment: PlaceholderAlignment.middle,
-                              child: InkWell(
-                                onTap: () => launchUrl(
-                                  Uri.parse('mailto:drdhaval2785@gmail.com'),
-                                ),
-                                child: Text(
-                                  'drdhaval2785@gmail.com',
-                                  style: TextStyle(
-                                    color: Theme.of(context).colorScheme.primary,
-                                    decoration: TextDecoration.underline,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('Close'),
-                    ),
-                  ],
-                ),
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AboutUsScreen()),
               );
             },
           ),
