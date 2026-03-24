@@ -4,6 +4,29 @@ import 'package:url_launcher/url_launcher.dart';
 class AboutUsScreen extends StatelessWidget {
   const AboutUsScreen({super.key});
 
+  Future<void> _launchEmail(BuildContext context) async {
+    final Uri emailUri = Uri(
+      scheme: 'mailto',
+      path: 'drdhaval2785@gmail.com',
+      queryParameters: {'subject': 'Cologne Sanskrit Lexicon Feedback'},
+    );
+    try {
+      if (!await launchUrl(emailUri)) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Could not open email client')),
+          );
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,9 +68,7 @@ class AboutUsScreen extends StatelessWidget {
             ListTile(
               leading: const Icon(Icons.email),
               title: const Text('drdhaval2785@gmail.com'),
-              onTap: () => launchUrl(
-                Uri.parse('mailto:drdhaval2785@gmail.com'),
-              ),
+              onTap: () => _launchEmail(context),
             ),
           ],
         ),

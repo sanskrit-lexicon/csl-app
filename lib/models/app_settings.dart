@@ -4,7 +4,6 @@ import 'package:flutter/material.dart' show ThemeMode;
 /// Theme modes for the app.
 enum AppThemeMode { light, dark }
 
-
 extension AppThemeModeX on AppThemeMode {
   String get label {
     switch (this) {
@@ -25,10 +24,8 @@ extension AppThemeModeX on AppThemeMode {
   }
 }
 
-
-
 /// Search mode for headword or definition search.
-enum SearchMode { exact, prefix, suffix, substring }
+enum SearchMode { prefix, exact, substring, suffix }
 
 extension SearchModeX on SearchMode {
   String get label {
@@ -66,10 +63,9 @@ class AppSettings {
   final bool showAccent;
   final bool highlightEnabled;
   final int maxResults;
-  final List<String> activeDictCodes; 
+  final List<String> activeDictCodes;
   final List<String> dictOrder; // Order of all dictionary codes
   final AppThemeMode themeMode;
-
 
   const AppSettings({
     this.headwordSearchMode = SearchMode.prefix,
@@ -84,8 +80,6 @@ class AppSettings {
     this.themeMode = AppThemeMode.light,
   });
 
-
-
   AppSettings copyWith({
     SearchMode? headwordSearchMode,
     SearchMode? definitionSearchMode,
@@ -98,7 +92,6 @@ class AppSettings {
     List<String>? dictOrder,
     AppThemeMode? themeMode,
   }) {
-
     return AppSettings(
       headwordSearchMode: headwordSearchMode ?? this.headwordSearchMode,
       definitionSearchMode: definitionSearchMode ?? this.definitionSearchMode,
@@ -111,6 +104,5 @@ class AppSettings {
       dictOrder: dictOrder ?? this.dictOrder,
       themeMode: themeMode ?? this.themeMode,
     );
-
   }
 }

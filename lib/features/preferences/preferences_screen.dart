@@ -17,31 +17,45 @@ class PreferencesScreen extends ConsumerWidget {
       body: ListView(
         children: [
           // 1. Headword Search
-          ListTile(
-            title: const Text('Headword Search Mode'),
-            subtitle: const Text('How to match headwords'),
-            trailing: _SearchModeSelector(
-              currentMode: settings.headwordSearchMode,
-              onChanged: (v) =>
-                  notifier.update(settings.copyWith(headwordSearchMode: v)),
-            ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                child: Text('Headword Search Mode'),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
+                child: _SearchModeSelector(
+                  currentMode: settings.headwordSearchMode,
+                  onChanged: (v) =>
+                      notifier.update(settings.copyWith(headwordSearchMode: v)),
+                ),
+              ),
+            ],
           ),
           // 2. Definition Search
-          ListTile(
-            title: const Text('Definition Search Mode'),
-            subtitle: const Text('How to match in dictionary definitions'),
-            trailing: _SearchModeSelector(
-              currentMode: settings.definitionSearchMode,
-              onChanged: (v) =>
-                  notifier.update(settings.copyWith(definitionSearchMode: v)),
-            ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                child: Text('Definition Search Mode'),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
+                child: _SearchModeSelector(
+                  currentMode: settings.definitionSearchMode,
+                  onChanged: (v) => notifier
+                      .update(settings.copyWith(definitionSearchMode: v)),
+                ),
+              ),
+            ],
           ),
           const Divider(),
           // 3. Input Transliteration
           ListTile(
             title: const Text('Input Transliteration'),
-            subtitle:
-                const Text('Scheme used for typing inside the search box'),
             trailing: DropdownButton<String>(
               value: settings.inputTranslit,
               onChanged: (v) {
@@ -59,7 +73,6 @@ class PreferencesScreen extends ConsumerWidget {
           // 4. Output Transliteration
           ListTile(
             title: const Text('Output Transliteration'),
-            subtitle: const Text('Display script used for dictionary results'),
             trailing: DropdownButton<String>(
               value: settings.outputTranslit,
               onChanged: (v) {
@@ -78,16 +91,12 @@ class PreferencesScreen extends ConsumerWidget {
           // 5. Accent show/hide
           SwitchListTile(
             title: const Text('Vedic Accents'),
-            subtitle: const Text(
-                'Show pitch accent marks if available in dictionary'),
             value: settings.showAccent,
             onChanged: (v) => notifier.update(settings.copyWith(showAccent: v)),
           ),
           // 6. Highlight
           SwitchListTile(
             title: const Text('Highlight Search Results'),
-            subtitle:
-                const Text('Visually mark found terms inside definitions'),
             value: settings.highlightEnabled,
             onChanged: (v) =>
                 notifier.update(settings.copyWith(highlightEnabled: v)),
@@ -115,7 +124,6 @@ class PreferencesScreen extends ConsumerWidget {
           // 8. Theme Mode
           ListTile(
             title: const Text('App Theme'),
-            subtitle: const Text('Choose light or dark theme'),
             trailing: DropdownButton<AppThemeMode>(
               value: settings.themeMode,
               onChanged: (v) {
@@ -143,15 +151,18 @@ class _SearchModeSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SegmentedButton<SearchMode>(
-      segments: SearchMode.values
-          .map((mode) => ButtonSegment<SearchMode>(
-                value: mode,
-                label: Text(mode.label, style: const TextStyle(fontSize: 12)),
-              ))
-          .toList(),
-      selected: {currentMode},
-      onSelectionChanged: (selection) => onChanged(selection.first),
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: SegmentedButton<SearchMode>(
+        segments: SearchMode.values
+            .map((mode) => ButtonSegment<SearchMode>(
+                  value: mode,
+                  label: Text(mode.label, style: const TextStyle(fontSize: 12)),
+                ))
+            .toList(),
+        selected: {currentMode},
+        onSelectionChanged: (selection) => onChanged(selection.first),
+      ),
     );
   }
 }
