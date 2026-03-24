@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import '../models/app_settings.dart';
 import '../models/search_result.dart';
 import 'database_helper.dart';
@@ -199,44 +200,156 @@ class SearchService {
     }
   }
 
-  /// Fetch literary source expansion from {dict}authtooltips database.
+  /// Fetch literary source expansion from {dict}authtooltips or {dict}bib database.
   /// Returns full name (e.g., "Whitney's Grammar, section 502") or null if not found.
   static Future<String?> fetchLsExpansion({
     required String dictCode,
     required String code,
   }) async {
+    debugPrint(
+        '=== SEARCH SERVICE: fetchLsExpansion called with dictCode=$dictCode, code=$code');
+
+    // Try authtooltips database first
+    String? result = await _queryLsFromDb(dictCode, code, 'authtooltips');
+    if (result != null) {
+      debugPrint('=== SEARCH SERVICE: Found result in authtooltips: $result');
+      return result;
+    }
+
+    // Try bib database (e.g., pwgbib.sqlite for PWG)
+    result = await _queryLsFromDb(dictCode, code, 'bib');
+    if (result != null) {
+      debugPrint('=== SEARCH SERVICE: Found result in bib: $result');
+      return result;
+    }
+
+    debugPrint('=== SEARCH SERVICE: No result found in any database');
+    return null;
+  }
+
+  /// Helper to query LS from a specific database type (authtooltips or bib).
+  static Future<String?> _queryLsFromDb(
+      String dictCode, String code, String dbType) async {
     try {
-      final db = await DatabaseHelper.openAuthTooltips(dictCode);
-      if (db == null) return null;
+      Database? db;
+      String table;
 
-      final table = '${dictCode.toLowerCase()}authtooltips';
+      if (dbType == 'authtooltips') {
+        db = await DatabaseHelper.openAuthTooltips(dictCode);
+        if (db == null) return null;
+        table = '${dictCode.toLowerCase()}authtooltips';
+      } else {
+        db = await DatabaseHelper.openBib(dictCode);
+        if (db == null) return null;
+        table = '${dictCode.toLowerCase()}bib';
+      }
 
-      // Try MW format first: columns are cid, code, title, type
-      var rows = await db.rawQuery(
-        'SELECT title, type FROM $table WHERE code = ? LIMIT 1',
-        [code],
-      );
-      if (rows.isNotEmpty) {
-        final title = rows.first['title'] as String?;
-        final type = rows.first['type'] as String?;
-        if (title != null && type != null) {
-          return '$title ($type)';
-        } else if (title != null) {
-          return title;
+      debugPrint(
+          '=== SEARCH SERVICE: Querying $dbType table $table with code=$code');
+
+      // First, discover the column names in the table
+      final columnsInfo = await db.rawQuery('PRAGMA table_info($table)');
+      final columnNames = columnsInfo.map((c) => c['name'] as String).toList();
+      debugPrint('=== SEARCH SERVICE: $dbType Table columns: $columnNames');
+
+      // Try different column name patterns
+      String? result;
+
+      // Pattern 1: key + data columns
+      if (columnNames.contains('key') && columnNames.contains('data')) {
+        final rows = await db.rawQuery(
+          'SELECT data, type FROM $table WHERE key = ? LIMIT 1',
+          [code],
+        );
+        debugPrint(
+            '=== SEARCH SERVICE: $dbType key+data query returned ${rows.length} rows');
+        if (rows.isNotEmpty) {
+          final data = rows.first['data'] as String?;
+          final type = rows.first['type'] as String?;
+          if (data != null && type != null) {
+            result = '$data ($type)';
+          } else if (data != null) {
+            result = data;
+          }
         }
       }
 
-      // Fallback to simpler format: columns are code, text
-      rows = await db.rawQuery(
-        'SELECT text FROM $table WHERE code = ? LIMIT 1',
-        [code],
-      );
-      if (rows.isNotEmpty) {
-        return rows.first['text'] as String?;
+      // Pattern 2: code + title + type columns
+      if (result == null &&
+          columnNames.contains('code') &&
+          columnNames.contains('title')) {
+        final rows = await db.rawQuery(
+          'SELECT title, type FROM $table WHERE code = ? LIMIT 1',
+          [code],
+        );
+        debugPrint(
+            '=== SEARCH SERVICE: $dbType code+title query returned ${rows.length} rows');
+        if (rows.isNotEmpty) {
+          final title = rows.first['title'] as String?;
+          final type = rows.first['type'] as String?;
+          if (title != null && type != null) {
+            result = '$title ($type)';
+          } else if (title != null) {
+            result = title;
+          }
+        }
       }
 
-      return null;
-    } catch (_) {
+      // Pattern 3: text column
+      if (result == null && columnNames.contains('text')) {
+        final rows = await db.rawQuery(
+          'SELECT text FROM $table WHERE key = ? LIMIT 1',
+          [code],
+        );
+        debugPrint(
+            '=== SEARCH SERVICE: $dbType text query returned ${rows.length} rows');
+        if (rows.isNotEmpty) {
+          result = rows.first['text'] as String?;
+        }
+      }
+
+      // Pattern 4: name column
+      if (result == null && columnNames.contains('name')) {
+        final rows = await db.rawQuery(
+          'SELECT name FROM $table WHERE key = ? LIMIT 1',
+          [code],
+        );
+        debugPrint(
+            '=== SEARCH SERVICE: $dbType name query returned ${rows.length} rows');
+        if (rows.isNotEmpty) {
+          result = rows.first['name'] as String?;
+        }
+      }
+
+      // Pattern 5: description column
+      if (result == null && columnNames.contains('description')) {
+        final rows = await db.rawQuery(
+          'SELECT description FROM $table WHERE key = ? LIMIT 1',
+          [code],
+        );
+        debugPrint(
+            '=== SEARCH SERVICE: $dbType description query returned ${rows.length} rows');
+        if (rows.isNotEmpty) {
+          result = rows.first['description'] as String?;
+        }
+      }
+
+      // Pattern 6: expansion column
+      if (result == null && columnNames.contains('expansion')) {
+        final rows = await db.rawQuery(
+          'SELECT expansion FROM $table WHERE key = ? LIMIT 1',
+          [code],
+        );
+        debugPrint(
+            '=== SEARCH SERVICE: $dbType expansion query returned ${rows.length} rows');
+        if (rows.isNotEmpty) {
+          result = rows.first['expansion'] as String?;
+        }
+      }
+
+      return result;
+    } catch (e) {
+      debugPrint('=== SEARCH SERVICE: $dbType Exception: $e');
       return null;
     }
   }

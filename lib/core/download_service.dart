@@ -70,6 +70,7 @@ class DownloadService {
       'web/sqlite/${codeLo}ab.sqlite': p.join(docsDir, '${codeLo}ab.sqlite'),
       'web/sqlite/${codeLo}authtooltips.sqlite':
           p.join(docsDir, '${codeLo}authtooltips.sqlite'),
+      'web/sqlite/${codeLo}bib.sqlite': p.join(docsDir, '${codeLo}bib.sqlite'),
     };
 
     for (final file in archive) {
@@ -79,15 +80,18 @@ class DownloadService {
       final isMain = fileName == '$codeLo.sqlite';
       final isAb = fileName == '${codeLo}ab.sqlite';
       final isAuth = fileName == '${codeLo}authtooltips.sqlite';
+      final isBib = fileName == '${codeLo}bib.sqlite';
 
-      if ((isMain || isAb || isAuth) && file.isFile) {
+      if ((isMain || isAb || isAuth || isBib) && file.isFile) {
         String dest;
         if (isMain) {
           dest = targets['web/sqlite/$codeLo.sqlite']!;
         } else if (isAb) {
           dest = targets['web/sqlite/${codeLo}ab.sqlite']!;
-        } else {
+        } else if (isAuth) {
           dest = targets['web/sqlite/${codeLo}authtooltips.sqlite']!;
+        } else {
+          dest = targets['web/sqlite/${codeLo}bib.sqlite']!;
         }
         final outFile = File(dest);
         await outFile.writeAsBytes(file.content as List<int>);

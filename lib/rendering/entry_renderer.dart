@@ -50,14 +50,18 @@ class EntryRenderer {
 
     // 2. Pre-fetch LS (literary source) expansions
     final lsCodes = EntryParser.extractLsReferences(entry.bodyHtml);
+    debugPrint('=== LS DEBUG: Dict=$dictCode, Extracted codes: $lsCodes');
     final lsCache = <String, String>{};
     for (final code in lsCodes) {
+      debugPrint('=== LS DEBUG: Fetching expansion for code: "$code"');
       final exp = await SearchService.fetchLsExpansion(
         dictCode: dictCode,
         code: code,
       );
+      debugPrint('=== LS DEBUG: Got expansion: "$exp"');
       if (exp != null) lsCache[code] = exp;
     }
+    debugPrint('=== LS DEBUG: Final lsCache: $lsCache');
 
     // DEBUG: Log raw entry HTML structure
     AppLogger.entry(dictCode, lnum, entry.key1Slp1, entry.bodyHtml);
@@ -77,8 +81,8 @@ class EntryRenderer {
                 highlightTerm, settings.inputTranslit))
         : null;
 
-    final processedHtml = _buildBodyHtml(
-        entry.bodyHtml, abbrCache, highlightSlp1, highlightTerm, dictCode);
+    final processedHtml = _buildBodyHtml(entry.bodyHtml, abbrCache, lsCache,
+        highlightSlp1, highlightTerm, dictCode);
 
     return _EntryCard(
       displayKey: displayKey,
@@ -107,32 +111,26 @@ class EntryRenderer {
     return entry.key1Slp1;
   }
 
-  String _buildBodyHtml(String bodyHtml, Map<String, String> abbreviationCache,
-      String? highlightSlp1, String? rawHighlightTerm, String dictCode) {
-    // DEBUG: Print original body HTML
-    debugPrint('=== DEBUG: Original bodyHtml ===');
-    debugPrint(bodyHtml);
-
+  String _buildBodyHtml(
+      String bodyHtml,
+      Map<String, String> abbreviationCache,
+      Map<String, String> lsCache,
+      String? highlightSlp1,
+      String? rawHighlightTerm,
+      String dictCode) {
     // Apply BasicAdjust (Feature 5) if enabled
     String html = bodyHtml;
-    // TEMPORARILY DISABLED FOR TESTING
-    // if (settings.enableBasicAdjust) {
-    if (false) {
+    if (settings.enableBasicAdjust) {
       html = BasicAdjust.adjust(
         xmlData: html,
         dictCode: dictCode,
         accent: settings.showAccent,
         outputTranslit: settings.outputTranslit,
       );
-      // DEBUG: Print after BasicAdjust
-      debugPrint('=== DEBUG: After BasicAdjust ===');
-      debugPrint(html);
     }
 
     // Apply BasicDisplay (Feature 4) if enabled
-    // TEMPORARILY DISABLED FOR TESTING
-    // if (settings.enableBasicDisplay) {
-    if (false) {
+    if (settings.enableBasicDisplay) {
       html = BasicDisplay.processHtml(
         html: html,
         dictCode: dictCode,
@@ -141,32 +139,22 @@ class EntryRenderer {
         highlightTerm: rawHighlightTerm,
         highlightEnabled: settings.highlightEnabled,
       );
-      // DEBUG: Print after BasicDisplay
-      debugPrint('=== DEBUG: After BasicDisplay ===');
-      debugPrint(html);
     }
 
     // Always apply transliteration (handles <s> and <SA> tags)
     // This is needed regardless of BasicDisplay toggle
-    html = _applyTransliteration(
-        html, abbreviationCache, highlightSlp1, rawHighlightTerm, dictCode);
-
-    // DEBUG: Print after transliteration
-    debugPrint('=== DEBUG: After transliteration ===');
-    debugPrint(html);
-
-    // DEBUG: Print final HTML
-    debugPrint('=== DEBUG: Final HTML ===');
-    debugPrint('<div style="font-size:15px; line-height:1.6;">$html</div>');
+    html = _applyTransliteration(html, abbreviationCache, lsCache,
+        highlightSlp1, rawHighlightTerm, dictCode);
 
     // Wrap in a div for styling
-    return '<div style="font-size:15px; line-height:1.6; white-space: normal;">$html</div>';
+    return '<div style="font-size:15px; line-height:1.6;">$html</div>';
   }
 
   /// Apply transliteration to Sanskrit text within s and SA tags
   String _applyTransliteration(
       String html,
       Map<String, String> abbreviationCache,
+      Map<String, String> lsCache,
       String? highlightSlp1,
       String? rawHighlightTerm,
       String dictCode) {
@@ -208,27 +196,76 @@ class EntryRenderer {
     );
 
     // Expand <ab>text</ab> abbreviations (if not already handled by BasicDisplay)
+    // Also handle already-transformed <abbr title="...">text</abbr>
+    // Add custom URL for tap-based tooltip via SnackBar
     html = html.replaceAllMapped(
       RegExp(r'<ab>(.*?)</ab>', dotAll: true),
       (m) {
         final abbr = m.group(1)?.trim() ?? '';
         final expansion = abbreviationCache[abbr];
         if (expansion != null) {
-          return '<abbr title="$expansion">$abbr</abbr>';
+          final encoded = Uri.encodeComponent(expansion);
+          return '<a href="sanslex://tooltip/ab/$encoded">$abbr</a>';
         }
         return abbr;
+      },
+    );
+    // Handle already-transformed <abbr> elements (from BasicDisplay)
+    html = html.replaceAllMapped(
+      RegExp(r'<abbr\s+title="([^"]*)">(.*?)</abbr>', dotAll: true),
+      (m) {
+        final expansion = m.group(1)?.trim() ?? '';
+        final abbr = m.group(2)?.trim() ?? '';
+        if (expansion.isNotEmpty && abbr.isNotEmpty) {
+          final encoded = Uri.encodeComponent(expansion);
+          return '<a href="sanslex://tooltip/ab/$encoded">$abbr</a>';
+        }
+        return m.group(0) ?? '';
       },
     );
 
     // Style <ls> references (if not already handled by BasicDisplay)
     // Preserve n attribute as title for tooltip
+    // Also handle already-transformed <span class="ls" title="...">
     html = html.replaceAllMapped(
       RegExp(r'<ls\s+n="([^"]*)">(.*?)</ls>', dotAll: true),
-      (m) => '<span class="ls" title="${m.group(1)}">${m.group(2)}</span>',
+      (m) {
+        final code = m.group(1) ?? '';
+        final text = m.group(2) ?? '';
+        debugPrint(
+            '=== LS DEBUG: Matched <ls n="$code">$text</ls>, lsCache lookup: ${lsCache[code]}');
+        final tooltip = lsCache[code] ?? code;
+        final encoded = Uri.encodeComponent(tooltip);
+        return '<a href="sanslex://tooltip/ls/$encoded" class="ls" title="$code">$text</a>';
+      },
     );
     html = html.replaceAllMapped(
       RegExp(r'<ls\s+n="([^"]*)"\s*/>'),
-      (m) => '<span class="ls" title="${m.group(1)}">[${m.group(1)}]</span>',
+      (m) {
+        final code = m.group(1) ?? '';
+        debugPrint(
+            '=== LS DEBUG: Matched <ls n="$code"/>, lsCache lookup: ${lsCache[code]}');
+        final tooltip = lsCache[code] ?? code;
+        final encoded = Uri.encodeComponent(tooltip);
+        return '<a href="sanslex://tooltip/ls/$encoded" class="ls" title="$code">[$code]</a>';
+      },
+    );
+    // Handle already-transformed <span class="ls" title="..."> elements (from BasicDisplay)
+    html = html.replaceAllMapped(
+      RegExp(r'<span\s+class="ls"\s+title="([^"]*)">(.*?)</span>',
+          dotAll: true),
+      (m) {
+        final code = m.group(1) ?? '';
+        final text = m.group(2) ?? '';
+        debugPrint(
+            '=== LS DEBUG: Matched <span class="ls" title="$code">$text</span>, lsCache lookup: ${lsCache[code]}');
+        if (code.isNotEmpty && text.isNotEmpty) {
+          final tooltip = lsCache[code] ?? code;
+          final encoded = Uri.encodeComponent(tooltip);
+          return '<a href="sanslex://tooltip/ls/$encoded" class="ls" title="$code">$text</a>';
+        }
+        return m.group(0) ?? '';
+      },
     );
 
     // Clean remaining custom tags that HtmlWidget won't know
@@ -358,6 +395,30 @@ class _EntryCard extends StatelessWidget {
                   onWordTap(word);
                   return true;
                 }
+                if (url.startsWith('sanslex://tooltip/')) {
+                  // Parse tooltip URL: sanslex://tooltip/ab/{encoded} or sanslex://tooltip/ls/{encoded}
+                  // URL structure: sanslex://tooltip/ab/encodedMessage
+                  // Split gives: ['sanslex:', '', 'tooltip', 'ab', 'encodedMessage']
+                  final parts = url.split('/');
+                  debugPrint('=== TOOLTIP DEBUG: URL parts: $parts');
+                  if (parts.length >= 5) {
+                    final encoded = parts[4];
+                    final message = Uri.decodeComponent(encoded);
+                    debugPrint(
+                        '=== TOOLTIP DEBUG: Showing message: "$message"');
+                    // Remove any existing SnackBar immediately and show new one
+                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(message),
+                        duration: const Duration(seconds: 2),
+                        behavior: SnackBarBehavior.floating,
+                        margin: const EdgeInsets.all(16),
+                      ),
+                    );
+                  }
+                  return true;
+                }
                 return false;
               },
               customStylesBuilder: (element) {
@@ -400,18 +461,26 @@ class _EntryCard extends StatelessWidget {
                 if (element.localName == 'b') {
                   return {'color': primaryHex};
                 }
+                // Style for tooltip links - dotted underline to indicate tappable
+                if (element.localName == 'a' &&
+                    element.attributes.containsKey('href') &&
+                    element.attributes['href']!
+                        .startsWith('sanslex://tooltip/')) {
+                  return {
+                    'color': isDark ? '#B0BEC5' : '#546E7A',
+                    'text-decoration': 'underline dotted',
+                  };
+                }
                 if (element.localName == 'abbr') {
                   return {
                     'color': 'inherit',
                     'text-decoration': 'underline dotted',
-                    'display': 'inline',
                   };
                 }
                 if (element.classes.contains('ls')) {
                   return {
                     'color': primaryLightHex,
                     'text-decoration': 'underline dotted',
-                    'display': 'inline',
                   };
                 }
                 if (element.localName == 'mark') {
@@ -420,9 +489,6 @@ class _EntryCard extends StatelessWidget {
                     'color': onSecondaryContainerHex,
                   };
                 }
-                return null;
-              },
-              customWidgetBuilder: (element) {
                 return null;
               },
             ),

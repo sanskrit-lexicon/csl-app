@@ -59,7 +59,8 @@ class EntryParser {
   }
 
   /// Extract all LS (literary source) reference codes from body HTML.
-  /// Returns the 'n' attribute values from <ls n="..."> tags.
+  /// Returns the 'n' attribute values from <ls n="..."> tags,
+  /// or text content from <ls>text</ls> without n attribute.
   static List<String> extractLsReferences(String bodyHtml) {
     final codes = <String>{};
     // Match <ls n="code">text</ls>
@@ -70,6 +71,12 @@ class EntryParser {
     }
     // Match <ls n="code"/>
     for (final m in RegExp(r'<ls\s+n="([^"]*)"\s*/>').allMatches(bodyHtml)) {
+      final code = m.group(1)?.trim() ?? '';
+      if (code.isNotEmpty) codes.add(code);
+    }
+    // Match <ls>text</ls> without n attribute - use text content as code
+    for (final m
+        in RegExp(r'<ls>([^<]*)</ls>', dotAll: true).allMatches(bodyHtml)) {
       final code = m.group(1)?.trim() ?? '';
       if (code.isNotEmpty) codes.add(code);
     }

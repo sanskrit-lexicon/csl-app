@@ -30,6 +30,11 @@ class DatabaseHelper {
         await dataDir, '${dictCode.toLowerCase()}authtooltips.sqlite');
   }
 
+  /// Full path to {dictCode}bib.sqlite in app documents directory.
+  static Future<String> bibDbPath(String dictCode) async {
+    return p.join(await dataDir, '${dictCode.toLowerCase()}bib.sqlite');
+  }
+
   /// Returns true if the main .sqlite file exists for this dictionary.
   static Future<bool> isAvailable(String dictCode) async {
     final main = await dbPath(dictCode);
@@ -93,17 +98,40 @@ class DatabaseHelper {
     return db;
   }
 
+  /// Opens (or returns cached) bib database (e.g., pwgbib.sqlite).
+  static Future<Database?> openBib(String dictCode) async {
+    final code = '${dictCode.toLowerCase()}bib';
+    if (_openDbs.containsKey(code)) return _openDbs[code]!;
+    final path = await bibDbPath(dictCode);
+    final exists = await databaseExists(path);
+    if (!exists) return null;
+    final db = await databaseFactory.openDatabase(
+      path,
+      options: OpenDatabaseOptions(
+        readOnly: true,
+        onOpen: (db) async {
+          await db.execute('PRAGMA case_sensitive_like = ON;');
+        },
+      ),
+    );
+    _openDbs[code] = db;
+    return db;
+  }
+
   /// Closes and removes a dictionary from cache (call after deletion).
   static Future<void> closeDict(String dictCode) async {
     final code = dictCode.toLowerCase();
     final abCode = '${code}ab';
     final authCode = '${code}authtooltips';
+    final bibCode = '${code}bib';
     await _openDbs[code]?.close();
     await _openDbs[abCode]?.close();
     await _openDbs[authCode]?.close();
+    await _openDbs[bibCode]?.close();
     _openDbs.remove(code);
     _openDbs.remove(abCode);
     _openDbs.remove(authCode);
+    _openDbs.remove(bibCode);
   }
 
   /// Closes all open databases.
