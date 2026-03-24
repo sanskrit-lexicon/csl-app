@@ -40,6 +40,9 @@ dependencies:
   # Color picker for custom theme
   flex_color_picker: ^3.6.0
 
+  # Markdown rendering for help content
+  flutter_markdown_plus: ^1.0.0
+
   cupertino_icons: ^1.0.8
 
 dev_dependencies:
