@@ -314,7 +314,7 @@ class EntryRenderer {
     if (rawHighlightTerm != null && rawHighlightTerm.isNotEmpty) {
       final escaped = RegExp.escape(rawHighlightTerm);
       html = html.replaceAllMapped(
-        RegExp('(?<!<[^>]*)\\b($escaped)\\b(?![^<]*>)', caseSensitive: false),
+        RegExp('(?<!<[^>]*)($escaped)(?![^<]*>)', caseSensitive: false),
         (match) => '<mark>${match.group(1)}</mark>',
       );
     }
