@@ -192,27 +192,8 @@ class EntryRenderer {
               useAccented: settings.showAccent, dictCode: dictCode);
         }
 
-        String result;
-        if (highlightSlp1 != null && highlightSlp1.isNotEmpty) {
-          final escaped = RegExp.escape(highlightSlp1);
-          final matches =
-              RegExp('($escaped)', caseSensitive: false).allMatches(slp1);
-          if (matches.isEmpty) {
-            result = process(slp1);
-          } else {
-            final sb = StringBuffer();
-            int lastEnd = 0;
-            for (final match in matches) {
-              sb.write(process(slp1.substring(lastEnd, match.start)));
-              sb.write('<mark>${process(match.group(1)!)}</mark>');
-              lastEnd = match.end;
-            }
-            sb.write(process(slp1.substring(lastEnd)));
-            result = sb.toString();
-          }
-        } else {
-          result = process(slp1);
-        }
+        // Transliterate - <mark> tags are protected by TransliterationService
+        final result = process(slp1);
 
         return '<span class="sanskrit">$result</span>';
       },

@@ -1,5 +1,6 @@
 import 'package:indic_transliteration_dart/transliterate.dart' as indic;
-import 'package:indic_transliteration_dart/indic_transliteration_dart.dart' as indic_pkg;
+import 'package:indic_transliteration_dart/indic_transliteration_dart.dart'
+    as indic_pkg;
 
 /// Wrapper around indic_transliteration_dart for the app's transliteration needs.
 class TransliterationService {
@@ -57,7 +58,8 @@ class TransliterationService {
     if (text.isEmpty) return text;
     if (fromScheme == toScheme) return text;
     try {
-      return indic.transliterate(text, fromScheme: fromScheme, toScheme: toScheme);
+      return indic.transliterate(text,
+          fromScheme: fromScheme, toScheme: toScheme);
     } catch (_) {
       return text;
     }
@@ -68,15 +70,22 @@ class TransliterationService {
       transliterate(text, fromScheme, 'slp1');
 
   /// Convenience: SLP1 DB text → display scheme.
-  static String fromSlp1(String text, String toScheme, {bool useAccented = false, String? dictCode}) {
-    String out = transliterate(text, useAccented ? 'slp1_accented' : 'slp1', toScheme);
-    
-    // Fallback: if accents are requested for Devanagari but ASCII markers remained, 
+  static String fromSlp1(String text, String toScheme,
+      {bool useAccented = false, String? dictCode}) {
+    // Skip transliteration if text contains <mark> tags (highlighting)
+    if (text.contains('<mark>') || text.contains('</mark>')) {
+      return text;
+    }
+
+    String out =
+        transliterate(text, useAccented ? 'slp1_accented' : 'slp1', toScheme);
+
+    // Fallback: if accents are requested for Devanagari but ASCII markers remained,
     // manually replace them with Vedic Unicode characters.
     if (useAccented && toScheme == 'devanagari') {
       out = out
           .replaceAll('\\', '॒') // Anudatta
-          .replaceAll('^', '᳙');  // Svarita (Yajurvedic)
+          .replaceAll('^', '᳙'); // Svarita (Yajurvedic)
       // Note: '/' is usually correctly handled by slp1_accented to ꣡ or ॑
 
       // Dictionary-specific PW/PWG overrides to match printed book style
@@ -84,14 +93,12 @@ class TransliterationService {
       if (d == 'pw' || d == 'pwg') {
         out = out
             .replaceAll('\uA8E1', '\uA8EB') // ꣡ -> ꣫ (Digit 3)
-            .replaceAll('\u1CD9', '\u0951'); // ᳙ -> ॑ (Uvarita/Vertical Svarita)
+            .replaceAll(
+                '\u1CD9', '\u0951'); // ᳙ -> ॑ (Uvarita/Vertical Svarita)
       }
     }
     return out;
   }
-
-
-
 
   /// Strip SLP1 accent markers.
   /// In key2, '/' appears before an accented vowel (Vedic pitch accent).
