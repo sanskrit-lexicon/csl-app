@@ -1711,6 +1711,7 @@ All user preferences/settings.
 | `customSanskritTextColor` | `int` | Custom Sanskrit text color (ARGB) |
 | `enableBasicAdjust` | `bool` | Feature 5: XML pre-processing |
 | `enableBasicDisplay` | `bool` | Feature 4: XML to HTML rendering |
+| `listMode` | `bool` | List Mode: accordion view for search results |
 
 **Constructor:**
 ```dart
@@ -1731,6 +1732,7 @@ const AppSettings({
   this.customSanskritTextColor = 0xFF339933,
   this.enableBasicAdjust = true,
   this.enableBasicDisplay = true,
+  this.listMode = false,
 });
 ```
 
@@ -1843,6 +1845,17 @@ final results = await ref.watch(searchResultsProvider("mw").future);
 
 ```dart
 final tabs = await ref.watch(filteredTabsProvider.future);
+```
+
+---
+
+#### Provider: `globalResultIndexProvider`
+
+`FutureProvider<Map<String, int>>` - Cumulative result counts for global numbering in list mode. Returns a map of dictCode to the starting index for that dictionary.
+
+```dart
+final indexMap = await ref.watch(globalResultIndexProvider.future);
+final startIndex = indexMap['mw'] ?? 0; // Starting index for MW dictionary
 ```
 
 ---

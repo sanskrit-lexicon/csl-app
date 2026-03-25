@@ -479,6 +479,16 @@ SharedPreferences key for custom Sanskrit text color.
 
 ---
 
+##### `_listMode`
+
+```dart
+static const _listMode = 'list_mode';
+```
+
+SharedPreferences key for List Mode setting (accordion view).
+
+---
+
 ##### `_decodeList`
 
 Decodes JSON-encoded string list.
