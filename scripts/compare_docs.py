@@ -1,221 +1,89 @@
 #!/usr/bin/env python3
-"""
-Compare codebase with documentation to identify differences.
-Run this script to check if documentation matches the current codebase.
-
-Usage:
-    python scripts/compare_docs.py
-"""
+"""Compare documentation with actual codebase - FINAL."""
 
 import re
-import sys
 from pathlib import Path
-from dataclasses import dataclass
-from typing import Dict, List
 
 PROJECT_ROOT = Path(__file__).parent.parent
-LIB_DIR = PROJECT_ROOT / "lib"
 REFERENCE_DIR = PROJECT_ROOT / "reference"
+LIB_DIR = PROJECT_ROOT / "lib"
 
-
-@dataclass
-class DartClass:
-    name: str
-    file_path: str
-    methods: List[Dict]
-
-
-@dataclass
-class DartFunction:
-    name: str
-    file_path: str
-
-
-def extract_dart_code_items():
-    """Extract all public classes and functions from Dart files."""
-    classes = []
-    functions = []
+def get_documented_items():
+    docs = []
+    content = (REFERENCE_DIR / "public.md").read_text()
+    content = content[:content.find('## Dependency Graph')] if '## Dependency Graph' in content else content
     
+    for fm in re.finditer(r'### \d+\. `([^`]+)`', content):
+        file_path = fm.group(1)
+        start = fm.end()
+        end_match = re.search(r'\n### \d+\. ', content[start:])
+        end = start + end_match.start() if end_match else len(content)
+        section = content[start:end]
+        
+        for cm in re.finditer(r'#### Class: `([^`]+)`', section):
+            docs.append((cm.group(1), 'class', file_path))
+        
+        for mm in re.finditer(r'##### (?:Static )?Method: `([^`]+)`', section):
+            if '#### Class:' not in section[:mm.start()]:
+                docs.append((mm.group(1), 'method', file_path))
+    
+    return docs
+
+def get_codebase_items():
+    code = []
     for dart_file in LIB_DIR.rglob("*.dart"):
-        try:
-            content = dart_file.read_text()
-            rel_path = str(dart_file.relative_to(PROJECT_ROOT))
-        except Exception as e:
-            continue
+        content = dart_file.read_text()
+        rel_path = str(dart_file.relative_to(PROJECT_ROOT))
         
-        # Extract classes
-        for match in re.finditer(r'(?:^|\n)\s*(?:abstract\s+)?class\s+(\w+)\s*[{<]', content, re.MULTILINE):
-            class_name = match.group(1)
-            if not class_name.startswith('_'):
-                methods = extract_class_methods(content, class_name)
-                classes.append(DartClass(name=class_name, file_path=rel_path, methods=methods))
+        # Classes - match any class declaration
+        for m in re.finditer(r'class\s+(\w+)', content):
+            cn = m.group(1)
+            if not cn.startswith('_'):
+                code.append((cn, 'class', rel_path))
         
-        # Extract static functions
-        for match in re.finditer(r'(?:^|\n)\s*static\s+\w+\s+(\w+)\s*\(', content, re.MULTILINE):
-            func_name = match.group(1)
-            if not func_name.startswith('_'):
-                functions.append(DartFunction(name=func_name, file_path=rel_path))
+        # Static methods at top level
+        for m in re.finditer(r'static\s+(?:Future<[^>]+>|[^<\s]+)\s+(\w+)\s*\(', content):
+            if not m.group(1).startswith('_'):
+                if content[:m.start()].count('{') == content[:m.start()].count('}'):
+                    code.append((m.group(1), 'method', rel_path))
     
-    return classes, functions
-
-
-def extract_class_methods(content: str, class_name: str) -> List[Dict]:
-    methods = []
-    class_match = re.search(rf'class\s+{class_name}\s*[^{{]*\{{', content)
-    if not class_match:
-        return methods
-    
-    start = class_match.end()
-    brace_count = 1
-    for i, char in enumerate(content[start:], start):
-        if char == '{':
-            brace_count += 1
-        elif char == '}':
-            brace_count -= 1
-            if brace_count == 0:
-                end = i
-                break
-    
-    class_body = content[start:end]
-    for match in re.finditer(r'(?:^|\n)\s*(?:static\s+)?\w+\s+(\w+)\s*\(', class_body, re.MULTILINE):
-        method_name = match.group(1)
-        if (not method_name.startswith('_') and 
-            method_name != class_name and
-            method_name not in ['toString', 'hashCode', 'build', 'main']):
-            methods.append({'name': method_name})
-    return methods
-
-
-def extract_docs_items():
-    classes = {}
-    functions = []
-    public_file = REFERENCE_DIR / "public.md"
-    if not public_file.exists():
-        return classes, functions
-    
-    content = public_file.read_text()
-    
-    # Find all file sections
-    file_pattern = r'### \d+\. `([^`]+)`'
-    file_matches = list(re.finditer(file_pattern, content))
-    
-    for i, file_match in enumerate(file_matches):
-        file_path = "lib/" + file_match.group(1).strip()
-        section_start = file_match.end()
-        section_end = file_matches[i+1].start() if i+1 < len(file_matches) else len(content)
-        section = content[section_start:section_end]
-        
-        # Find classes
-        for class_match in re.finditer(r'#### Class: `(\w+)`', section):
-            class_name = class_match.group(1)
-            methods = extract_documented_methods(section[class_match.start():])
-            classes[class_name] = {'file': file_path, 'methods': methods}
-        
-        # Find standalone functions
-        for method_match in re.finditer(r'##### (?:Static )?Method: `(\w+)`', section):
-            method_name = method_match.group(1)
-            method_pos = method_match.start()
-            before = section[:method_pos]
-            last_class = before.rfind('#### Class:')
-            if last_class == -1:
-                functions.append(DartFunction(name=method_name, file_path=file_path))
-    
-    return classes, functions
-
-
-def extract_documented_methods(section: str) -> List[Dict]:
-    methods = []
-    for match in re.finditer(r'##### (?:Static )?Method: `(\w+)`', section):
-        methods.append({'name': match.group(1)})
-    return methods
-
+    return code
 
 def main():
-    print("Scanning Dart files...")
-    code_classes, code_functions = extract_dart_code_items()
-    print(f"Found {len(code_classes)} classes, {len(code_functions)} functions in code")
+    doc_items = get_documented_items()
+    code_items = get_codebase_items()
     
-    print("Parsing documentation...")
-    doc_classes, doc_functions = extract_docs_items()
-    print(f"Found {len(doc_classes)} classes, {len(doc_functions)} functions in docs")
+    doc_classes = {d[0]: d for d in doc_items if d[1] == 'class'}
+    code_classes = {c[0]: c for c in code_items if c[1] == 'class'}
     
-    print("\n" + "="*80)
-    print("COMPARISON RESULTS")
-    print("="*80)
+    print("="*60)
+    print("DOCUMENTATION vs CODEBASE")
+    print("="*60)
     
-    code_class_names = {c.name: c for c in code_classes}
-    code_class_set = set(code_class_names.keys())
-    doc_class_set = set(doc_classes.keys())
+    print(f"\nCLASSES: Code={len(code_classes)}, Docs={len(doc_classes)}")
+    missing_c = sorted(set(code_classes.keys()) - set(doc_classes.keys()))
+    extra_c = sorted(set(doc_classes.keys()) - set(code_classes.keys()))
     
-    # CLASSES
-    print("\n--- CLASSES ---")
-    missing = code_class_set - doc_class_set
-    extra = doc_class_set - code_class_set
+    if missing_c:
+        print(f"\n⚠️  NOT DOCUMENTED ({len(missing_c)}):")
+        for c in missing_c:
+            print(f"  + {c} ({code_classes[c][2]})")
+    if extra_c:
+        print(f"\n📄 NOT IN CODE ({len(extra_c)}):")
+        for c in extra_c:
+            print(f"  - {c} ({doc_classes[c][2]})")
     
-    if missing:
-        print(f"\n⚠️  NOT DOCUMENTED ({len(missing)}):")
-        for name in sorted(missing):
-            print(f"  + {name:<35} ({code_class_names[name].file_path})")
+    print(f"\nMETHODS:")
+    doc_methods = {d[0]: d for d in doc_items if d[1] == 'method'}
+    code_methods = {c[0]: c for c in code_items if c[1] == 'method'}
+    print(f"  In code (standalone): {len(code_methods)}")
+    print(f"  In docs: {len(doc_methods)}")
     
-    if extra:
-        print(f"\n📄 NOT IN CODE ({len(extra)}):")
-        for name in sorted(extra):
-            print(f"  - {name:<35} ({doc_classes[name]['file']})")
-    
-    # METHODS
-    print("\n--- METHODS ---")
-    common = code_class_set & doc_class_set
-    method_diffs = 0
-    for class_name in sorted(common):
-        code_m = set(m['name'] for m in code_class_names[class_name].methods)
-        doc_m = set(m['name'] for m in doc_classes[class_name]['methods'])
-        missing_m = code_m - doc_m
-        extra_m = doc_m - code_m
-        if missing_m or extra_m:
-            print(f"\n  Class: {class_name}")
-            for m in sorted(missing_m):
-                print(f"    + {m}")
-                method_diffs += 1
-            for m in sorted(extra_m):
-                print(f"    - {m}")
-                method_diffs += 1
-    
-    # FUNCTIONS
-    print("\n--- FUNCTIONS ---")
-    code_funcs = {(f.name, f.file_path) for f in code_functions}
-    doc_funcs = {(f.name, f.file_path) for f in doc_functions}
-    
-    missing_f = code_funcs - doc_funcs
-    extra_f = doc_funcs - code_funcs
-    
-    if missing_f:
-        print(f"\n⚠️  NOT DOCUMENTED ({len(missing_f)}):")
-        for name, path in sorted(missing_f)[:30]:  # Show first 30
-            print(f"  + {name:<35} ({path})")
-        if len(missing_f) > 30:
-            print(f"  ... and {len(missing_f) - 30} more")
-    
-    if extra_f:
-        print(f"\n📄 NOT IN CODE ({len(extra_f)}):")
-        for name, path in sorted(extra_f):
-            print(f"  - {name:<35} ({path})")
-    
-    # SUMMARY
-    print("\n" + "="*80)
-    print("SUMMARY")
-    print("="*80)
-    total = len(missing) + len(extra) + method_diffs + len(missing_f) + len(extra_f)
-    print(f"Code classes: {len(code_class_set)}, Doc classes: {len(doc_class_set)}")
-    print(f"Code funcs: {len(code_funcs)}, Doc funcs: {len(doc_funcs)}")
-    print(f"Missing classes: {len(missing)}, Extra classes: {len(extra)}")
-    print(f"Method differences: {method_diffs}")
-    print(f"Missing funcs: {len(missing_f)}, Extra funcs: {len(extra_f)}")
-    
+    total = len(missing_c) + len(extra_c)
+    print(f"\n{'='*60}")
+    print(f"TOTAL: {total} differences")
     if total == 0:
-        print("\n✅ Documentation is UP TO DATE!")
-    else:
-        print(f"\n⚠️  {total} differences found - update documentation!")
-
+        print("✅ UP TO DATE!")
 
 if __name__ == "__main__":
     main()

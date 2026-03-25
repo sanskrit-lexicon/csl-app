@@ -2048,19 +2048,59 @@ Builds the MaterialApp with appropriate theme.
 
 ## Feature Screens
 
-The following are UI screens located in `lib/features/`:
+### 21. `lib/features/home/home_screen.dart`
 
-| File | Description |
-|------|-------------|
-| `features/home/home_screen.dart` | Main home screen with search |
-| `features/home/widgets/app_drawer.dart` | App drawer navigation |
-| `features/home/widgets/entry_card.dart` | Entry display card widget |
-| `features/preferences/preferences_screen.dart` | Settings screen |
-| `features/help/help_screen.dart` | Help documentation |
-| `features/about/about_us_screen.dart` | About the app |
-| `features/dictionaries/manage_dictionaries_screen.dart` | Dictionary management |
+#### Class: `HomeScreen`
 
-These are UI components and typically depend on the public APIs documented above.
+Main home screen widget with search functionality and dictionary tabs.
+
+---
+
+### 22. `lib/features/home/widgets/app_drawer.dart`
+
+#### Class: `AppDrawer`
+
+Navigation drawer widget providing access to different app sections.
+
+---
+
+### 23. `lib/features/home/widgets/entry_card.dart`
+
+#### Class: `EntryCardWidget`
+
+Widget for displaying a single dictionary entry in the search results list.
+
+---
+
+### 24. `lib/features/preferences/preferences_screen.dart`
+
+#### Class: `PreferencesScreen`
+
+Settings screen for configuring app preferences.
+
+---
+
+### 25. `lib/features/help/help_screen.dart`
+
+#### Class: `HelpScreen`
+
+Help/documentation screen with usage instructions.
+
+---
+
+### 26. `lib/features/about/about_us_screen.dart`
+
+#### Class: `AboutUsScreen`
+
+About screen with app information and credits.
+
+---
+
+### 27. `lib/features/dictionaries/manage_dictionaries_screen.dart`
+
+#### Class: `ManageDictionariesScreen`
+
+Screen for managing (download/delete) dictionary files.
 
 ---
 
