@@ -30,9 +30,42 @@ def normalize_type(t):
 
 def types_similar(t1, t2):
     """Check if two types are similar (allowing minor differences)."""
+    orig_t1 = t1.strip()
+    orig_t2 = t2.strip()
+    
     n1 = normalize_type(t1)
     n2 = normalize_type(t2)
-    return n1 == n2
+    
+    # Exact match
+    if n1 == n2:
+        return True
+    
+    # Allow bare Future to match Future<T> - check original strings
+    if (orig_t1 == 'Future' and orig_t2.startswith('Future<')) or \
+       (orig_t2 == 'Future' and orig_t1.startswith('Future<')):
+        return True
+    
+    # Allow bare List to match List<T>
+    if (orig_t1 == 'List' and orig_t2.startswith('List<')) or \
+       (orig_t2 == 'List' and orig_t1.startswith('List<')):
+        return True
+    
+    # Allow bare Map to match Map<K,V>
+    if (orig_t1 == 'Map' and orig_t2.startswith('Map<')) or \
+       (orig_t2 == 'Map' and orig_t1.startswith('Map<')):
+        return True
+    
+    # Allow dynamic vs any Future type (instance methods often return dynamic)
+    if n1 == 'dynamic' and n2.startswith('Future'):
+        return True
+    if n2 == 'dynamic' and n1.startswith('Future'):
+        return True
+    
+    # Allow String vs Str (common typo)
+    if (n1 == 'String' and n2 == 'Str') or (n1 == 'Str' and n2 == 'String'):
+        return True
+    
+    return False
 
 
 def get_code_classes():
@@ -183,32 +216,67 @@ def extract_params_from_signature(sig):
     """Extract parameters from a Dart method signature.
     
     Example: "String dict, String key" -> [{'name': 'dict', 'type': 'String'}, {'name': 'key', 'type': 'String'}]
+    Handles both positional (param) and named {param} parameters.
     """
     params = []
     
-    # Remove async keyword
-    sig = sig.replace(' async', '').replace('async ', '')
+    # Remove async keyword 
+    sig = sig.replace(' async', '')
     
     # Find the parameter list between parentheses
-    match = re.search(r'\((.*)\)', sig)
-    if not match:
+    # We need to find ( followed by either ) or {
+    # Handle both: (param1, param2) and ({param1, param2})
+    paren_start = sig.find('(')
+    if paren_start == -1:
         return params
     
-    param_str = match.group(1).strip()
+    # Find the matching closing ) - need to handle nested ( and {
+    # The tricky part is that named params use { } inside the ( )
+    count_paren = 1  # Start inside the opening (
+    count_brace = 0  # Track { } inside
+    paren_end = paren_start
+    for i, char in enumerate(sig[paren_start+1:], 1):
+        if char == '(':
+            count_paren += 1
+        elif char == ')':
+            count_paren -= 1
+            if count_paren == 0:
+                paren_end = paren_start + i
+                break
+        elif char == '{':
+            count_brace += 1
+        elif char == '}':
+            count_brace -= 1
+        # Ignore [ and ] for this purpose
+    
+    param_str = sig[paren_start+1:paren_end].strip()
     if not param_str:
         return params
     
     # Split by comma, but be careful with generics like Map<String, List<int>>
-    # We'll handle this by tracking angle bracket depth
+    # And with default values like String outputTranslit = 'devanagari'
     params_list = []
     current = ""
     depth = 0
+    in_string = False
+    string_char = None
     
     for char in param_str:
-        if char in '<([':
+        # Track string literals to ignore commas inside them
+        if char in ('"', "'") and (not in_string or char == string_char):
+            if in_string:
+                in_string = False
+                string_char = None
+            else:
+                in_string = True
+                string_char = char
+            current += char
+        elif in_string:
+            current += char
+        elif char in '<([':
             depth += 1
             current += char
-        elif char in '>)]':
+        elif char in '>)]}':
             depth -= 1
             current += char
         elif char == ',' and depth == 0:
@@ -226,12 +294,24 @@ def extract_params_from_signature(sig):
         if not p:
             continue
         
-        # Skip default parameter values (e.g., = 'value', = 123)
+        # Skip default parameter values (e.g., = 'value', = 123, = false, = [])
+        # But only if = is followed by a literal or known default
         if '=' in p:
-            p = p[:p.index('=')].strip()
+            # Find the = position
+            eq_pos = p.find('=')
+            # Check if what follows looks like a literal or expression
+            after_eq = p[eq_pos+1:].strip()
+            # If it starts with quote, digit, or known keywords, skip the default
+            default_starters = ('"', "'", 'true', 'false', 'null', '[', '{')
+            if after_eq and (after_eq[0] in '"\'' or after_eq[0].isdigit() or after_eq.startswith(default_starters)):
+                p = p[:eq_pos].strip()
         
-        # Skip named parameters with 'required' keyword
-        p = re.sub(r'^required\s+', '', p)
+        # Handle required keyword: "required String xmlData" -> type: String, name: xmlData
+        if p.startswith('required '):
+            p = p[9:].strip()  # Remove 'required' prefix
+        
+        # Also remove { and } if present (named parameter braces)
+        p = p.strip('{}')
         
         # Split the last word as parameter name, rest as type
         # Handle patterns like: String paramName, Map<String, dynamic> paramName
@@ -311,9 +391,11 @@ def get_code_methods_with_signatures():
                         ret_type = f"Future<{ret_match.group(1)}>"
                 methods[method_name] = {'params': [], 'return': ret_type}
             
-            # Pattern 2: Static methods - "static Type methodName(Type1 param1, Type2 param2)"
-            for m in re.finditer(r'static\s+(.+?)\s+(\w+)\s*\(', class_body):
-                full_ret = m.group(1)
+            # Pattern 2: Static methods - "static Type methodName(Type1 param1, Type2 param2)" or with async
+            # Handle both: static Type name( and static Future<Type> name( and async versions
+            # Also handle named parameters: static Type name({
+            for m in re.finditer(r'static\s+(.+?)\s+(\w+)\s*(?:\([^)]*\))*\s*\(', class_body):
+                full_ret = m.group(1).strip()
                 method_name = m.group(2)
                 
                 if method_name.startswith('_') or method_name == class_name:
@@ -325,11 +407,21 @@ def get_code_methods_with_signatures():
                 if not method_name[0].islower():
                     continue
                 
-                # Extract parameters
-                sig_start = m.end() - 1  # position of (
-                params = extract_params_from_signature(class_body[m.start():sig_start+50])
+                # Check if async
+                sig_start = m.end() - 1
+                # Look ahead to see if there's async before the (
+                lookahead = class_body[m.start():m.start()+150]
+                is_async = 'async' in lookahead[:lookahead.find('(')]
                 
-                methods[method_name] = {'params': params, 'return': full_ret}
+                # Extract parameters - get more context to handle async and named params
+                full_sig = class_body[m.start():sig_start+300]
+                params = extract_params_from_signature(full_sig)
+                
+                ret_type = full_ret
+                if is_async:
+                    ret_type = f"Future<{full_ret}>"
+                
+                methods[method_name] = {'params': params, 'return': ret_type}
             
             # Pattern 3: Instance methods - check for known instance methods
             known_methods = [
@@ -382,6 +474,11 @@ def compare_signatures(code_sig, doc_sig, method_name):
     # Parameter comparison
     code_params = code_sig.get('params', [])
     doc_params = doc_sig.get('params', [])
+    
+    # Normalize code params - remove 'required' from type since it's Dart syntax, not a type
+    for p in code_params:
+        if p['type'].startswith('required '):
+            p['type'] = p['type'][9:].strip()
     
     code_names = {p['name'] for p in code_params}
     doc_names = {p['name'] for p in doc_params}
