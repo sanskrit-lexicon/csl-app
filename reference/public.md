@@ -664,7 +664,8 @@ Searches dictionary definition body (data column).
 |-----------|------|-------------|
 | `dictCode` | `String` | Dictionary code |
 | `inputWord` | `String` | Search input |
-| `inputTranslit` | `String` | Input transliteration scheme |
+| `inputTranslit` | `String` | Input transliteration scheme (for headword search) |
+| `outputTranslit` | `String` | Output transliteration scheme (for definition search - matches displayed text) |
 | `mode` | `SearchMode` | Search mode (always uses substring for definitions) |
 | `maxResults` | `int` | Maximum results |
 
@@ -673,8 +674,9 @@ Searches dictionary definition body (data column).
 ```dart
 final results = await SearchService.searchDefinition(
   dictCode: "mw",
-  inputWord: "fire",
-  inputTranslit: "itrans",
+  inputWord: "धवल",
+  inputTranslit: "slp1",
+  outputTranslit: "devanagari",
   mode: SearchMode.substring,
   maxResults: 100,
 );
@@ -691,7 +693,8 @@ Searches with both headword and definition conditions.
 | `dictCode` | `String` | Dictionary code |
 | `hwInput` | `String` | Headword search input |
 | `defInput` | `String` | Definition search input |
-| `inputTranslit` | `String` | Input transliteration scheme |
+| `inputTranslit` | `String` | Input transliteration scheme (for headword search) |
+| `outputTranslit` | `String` | Output transliteration scheme (for definition search - matches displayed text) |
 | `hwMode` | `SearchMode` | Headword search mode |
 | `maxResults` | `int` | Maximum results |
 
@@ -701,8 +704,9 @@ Searches with both headword and definition conditions.
 final results = await SearchService.searchCombined(
   dictCode: "mw",
   hwInput: "agni",
-  defInput: "fire",
-  inputTranslit: "itrans",
+  defInput: "धवल",
+  inputTranslit: "slp1",
+  outputTranslit: "devanagari",
   hwMode: SearchMode.prefix,
   maxResults: 100,
 );
