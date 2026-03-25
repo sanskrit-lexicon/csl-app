@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compare documentation with actual codebase - FINAL."""
+"""Compare documentation with codebase - RELIABLE VERSION."""
 
 import re
 from pathlib import Path
@@ -8,82 +8,109 @@ PROJECT_ROOT = Path(__file__).parent.parent
 REFERENCE_DIR = PROJECT_ROOT / "reference"
 LIB_DIR = PROJECT_ROOT / "lib"
 
-def get_documented_items():
-    docs = []
-    content = (REFERENCE_DIR / "public.md").read_text()
-    content = content[:content.find('## Dependency Graph')] if '## Dependency Graph' in content else content
-    
-    for fm in re.finditer(r'### \d+\. `([^`]+)`', content):
-        file_path = fm.group(1)
-        start = fm.end()
-        end_match = re.search(r'\n### \d+\. ', content[start:])
-        end = start + end_match.start() if end_match else len(content)
-        section = content[start:end]
-        
-        for cm in re.finditer(r'#### Class: `([^`]+)`', section):
-            docs.append((cm.group(1), 'class', file_path))
-        
-        for mm in re.finditer(r'##### (?:Static )?Method: `([^`]+)`', section):
-            if '#### Class:' not in section[:mm.start()]:
-                docs.append((mm.group(1), 'method', file_path))
-    
-    return docs
 
-def get_codebase_items():
-    code = []
-    for dart_file in LIB_DIR.rglob("*.dart"):
-        content = dart_file.read_text()
-        rel_path = str(dart_file.relative_to(PROJECT_ROOT))
-        
-        # Classes - match any class declaration
+def get_code_classes():
+    """Get all class names from code."""
+    classes = set()
+    for f in LIB_DIR.rglob("*.dart"):
+        content = f.read_text()
         for m in re.finditer(r'class\s+(\w+)', content):
             cn = m.group(1)
             if not cn.startswith('_'):
-                code.append((cn, 'class', rel_path))
-        
-        # Static methods at top level
-        for m in re.finditer(r'static\s+(?:Future<[^>]+>|[^<\s]+)\s+(\w+)\s*\(', content):
-            if not m.group(1).startswith('_'):
-                if content[:m.start()].count('{') == content[:m.start()].count('}'):
-                    code.append((m.group(1), 'method', rel_path))
+                classes.add((cn, str(f.relative_to(PROJECT_ROOT))))
+    return classes
+
+
+def get_private_code_classes():
+    """Get private class names from code."""
+    classes = set()
+    for f in LIB_DIR.rglob("*.dart"):
+        content = f.read_text()
+        for m in re.finditer(r'class\s+(_[A-Z]\w+)', content):
+            classes.add((m.group(1), str(f.relative_to(PROJECT_ROOT))))
+    return classes
+
+
+def get_doc_classes(md_file):
+    """Get documented class names."""
+    path = REFERENCE_DIR / md_file
+    if not path.exists():
+        return set()
     
-    return code
+    content = path.read_text()
+    if '## Dependency Graph' in content:
+        content = content[:content.find('## Dependency Graph')]
+    
+    classes = set()
+    for m in re.finditer(r'#### Class: `(\w+)`', content):
+        classes.add(m.group(1))
+    return classes
+
 
 def main():
-    doc_items = get_documented_items()
-    code_items = get_codebase_items()
+    print("Checking documentation completeness...\n")
     
-    doc_classes = {d[0]: d for d in doc_items if d[1] == 'class'}
-    code_classes = {c[0]: c for c in code_items if c[1] == 'class'}
+    # Code classes
+    code_pub = get_code_classes()
+    code_priv = get_private_code_classes()
     
-    print("="*60)
-    print("DOCUMENTATION vs CODEBASE")
-    print("="*60)
+    # Doc classes  
+    doc_pub = get_doc_classes('public.md')
+    doc_priv = get_doc_classes('private.md')
     
-    print(f"\nCLASSES: Code={len(code_classes)}, Docs={len(doc_classes)}")
-    missing_c = sorted(set(code_classes.keys()) - set(doc_classes.keys()))
-    extra_c = sorted(set(doc_classes.keys()) - set(code_classes.keys()))
+    print("="*50)
+    print("PUBLIC API")
+    print("="*50)
     
-    if missing_c:
-        print(f"\n⚠️  NOT DOCUMENTED ({len(missing_c)}):")
-        for c in missing_c:
-            print(f"  + {c} ({code_classes[c][2]})")
-    if extra_c:
-        print(f"\n📄 NOT IN CODE ({len(extra_c)}):")
-        for c in extra_c:
-            print(f"  - {c} ({doc_classes[c][2]})")
+    # Missing from public docs
+    missing_pub = {(c, f) for c, f in code_pub if c not in doc_pub}
+    extra_pub = doc_pub - {c for c, f in code_pub}
     
-    print(f"\nMETHODS:")
-    doc_methods = {d[0]: d for d in doc_items if d[1] == 'method'}
-    code_methods = {c[0]: c for c in code_items if c[1] == 'method'}
-    print(f"  In code (standalone): {len(code_methods)}")
-    print(f"  In docs: {len(doc_methods)}")
+    if missing_pub:
+        print(f"\n⚠️  PUBLIC CLASSES NOT DOCUMENTED ({len(missing_pub)}):")
+        for c, f in sorted(missing_pub):
+            print(f"  + {c} ({f})")
+    if extra_pub:
+        print(f"\n📄 EXTRA IN DOCS: {extra_pub}")
     
-    total = len(missing_c) + len(extra_c)
-    print(f"\n{'='*60}")
-    print(f"TOTAL: {total} differences")
+    print("\n" + "="*50)
+    print("PRIVATE API")
+    print("="*50)
+    
+    missing_priv = {(c, f) for c, f in code_priv if c not in doc_priv}
+    extra_priv = doc_priv - {c for c, f in code_priv}
+    
+    if missing_priv:
+        print(f"\n⚠️  PRIVATE CLASSES NOT DOCUMENTED ({len(missing_priv)}):")
+        for c, f in sorted(missing_priv):
+            print(f"  + {c} ({f})")
+    if extra_priv:
+        print(f"\n📄 EXTRA IN DOCS: {extra_priv}")
+    
+    # Summary
+    print("\n" + "="*50)
+    total = len(missing_pub) + len(missing_priv)
+    print(f"TOTAL: {total} missing classes")
+    
+    # For methods, do a simpler check
+    print("\n" + "="*50)
+    print("METHOD CHECK (basic)")
+    print("="*50)
+    
+    # Just count documented methods
+    doc_content = (REFERENCE_DIR / "public.md").read_text()
+    doc_methods = re.findall(r'##### (?:Static )?Method: `(\w+)`', doc_content)
+    print(f"Documented methods in public.md: {len(set(doc_methods))}")
+    
+    priv_content = (REFERENCE_DIR / "private.md").read_text()
+    priv_methods = re.findall(r'##### (?:Static )?Method: `(\w+)`', priv_content)
+    print(f"Documented methods in private.md: {len(set(priv_methods))}")
+    
     if total == 0:
-        print("✅ UP TO DATE!")
+        print("\n✅ All classes documented!")
+    else:
+        print(f"\n⚠️  Update documentation with missing classes")
+
 
 if __name__ == "__main__":
     main()

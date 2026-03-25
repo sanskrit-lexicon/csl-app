@@ -1181,4 +1181,48 @@ Builds custom theme from AppSettings.
 
 ---
 
+### 16. `lib/features/home/home_screen.dart`
+
+#### Class: `_HomeScreenState`
+
+Private State class for HomeScreen.
+
+---
+
+#### Class: `_DictionaryView`
+
+Private widget for displaying dictionary search results.
+
+---
+
+### 17. `lib/features/preferences/preferences_screen.dart`
+
+#### Class: `_ColorPickerTile`
+
+Private widget for color picker list tiles.
+
+---
+
+#### Class: `_SearchModeSelector`
+
+Private widget for search mode selection.
+
+---
+
+### 18. `lib/features/help/help_screen.dart`
+
+#### Class: `_HelpScreenState`
+
+Private State class for HelpScreen.
+
+---
+
+### 19. `lib/rendering/entry_renderer.dart`
+
+#### Class: `_EntryCard`
+
+Private widget for rendering entry cards.
+
+---
+
 *Last updated: March 2026*
