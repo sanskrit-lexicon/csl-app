@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/dictionary_registry.dart';
+import '../../core/transliteration_service.dart';
 import '../../models/app_settings.dart';
 import '../../providers/search_provider.dart';
 import '../../providers/settings_provider.dart';
+import '../../rendering/entry_parser.dart';
 import '../dictionaries/manage_dictionaries_screen.dart';
 import 'widgets/app_drawer.dart';
 import 'widgets/entry_card.dart';
@@ -279,7 +281,9 @@ class _DictionaryView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final settings = ref.watch(settingsProvider);
     final searchAsync = ref.watch(searchResultsProvider(dictCode));
+    final highlightTerm = ref.watch(definitionQueryProvider).trim();
 
     return searchAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
@@ -294,6 +298,11 @@ class _DictionaryView extends ConsumerWidget {
           return const Center(child: Text('No results found.'));
         }
 
+        if (settings.listMode) {
+          return _buildAccordionView(
+              context, ref, results, settings, highlightTerm);
+        }
+
         return ListView.builder(
           itemCount: results.length,
           itemBuilder: (context, index) {
@@ -301,10 +310,64 @@ class _DictionaryView extends ConsumerWidget {
               key: ValueKey('${dictCode}_${results[index].lnum}'),
               dictCode: dictCode,
               searchResult: results[index],
-              highlightTerm: ref.watch(definitionQueryProvider).trim(),
+              highlightTerm: highlightTerm,
               onWordTap: onWordTap,
             );
           },
+        );
+      },
+    );
+  }
+
+  Widget _buildAccordionView(
+    BuildContext context,
+    WidgetRef ref,
+    List results,
+    AppSettings settings,
+    String highlightTerm,
+  ) {
+    return ListView.builder(
+      itemCount: results.length,
+      itemBuilder: (context, index) {
+        final result = results[index];
+        final parsed = EntryParser.parse(result.data, result.lnum);
+        final slp1Key = parsed.key2Slp1 ?? parsed.key1Slp1;
+        final displayKey = TransliterationService.fromSlp1(
+          slp1Key,
+          settings.outputTranslit,
+          useAccented: settings.showAccent,
+          dictCode: dictCode,
+        );
+        final titleText = parsed.homonym != null
+            ? '$displayKey (${parsed.homonym})'
+            : displayKey;
+
+        return Theme(
+          data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+          child: ExpansionTile(
+            key: ValueKey('${dictCode}_${result.lnum}'),
+            tilePadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+            childrenPadding: EdgeInsets.zero,
+            minTileHeight: 48,
+            dense: true,
+            title: Text(
+              titleText,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            trailing: const Icon(Icons.expand_more, size: 20),
+            children: [
+              EntryCardWidget(
+                dictCode: dictCode,
+                searchResult: result,
+                highlightTerm: highlightTerm,
+                onWordTap: onWordTap,
+              ),
+            ],
+          ),
         );
       },
     );

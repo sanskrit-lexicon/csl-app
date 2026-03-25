@@ -88,14 +88,21 @@ class PreferencesScreen extends ConsumerWidget {
                   .toList(),
             ),
           ),
+          // 5. List Mode
+          SwitchListTile(
+            title: const Text('List Mode'),
+            subtitle: const Text('Show only headwords (accordion view)'),
+            value: settings.listMode,
+            onChanged: (v) => notifier.update(settings.copyWith(listMode: v)),
+          ),
           const Divider(),
-          // 5. Accent show/hide
+          // 6. Accent show/hide
           SwitchListTile(
             title: const Text('Vedic Accents'),
             value: settings.showAccent,
             onChanged: (v) => notifier.update(settings.copyWith(showAccent: v)),
           ),
-          // 6. Highlight
+          // 7. Highlight
           SwitchListTile(
             title: const Text('Highlight Search Results'),
             value: settings.highlightEnabled,
@@ -103,7 +110,7 @@ class PreferencesScreen extends ConsumerWidget {
                 notifier.update(settings.copyWith(highlightEnabled: v)),
           ),
           const Divider(),
-          // 7. Max Results
+          // 8. Max Results
           ListTile(
             title: const Text('Maximum Results'),
             trailing: SizedBox(
@@ -122,7 +129,7 @@ class PreferencesScreen extends ConsumerWidget {
             ),
           ),
           const Divider(),
-          // 8. Theme Mode
+          // 9. Theme Mode
           ListTile(
             title: const Text('App Theme'),
             trailing: DropdownButton<AppThemeMode>(
@@ -135,7 +142,7 @@ class PreferencesScreen extends ConsumerWidget {
                   .toList(),
             ),
           ),
-          // 9. Custom Theme Colors (only show when Custom theme is selected)
+          // 10. Custom Theme Colors (only show when Custom theme is selected)
           if (settings.themeMode == AppThemeMode.custom) ...[
             const Divider(),
             Padding(

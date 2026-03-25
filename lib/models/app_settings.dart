@@ -134,6 +134,7 @@ class AppSettings {
   final int customSanskritTextColor;
   final bool enableBasicAdjust; // Feature 5: XML pre-processing
   final bool enableBasicDisplay; // Feature 4: XML to HTML rendering
+  final bool listMode; // List Mode: accordion view for search results
 
   const AppSettings({
     this.headwordSearchMode = SearchMode.prefix,
@@ -152,6 +153,7 @@ class AppSettings {
     this.customSanskritTextColor = 0xFF339933,
     this.enableBasicAdjust = true,
     this.enableBasicDisplay = true,
+    this.listMode = false,
   });
 
   AppSettings copyWith({
@@ -171,6 +173,7 @@ class AppSettings {
     int? customSanskritTextColor,
     bool? enableBasicAdjust,
     bool? enableBasicDisplay,
+    bool? listMode,
   }) {
     return AppSettings(
       headwordSearchMode: headwordSearchMode ?? this.headwordSearchMode,
@@ -191,6 +194,7 @@ class AppSettings {
           customSanskritTextColor ?? this.customSanskritTextColor,
       enableBasicAdjust: enableBasicAdjust ?? this.enableBasicAdjust,
       enableBasicDisplay: enableBasicDisplay ?? this.enableBasicDisplay,
+      listMode: listMode ?? this.listMode,
     );
   }
 
