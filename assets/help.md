@@ -38,8 +38,8 @@ You can set different modes for headword and definition searches.
 
 Access from the menu → "Manage Dictionaries"
 
-- **Download** dictionaries you want to use
-- **Enable/disable** dictionaries by tapping them
+- **Download** dictionaries you want to use (automatically enabled after download)
+- **Enable/disable** dictionaries by tapping the toggle switch
 - **Drag** to reorder priority (top = highest priority)
 
 Only enabled dictionaries will appear in search results.
@@ -71,6 +71,17 @@ Choose from the App Theme dropdown in Preferences:
 - **Light**: Classic light theme
 - **Dark**: Dark mode for low-light use
 - **Custom**: Create your own color scheme
+
+---
+
+# Siddhanta Font
+
+The app uses the **Siddhanta** font for rendering Devanagari scripts. This ensures consistent display across all platforms, including iOS where system fonts may not support Vedic accent marks properly.
+
+The font is applied automatically to:
+- Headwords in search results
+- Dictionary entry definitions
+- Accordion list view headwords (when List Mode is enabled)
 
 ---
 
@@ -115,6 +126,18 @@ The side menu (☰) provides access to:
 - **Preferences**: Customize app settings
 - **Help**: This user manual
 - **About Us**: App information and contact details
+
+---
+
+# List Mode
+
+List Mode displays search results as a collapsible accordion view, allowing you to browse multiple entries without navigating between pages.
+
+- Toggle **List Mode** in Preferences
+- Tap any entry to expand and view the full definition
+- Tap again to collapse
+
+This is useful for quickly scanning through many results.
 
 ---
 
