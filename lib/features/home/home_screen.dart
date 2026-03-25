@@ -299,8 +299,11 @@ class _DictionaryView extends ConsumerWidget {
         }
 
         if (settings.listMode) {
+          final globalIndexMap =
+              ref.watch(globalResultIndexProvider).value ?? {};
+          final startIndex = globalIndexMap[dictCode] ?? 0;
           return _buildAccordionView(
-              context, ref, results, settings, highlightTerm);
+              context, ref, results, settings, highlightTerm, startIndex);
         }
 
         return ListView.builder(
@@ -325,6 +328,7 @@ class _DictionaryView extends ConsumerWidget {
     List results,
     AppSettings settings,
     String highlightTerm,
+    int globalStartIndex,
   ) {
     return ListView.builder(
       itemCount: results.length,
@@ -341,32 +345,57 @@ class _DictionaryView extends ConsumerWidget {
         final titleText = parsed.homonym != null
             ? '$displayKey (${parsed.homonym})'
             : displayKey;
+        final globalNumber = globalStartIndex + index + 1;
 
         return Theme(
           data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-          child: ExpansionTile(
-            key: ValueKey('${dictCode}_${result.lnum}'),
-            tilePadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
-            childrenPadding: EdgeInsets.zero,
-            minTileHeight: 48,
-            dense: true,
-            title: Text(
-              titleText,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-              ),
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 1),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey.shade300, width: 0.5),
+              borderRadius: BorderRadius.circular(2),
             ),
-            trailing: const Icon(Icons.expand_more, size: 20),
-            children: [
-              EntryCardWidget(
-                dictCode: dictCode,
-                searchResult: result,
-                highlightTerm: highlightTerm,
-                onWordTap: onWordTap,
+            child: ExpansionTile(
+              key: ValueKey('${dictCode}_${result.lnum}'),
+              tilePadding:
+                  const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+              childrenPadding: EdgeInsets.zero,
+              minTileHeight: 28,
+              dense: true,
+              title: Row(
+                children: [
+                  SizedBox(
+                    width: 36,
+                    child: Text(
+                      '$globalNumber.',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Text(
+                      titleText,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w400,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
               ),
-            ],
+              trailing: const Icon(Icons.expand_more, size: 16),
+              children: [
+                EntryCardWidget(
+                  dictCode: dictCode,
+                  searchResult: result,
+                  highlightTerm: highlightTerm,
+                  onWordTap: onWordTap,
+                ),
+              ],
+            ),
           ),
         );
       },

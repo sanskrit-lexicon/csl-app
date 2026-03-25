@@ -86,3 +86,30 @@ final filteredTabsProvider = FutureProvider<List<String>>((ref) async {
   }
   return filtered;
 });
+
+/// Provides cumulative result counts for global numbering in list mode.
+/// Returns a map of dictCode to the starting index for that dictionary.
+final globalResultIndexProvider = FutureProvider<Map<String, int>>((ref) async {
+  final settings = ref.watch(settingsProvider);
+  final activeCodes = settings.activeDictCodes;
+  if (activeCodes.isEmpty) return {};
+
+  final hwQuery = ref.watch(headwordQueryProvider);
+  final defQuery = ref.watch(definitionQueryProvider);
+
+  if (hwQuery.trim().isEmpty && defQuery.trim().isEmpty) {
+    return {};
+  }
+
+  final results = await Future.wait(
+    activeCodes.map((code) => ref.read(searchResultsProvider(code).future)),
+  );
+
+  final indexMap = <String, int>{};
+  int cumulative = 0;
+  for (int i = 0; i < activeCodes.length; i++) {
+    indexMap[activeCodes[i]] = cumulative;
+    cumulative += results[i].length;
+  }
+  return indexMap;
+});
