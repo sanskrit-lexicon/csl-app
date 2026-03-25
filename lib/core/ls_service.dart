@@ -383,9 +383,7 @@ class LsService {
         if (varNum != null && varNum <= match.groupCount) {
           final actualVal = match.group(varNum);
           final resultUrl = (actualVal == compareVal) ? urlTrue : urlFalse;
-          for (int i = 1; i <= match.groupCount; i++) {
-            return resultUrl.replaceAll('\$$i', match.group(i) ?? '');
-          }
+          return resultUrl.replaceAll('\$$varNum', match.group(varNum) ?? '');
         }
       }
     } catch (e) {
@@ -408,9 +406,9 @@ class LsService {
 
     final hymnFilePfx =
         '${pfx == 'rv' ? 'rv' : 'av'}${imandala.toString().padLeft(2, '0')}.${ihymn.toString().padLeft(3, '0')}';
-    final anchor = '${hymnFilePfx}.${iverse.toString().padLeft(2, '0')}';
+    final anchor = '$hymnFilePfx.${iverse.toString().padLeft(2, '0')}';
     final dir = 'https://sanskrit-lexicon.github.io/${pfx}links/${pfx}hymns';
-    return '$dir/${hymnFilePfx}.html#$anchor';
+    return '$dir/$hymnFilePfx.html#$anchor';
   }
 
   static String? hrefDhatu(String data1) {
@@ -441,10 +439,10 @@ class LsService {
 
         final hymnFilePfx =
             '${pfx == 'rv' ? 'rv' : 'av'}${imandala.toString().padLeft(2, '0')}.${ihymn.toString().padLeft(3, '0')}';
-        final anchor = '${hymnFilePfx}.${iverse.toString().padLeft(2, '0')}';
+        final anchor = '$hymnFilePfx.${iverse.toString().padLeft(2, '0')}';
         final dir =
             'https://sanskrit-lexicon.github.io/${pfx}links/${pfx}hymns';
-        return '$dir/${hymnFilePfx}.html#$anchor';
+        return '$dir/$hymnFilePfx.html#$anchor';
       }
     }
 
@@ -460,10 +458,10 @@ class LsService {
       if (imandala > 0) {
         final hymnFilePfx =
             '${pfx == 'rv' ? 'rv' : 'av'}${imandala.toString().padLeft(2, '0')}.${ihymn.toString().padLeft(3, '0')}';
-        final anchor = '${hymnFilePfx}.${iverse.toString().padLeft(2, '0')}';
+        final anchor = '$hymnFilePfx.${iverse.toString().padLeft(2, '0')}';
         final dir =
             'https://sanskrit-lexicon.github.io/${pfx}links/${pfx}hymns';
-        return '$dir/${hymnFilePfx}.html#$anchor';
+        return '$dir/$hymnFilePfx.html#$anchor';
       }
     }
 
@@ -477,10 +475,10 @@ class LsService {
       if (imandala > 0) {
         final hymnFilePfx =
             '${pfx == 'rv' ? 'rv' : 'av'}${imandala.toString().padLeft(2, '0')}.${ihymn.toString().padLeft(3, '0')}';
-        final anchor = '${hymnFilePfx}.01';
+        final anchor = '$hymnFilePfx.01';
         final dir =
             'https://sanskrit-lexicon.github.io/${pfx}links/${pfx}hymns';
-        return '$dir/${hymnFilePfx}.html#$anchor';
+        return '$dir/$hymnFilePfx.html#$anchor';
       }
     }
 

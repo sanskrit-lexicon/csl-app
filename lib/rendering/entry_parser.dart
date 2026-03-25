@@ -68,8 +68,8 @@ class EntryParser {
   }
 
   /// Extract all LS (literary source) reference codes from body HTML.
-  /// Returns the 'n' attribute values from <ls n="..."> tags,
-  /// or text content from <ls>text</ls> without n attribute.
+  /// Returns the 'n' attribute values from &lt;ls n="..."&gt; tags,
+  /// or text content from &lt;ls&gt;text&lt;/ls&gt; without n attribute.
   static List<String> extractLsReferences(String bodyHtml) {
     final codes = <String>{};
     // Match <ls n="code">text</ls>
