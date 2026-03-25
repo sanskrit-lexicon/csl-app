@@ -22,7 +22,6 @@ void main() {
         return '$dir/test/data';
       }
 
-
       return null;
     });
   });
@@ -36,7 +35,7 @@ void main() {
         mode: SearchMode.exact,
         maxResults: 10,
       );
-      
+
       expect(results.isNotEmpty, true);
       // there is an exact entry key 'a' in Lanman
       expect(results.any((r) => r.key == 'a'), true);
@@ -50,13 +49,12 @@ void main() {
         mode: SearchMode.prefix,
         maxResults: 10,
       );
-      
+
       expect(results.isNotEmpty, true);
       final keys = results.map((r) => r.key).toList();
       expect(keys.contains('aMSa'), true);
       expect(keys.contains('aMSaS'), true); // Both start with aMSa
     });
-
 
     test('Test headword suffix: "Msa" includes "aMsa"', () async {
       final results = await SearchService.searchHeadword(
@@ -66,7 +64,7 @@ void main() {
         mode: SearchMode.suffix,
         maxResults: 100,
       );
-      
+
       expect(results.isNotEmpty, true);
       expect(results.any((r) => r.key == 'aMsa'), true);
     });
@@ -79,7 +77,7 @@ void main() {
         mode: SearchMode.substring,
         maxResults: 10,
       );
-      
+
       expect(results.isNotEmpty, true);
       final keys = results.map((r) => r.key).toList();
       expect(keys.contains('aMsa'), true);
@@ -90,15 +88,19 @@ void main() {
         dictCode: 'lan',
         inputWord: 'entrance',
         inputTranslit: 'hl', // arbitrary for def search using english
-        mode: SearchMode.substring, // actually ignored, definition search defaults to LIKE %word%
+        outputTranslit: 'hl', // arbitrary for def search using english
+        mode: SearchMode
+            .substring, // actually ignored, definition search defaults to LIKE %word%
         maxResults: 10,
       );
-      
+
       expect(results.isNotEmpty, true);
-      expect(results.any((r) => r.data.toLowerCase().contains('entrance')), true);
+      expect(
+          results.any((r) => r.data.toLowerCase().contains('entrance')), true);
     });
 
-    test('Test ITRANS to SLP1 transliteration during search: "aMsha" == "aMSa"', () async {
+    test('Test ITRANS to SLP1 transliteration during search: "aMsha" == "aMSa"',
+        () async {
       final results = await SearchService.searchHeadword(
         dictCode: 'lan',
         inputWord: 'aMsha',
@@ -106,7 +108,7 @@ void main() {
         mode: SearchMode.exact,
         maxResults: 10,
       );
-      
+
       expect(results.isNotEmpty, true);
       expect(results.any((r) => r.key == 'aMSa'), true);
     });

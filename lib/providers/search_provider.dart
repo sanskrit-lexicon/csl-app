@@ -30,6 +30,7 @@ final searchResultsProvider = FutureProvider.family<List<SearchResult>, String>(
         hwInput: hwQuery.trim(),
         defInput: defQuery.trim(),
         inputTranslit: settings.inputTranslit,
+        outputTranslit: settings.outputTranslit,
         hwMode: settings.headwordSearchMode,
         maxResults: settings.maxResults,
       );
@@ -50,6 +51,7 @@ final searchResultsProvider = FutureProvider.family<List<SearchResult>, String>(
       dictCode: dictCode,
       inputWord: defQuery.trim(),
       inputTranslit: settings.inputTranslit,
+      outputTranslit: settings.outputTranslit,
       mode: settings.definitionSearchMode,
       maxResults: settings.maxResults,
     );

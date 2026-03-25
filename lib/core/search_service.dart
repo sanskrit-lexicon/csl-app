@@ -75,19 +75,24 @@ class SearchService {
   ///
   /// For Sanskrit dicts: converts [inputWord] to SLP1 and searches inside data.
   /// For English dicts: raw ASCII substring search (LIKE '%word%').
+  ///
+  /// Note: [outputTranslit] is used for definition search to match against displayed text.
+  /// If user types in Devanagari (which they see), we convert from Devanagari to SLP1.
   static Future<List<SearchResult>> searchDefinition({
     required String dictCode,
     required String inputWord,
     required String inputTranslit,
+    required String outputTranslit,
     required SearchMode mode,
     required int maxResults,
   }) async {
     if (inputWord.trim().isEmpty) return [];
 
     final isEnglish = ['ae', 'mwe', 'bor'].contains(dictCode.toLowerCase());
+    // Use outputTranslit for definition search to match displayed text
     final searchWord = isEnglish
         ? inputWord.trim().toLowerCase()
-        : TransliterationService.toSlp1(inputWord.trim(), inputTranslit);
+        : TransliterationService.toSlp1(inputWord.trim(), outputTranslit);
 
     if (searchWord.isEmpty) return [];
 
@@ -114,11 +119,14 @@ class SearchService {
   }
 
   /// Combined search: results where both HW and DEF conditions match.
+  ///
+  /// Note: [outputTranslit] is used for definition search to match against displayed text.
   static Future<List<SearchResult>> searchCombined({
     required String dictCode,
     required String hwInput,
     required String defInput,
     required String inputTranslit,
+    required String outputTranslit,
     required SearchMode hwMode,
     required int maxResults,
   }) async {
@@ -126,9 +134,10 @@ class SearchService {
     final hwSlp = isEnglish
         ? hwInput.trim().toLowerCase()
         : TransliterationService.toSlp1(hwInput.trim(), inputTranslit);
+    // Use outputTranslit for definition search to match displayed text
     final defSlp = isEnglish
         ? defInput.trim().toLowerCase()
-        : TransliterationService.toSlp1(defInput.trim(), inputTranslit);
+        : TransliterationService.toSlp1(defInput.trim(), outputTranslit);
 
     if (hwSlp.isEmpty || defSlp.isEmpty) return [];
 
