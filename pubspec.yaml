@@ -1,7 +1,7 @@
 name: cologne_sanskrit_lexicon
 description: Cologne Sanskrit Lexicon - offline dictionary app for the Cologne Digital Sanskrit Dictionaries.
 publish_to: 'none'
-version: 0.1.3+4
+version: 0.1.4+5
 
 environment:
   sdk: '>=3.4.0 <4.0.0'

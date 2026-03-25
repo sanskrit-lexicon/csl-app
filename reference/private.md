@@ -1,4 +1,4 @@
-# Private API Reference (version 0.1.3)
+# Private API Reference (version 0.1.4)
 
 This document lists all private classes, functions, methods, and fields in the CSL App codebase. These are implementation details not intended for external use.
 

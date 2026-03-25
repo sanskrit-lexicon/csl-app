@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.4] - 2026-03-25
+
+### Added
+- **Literary Sources Linking**: Provided links to literary sources where available. Providing tooltip where available.
+- **Abbreviation Tooltip**: Provided abbreviation tooltip where available.
+- **Case-Insensitive Definition Search**: Search in definition now matches regardless of case, for typo tolerance.
+- **Transliteration with Highlighting**: Search terms in definitions are now properly transliterated to the user's preferred output script while preserving highlighting.
+- **Reference Documentation**: Added public and private API reference documents.
+
+### Fixed
+- **Definition Search Transliteration**: Fixed issue where highlighted search terms in definitions were not transliterated when using Devanagari or other output scripts.
+
+
 ## [0.1.3] - 2026-03-24
 
 ### Added

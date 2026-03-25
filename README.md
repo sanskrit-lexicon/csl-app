@@ -146,6 +146,11 @@ This project is licensed under the GNU General Public License v3.0.
 
 ## Developer Corner
 
+### API Reference
+
+- [Public API Reference](reference/public.md) - Public classes, functions, and methods for external use
+- [Private API Reference](reference/private.md) - Private implementation details
+
 ### Installation from Source
 
 This is a flutter project. The instruction presumes that you have flutter set up on your machine.
