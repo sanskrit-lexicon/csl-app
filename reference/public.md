@@ -1979,6 +1979,16 @@ final available = await ref.watch(availableDictsProvider.future);
 
 ---
 
+#### Provider: `downloadNotifierProvider`
+
+`Provider<DownloadNotifier>` - Provider for DownloadNotifier instance.
+
+```dart
+final notifier = ref.read(downloadNotifierProvider);
+```
+
+---
+
 #### Class: `DownloadNotifier`
 
 Manages dictionary downloads.

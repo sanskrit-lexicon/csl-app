@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
-"""Compare documentation with codebase - Enhanced VERSION with parameter/return type checking."""
+"""Compare documentation with codebase - Enhanced VERSION with parameter/return type checking.
+   
+   Now also checks:
+   - Class fields/properties
+   - Top-level provider variables
+   - Private static const fields
+"""
 
 import re
 from pathlib import Path
@@ -92,6 +98,129 @@ def get_private_code_classes():
     return classes
 
 
+def get_code_class_fields():
+    """Get all public class fields (properties) from code.
+    
+    Returns dict: class_name -> set of field names
+    """
+    class_fields = {}
+    for f in LIB_DIR.rglob("*.dart"):
+        content = f.read_text()
+        
+        for class_match in re.finditer(r'class\s+(\w+)\s*(?:<[^>]+>)?\s*\{', content):
+            class_name = class_match.group(1)
+            if class_name.startswith('_'):
+                continue
+            
+            # Find class body
+            brace_start = content.find('{', class_match.end())
+            if brace_start == -1:
+                continue
+            
+            # Find closing brace
+            count = 1
+            pos = brace_start + 1
+            while count > 0 and pos < len(content):
+                if content[pos] == '{':
+                    count += 1
+                elif content[pos] == '}':
+                    count -= 1
+                pos += 1
+            
+            class_body = content[brace_start+1:pos-1]
+            
+            fields = set()
+            
+            # Pattern: final Type fieldName;
+            # Also: final Type? fieldName;
+            for m in re.finditer(r'final\s+(?:[\w<>?]+\??)\s+(\w+)\s*[;=]', class_body):
+                field_name = m.group(1)
+                # Skip common non-field names
+                if field_name not in ['build', 'child', 'children', 'context', 'widget']:
+                    fields.add(field_name)
+            
+            if fields:
+                class_fields[class_name] = fields
+    
+    return class_fields
+
+
+def get_code_top_level_providers():
+    """Get all top-level provider variables from code.
+    
+    Returns set of provider variable names.
+    Only matches providers defined at the top-level of a file (not inside functions/methods).
+    """
+    providers = set()
+    for f in LIB_DIR.rglob("*.dart"):
+        content = f.read_text()
+        
+        # Split into lines and check each line
+        # Only match providers that are at the top level (not indented inside a function)
+        lines = content.split('\n')
+        for i, line in enumerate(lines):
+            # Skip lines that are inside functions (have more than minimal indentation)
+            # Top-level items typically start at column 0 or with just a few spaces
+            stripped = line.lstrip()
+            indent = len(line) - len(stripped)
+            if indent > 2:  # Too indented = inside a function/method (typical method body starts at 4+)
+                continue
+            
+            # Pattern: final providerName = ...Provider(...)
+            # Pattern: final providerName = ...Provider.family(...)
+            match = re.match(r'final\s+(\w+Provider(?:\.family)?)\s*=', stripped)
+            if match:
+                provider_name = match.group(1)
+                # Skip common false positives
+                if not any(x in provider_name.lower() for x in ['test', 'mock', 'fake']):
+                    providers.add(provider_name)
+    
+    return providers
+
+
+def get_code_private_static_consts():
+    """Get all private static const fields from code.
+    
+    Returns dict: class_name -> set of const field names
+    """
+    consts = {}
+    for f in LIB_DIR.rglob("*.dart"):
+        content = f.read_text()
+        
+        # First find all classes (public and private)
+        for class_match in re.finditer(r'class\s+(\w+)\s*(?:<[^>]+>)?\s*\{', content):
+            class_name = class_match.group(1)
+            
+            # Find class body
+            brace_start = content.find('{', class_match.end())
+            if brace_start == -1:
+                continue
+            
+            # Find closing brace
+            count = 1
+            pos = brace_start + 1
+            while count > 0 and pos < len(content):
+                if content[pos] == '{':
+                    count += 1
+                elif content[pos] == '}':
+                    count -= 1
+                pos += 1
+            
+            class_body = content[brace_start+1:pos-1]
+            
+            fields = set()
+            
+            # Pattern: static const Type _fieldName = 'value';
+            for m in re.finditer(r'static\s+const\s+\w+\s+(_[a-z]\w*)\s*=', class_body):
+                field_name = m.group(1)
+                fields.add(field_name)
+            
+            if fields:
+                consts[class_name] = fields
+    
+    return consts
+
+
 def get_doc_classes(md_file):
     """Get all classes from documentation."""
     path = REFERENCE_DIR / md_file
@@ -106,6 +235,111 @@ def get_doc_classes(md_file):
     for m in re.finditer(r'#### Class: `(\w+)`', content):
         classes.add(m.group(1))
     return classes
+
+
+def get_doc_class_fields(md_file):
+    """Get documented class fields from documentation.
+    
+    Returns dict: class_name -> set of field names
+    """
+    path = REFERENCE_DIR / md_file
+    if not path.exists():
+        return {}
+    
+    content = path.read_text()
+    if '## Dependency Graph' in content:
+        content = content[:content.find('## Dependency Graph')]
+    
+    class_fields = {}
+    
+    # Find AppSettings class section and its property table
+    # Pattern: | `fieldName` | `type` | description |
+    for class_match in re.finditer(r'#### Class: `(\w+)`', content):
+        class_name = class_match.group(1)
+        start = class_match.start()
+        
+        # Find next class or end
+        next_class = re.search(r'#### Class: `', content[start+20:])
+        end = start + 20 + next_class.start() if next_class else len(content)
+        
+        section = content[start:end]
+        
+        # Look for property table
+        fields = set()
+        for m in re.finditer(r'\|\s*`(\w+)`\s*\|', section):
+            field_name = m.group(1)
+            # Only include actual fields, not constructor params or methods
+            if field_name not in ['copyWith', 'customPrimary', 'customBackground', 
+                                  'customHeadword', 'customSanskritText', 'label', 
+                                  'value', 'toThemeMode', 'fromValue']:
+                fields.add(field_name)
+        
+        if fields:
+            class_fields[class_name] = fields
+    
+    return class_fields
+
+
+def get_doc_providers(md_file):
+    """Get documented providers from documentation.
+    
+    Returns set of provider names.
+    """
+    path = REFERENCE_DIR / md_file
+    if not path.exists():
+        return set()
+    
+    content = path.read_text()
+    if '## Dependency Graph' in content:
+        content = content[:content.find('## Dependency Graph')]
+    
+    providers = set()
+    
+    # Pattern: #### Provider: `providerName`
+    for m in re.finditer(r'#### Provider: `(\w+Provider(?:\.family)?)`', content):
+        providers.add(m.group(1))
+    
+    return providers
+
+
+def get_doc_private_consts(md_file):
+    """Get documented private static const fields from documentation.
+    
+    Returns dict: class_name -> set of const field names
+    """
+    path = REFERENCE_DIR / md_file
+    if not path.exists():
+        return {}
+    
+    content = path.read_text()
+    if '## Dependency Graph' in content:
+        content = content[:content.find('## Dependency Graph')]
+    
+    consts = {}
+    
+    # Pattern: ##### `_constFieldName`
+    for m in re.finditer(r"##### `(_[a-z]\w+)`", content):
+        const_name = m.group(1)
+        
+        # Try to find which class this belongs to by looking at preceding sections
+        # Find the class section this is under
+        section_start = content.rfind('### ', 0, m.start())
+        if section_start == -1:
+            section_start = 0
+        
+        # Find class name in that section
+        class_match = re.search(r'`(lib/[^`]+)`', content[section_start:m.start()])
+        if class_match:
+            file_path = class_match.group(1)
+            # Extract class name from file path (e.g., settings_service.dart -> SettingsService)
+            file_name = Path(file_path).stem
+            class_name = ''.join(word.capitalize() for word in file_name.split('_'))
+            
+            if class_name not in consts:
+                consts[class_name] = set()
+            consts[class_name].add(const_name)
+    
+    return consts
 
 
 def extract_params_from_table(table_content):
@@ -628,10 +862,45 @@ def main():
         else:
             doc_methods_all[cn] = doc_methods_priv[cn]
     
+    # Get class fields
+    code_class_fields = get_code_class_fields()
+    doc_class_fields_pub = get_doc_class_fields('public.md')
+    doc_class_fields_priv = get_doc_class_fields('private.md')
+    doc_class_fields_all = {}
+    for cn in doc_class_fields_pub:
+        doc_class_fields_all[cn] = doc_class_fields_pub[cn]
+    for cn in doc_class_fields_priv:
+        if cn in doc_class_fields_all:
+            doc_class_fields_all[cn].update(doc_class_fields_priv[cn])
+        else:
+            doc_class_fields_all[cn] = doc_class_fields_priv[cn]
+    
+    # Get top-level providers
+    code_providers = get_code_top_level_providers()
+    doc_providers_pub = get_doc_providers('public.md')
+    doc_providers_priv = get_doc_providers('private.md')
+    doc_providers_all = doc_providers_pub | doc_providers_priv
+    
+    # Get private static consts
+    code_priv_consts = get_code_private_static_consts()
+    doc_priv_consts_pub = get_doc_private_consts('public.md')
+    doc_priv_consts_priv = get_doc_private_consts('private.md')
+    doc_priv_consts_all = {}
+    for cn in doc_priv_consts_pub:
+        doc_priv_consts_all[cn] = doc_priv_consts_pub[cn]
+    for cn in doc_priv_consts_priv:
+        if cn in doc_priv_consts_all:
+            doc_priv_consts_all[cn].update(doc_priv_consts_priv[cn])
+        else:
+            doc_priv_consts_all[cn] = doc_priv_consts_priv[cn]
+    
     # Track stats
     build_methods = 0
     local_functions = 0
     signature_issues = []
+    field_missing = 0
+    provider_missing = 0
+    const_missing = 0
     
     # CLASSES CHECK
     print("\n--- PUBLIC CLASSES ---")
@@ -653,6 +922,75 @@ def main():
         print(f"EXTRA in docs: {sorted(extra_priv)}")
     if not missing_priv and not extra_priv:
         print("✓ All private classes documented")
+    
+    # CLASS FIELDS CHECK
+    print("\n" + "="*70)
+    print("CLASS FIELDS (Properties)")
+    print("="*70)
+    
+    for class_name in sorted(code_class_fields.keys()):
+        code_f = code_class_fields.get(class_name, set())
+        doc_f = doc_class_fields_all.get(class_name, set())
+        
+        if not code_f and not doc_f:
+            continue
+        
+        missing = code_f - doc_f
+        extra = doc_f - code_f
+        
+        if missing:
+            print(f"\n--- {class_name} ---")
+            print(f"  + MISSING in docs: {sorted(missing)}")
+            field_missing += len(missing)
+        if extra:
+            print(f"\n--- {class_name} ---")
+            print(f"  - EXTRA in docs: {sorted(extra)}")
+    
+    if field_missing == 0:
+        print("✓ All class fields documented")
+    
+    # PROVIDERS CHECK
+    print("\n" + "="*70)
+    print("TOP-LEVEL PROVIDERS")
+    print("="*70)
+    
+    missing_providers = code_providers - doc_providers_all
+    extra_providers = doc_providers_all - code_providers
+    
+    if missing_providers:
+        print(f"MISSING in docs: {sorted(missing_providers)}")
+        provider_missing = len(missing_providers)
+    if extra_providers:
+        print(f"EXTRA in docs: {sorted(extra_providers)}")
+    
+    if not missing_providers and not extra_providers:
+        print("✓ All providers documented")
+    
+    # PRIVATE STATIC CONSTS CHECK
+    print("\n" + "="*70)
+    print("PRIVATE STATIC CONST FIELDS")
+    print("="*70)
+    
+    for class_name in sorted(code_priv_consts.keys()):
+        code_c = code_priv_consts.get(class_name, set())
+        doc_c = doc_priv_consts_all.get(class_name, set())
+        
+        if not code_c and not doc_c:
+            continue
+        
+        missing = code_c - doc_c
+        extra = doc_c - code_c
+        
+        if missing:
+            print(f"\n--- {class_name} ---")
+            print(f"  + MISSING in docs: {sorted(missing)}")
+            const_missing += len(missing)
+        if extra:
+            print(f"\n--- {class_name} ---")
+            print(f"  - EXTRA in docs: {sorted(extra)}")
+    
+    if const_missing == 0:
+        print("✓ All private const fields documented")
     
     # METHODS CHECK
     print("\n" + "="*70)
@@ -703,6 +1041,9 @@ def main():
         method_missing += len(code_m - doc_m)
     
     print(f"Missing classes: {total_missing}")
+    print(f"Missing class fields: {field_missing}")
+    print(f"Missing providers: {provider_missing}")
+    print(f"Missing private consts: {const_missing}")
     print(f"Methods in code but not docs: {method_missing}")
     print(f"  (Build methods - no doc needed: {build_methods})")
     print(f"  (Local functions - no doc needed: {local_functions})")
@@ -715,7 +1056,7 @@ def main():
         if len(signature_issues) > 10:
             print(f"  ... and {len(signature_issues) - 10} more")
     
-    effective_missing = total_missing + method_missing - build_methods - local_functions
+    effective_missing = total_missing + method_missing + field_missing + provider_missing + const_missing - build_methods - local_functions
     
     if effective_missing == 0 and len(signature_issues) == 0:
         print("\n✅ COMPLETE!")
