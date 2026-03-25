@@ -415,6 +415,7 @@ class _EntryCard extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                         fontSize: isDevanagari ? 18 : 16,
                         color: _getHeadwordColor(theme),
+                        fontFamily: 'Siddhanta',
                       ),
                     ),
                     if (homonym != null)
@@ -444,6 +445,7 @@ class _EntryCard extends StatelessWidget {
                 fontSize: isDevanagari ? 16 : 14,
                 height: 1.6,
                 color: theme.colorScheme.onSurface,
+                fontFamily: 'Siddhanta',
               ),
               onTapUrl: (url) async {
                 if (url.startsWith('sanslex://lookup/')) {

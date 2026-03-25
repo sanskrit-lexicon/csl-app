@@ -1,7 +1,7 @@
 name: cologne_sanskrit_lexicon
 description: Cologne Sanskrit Lexicon - offline dictionary app for the Cologne Digital Sanskrit Dictionaries.
 publish_to: 'none'
-version: 0.1.5+6
+version: 0.1.6+7
 
 environment:
   sdk: '>=3.4.0 <4.0.0'
@@ -57,6 +57,10 @@ flutter:
   uses-material-design: true
   assets:
     - assets/
+  fonts:
+    - family: Siddhanta
+      fonts:
+        - asset: assets/siddhanta.ttf
 
 flutter_launcher_icons:
   android: true

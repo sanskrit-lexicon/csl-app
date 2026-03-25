@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.6] - 2026-03-25
+
+### Added
+- **Siddhanta Font**: Integrated Siddhanta font for consistent Devanagari rendering across all platforms, resolving font compatibility issues on iOS.
+
+## [0.1.5] - 2026-03-25
+
+### Added
+- **List Mode**: New accordion-style view for search results, allowing users to browse multiple entries with only headwords listed. They can click on the headword of their choice to see definition.
+
 ## [0.1.4] - 2026-03-25
 
 ### Added
