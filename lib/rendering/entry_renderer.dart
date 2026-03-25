@@ -172,6 +172,51 @@ class EntryRenderer {
     return '<div style="font-size:15px; line-height:1.6;">$html</div>';
   }
 
+  /// Transliterate content while preserving <mark> tags for highlighting.
+  ///
+  /// Input:  "a<mark>bahu</mark>la"
+  /// Output: "अ<mark>बहु</mark>ल"
+  ///
+  /// The <mark> tags are preserved but their content is also transliterated,
+  /// while surrounding text is transliterated to the output scheme.
+  String _transliterateWithMarksPreserved(String content, String outputTranslit,
+      {bool useAccented = false, String? dictCode}) {
+    if (!content.contains('<mark>')) {
+      return TransliterationService.fromSlp1(content, outputTranslit,
+          useAccented: useAccented, dictCode: dictCode);
+    }
+
+    const markerStart = '\u0000MARK_START\u0000';
+    const markerEnd = '\u0000MARK_END\u0000';
+
+    final temp = content
+        .replaceAll('<mark>', markerStart)
+        .replaceAll('</mark>', markerEnd);
+
+    final segments = temp.split(RegExp('$markerStart|$markerEnd'));
+
+    final result = StringBuffer();
+    for (int i = 0; i < segments.length; i++) {
+      if (i % 2 == 0) {
+        if (segments[i].isNotEmpty) {
+          final transliterated = TransliterationService.fromSlp1(
+              segments[i], outputTranslit,
+              useAccented: useAccented, dictCode: dictCode);
+          result.write(transliterated);
+        }
+      } else {
+        result.write('<mark>');
+        final transliterated = TransliterationService.fromSlp1(
+            segments[i], outputTranslit,
+            useAccented: useAccented, dictCode: dictCode);
+        result.write(transliterated);
+        result.write('</mark>');
+      }
+    }
+
+    return result.toString();
+  }
+
   /// Apply transliteration to Sanskrit text within s and SA tags
   String _applyTransliteration(
       String html,
@@ -186,14 +231,9 @@ class EntryRenderer {
       (m) {
         final slp1 = m.group(1) ?? '';
 
-        String process(String text) {
-          if (text.isEmpty) return '';
-          return TransliterationService.fromSlp1(text, settings.outputTranslit,
-              useAccented: settings.showAccent, dictCode: dictCode);
-        }
-
-        // Transliterate - <mark> tags are protected by TransliterationService
-        final result = process(slp1);
+        final result = _transliterateWithMarksPreserved(
+            slp1, settings.outputTranslit,
+            useAccented: settings.showAccent, dictCode: dictCode);
 
         return '<span class="sanskrit">$result</span>';
       },

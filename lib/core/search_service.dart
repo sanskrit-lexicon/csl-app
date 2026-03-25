@@ -103,11 +103,11 @@ class SearchService {
 
     if (kDebugMode) {
       debugPrint(
-          'SQL Query [$dictCode]: SELECT key, lnum, data FROM $table WHERE data LIKE "$pattern"');
+          'SQL Query [$dictCode]: SELECT key, lnum, data FROM $table WHERE LOWER(data) LIKE LOWER("$pattern")');
     }
 
     final rows = await db.rawQuery(
-      'SELECT key, lnum, data FROM $table WHERE data LIKE ? LIMIT ?',
+      'SELECT key, lnum, data FROM $table WHERE LOWER(data) LIKE LOWER(?) LIMIT ?',
       [pattern, maxResults],
     );
 
@@ -148,18 +148,18 @@ class SearchService {
 
     if (kDebugMode) {
       debugPrint(
-          'SQL Query [$dictCode]: SELECT ... FROM $table WHERE key LIKE "$hwPattern" AND data LIKE "$defPattern"');
+          'SQL Query [$dictCode]: SELECT ... FROM $table WHERE key LIKE "$hwPattern" AND LOWER(data) LIKE LOWER("$defPattern")');
     }
 
     final List<Map<String, dynamic>> rows;
     if (hwMode == SearchMode.exact) {
       rows = await db.rawQuery(
-        'SELECT key, lnum, data FROM $table WHERE key = ? AND data LIKE ? LIMIT ?',
+        'SELECT key, lnum, data FROM $table WHERE key = ? AND LOWER(data) LIKE LOWER(?) LIMIT ?',
         [hwSlp, defPattern, maxResults],
       );
     } else {
       rows = await db.rawQuery(
-        'SELECT key, lnum, data FROM $table WHERE key LIKE ? AND data LIKE ? LIMIT ?',
+        'SELECT key, lnum, data FROM $table WHERE key LIKE ? AND LOWER(data) LIKE LOWER(?) LIMIT ?',
         [hwPattern, defPattern, maxResults],
       );
     }
