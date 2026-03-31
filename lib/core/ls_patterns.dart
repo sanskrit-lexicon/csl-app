@@ -617,12 +617,12 @@ class LsPatterns {
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/ramayanagorr/?\$2,\$3,\$4',
     ),
-    // Ramayana with 2 params (add default verse 1)
+    // Ramayana with 2 params (add default verse 1) - kanda 1,2 -> schlegel, kanda 7 -> bombay, else -> gorresio
     LsPattern(
       prefixes: ['R.'],
       regex: r'^(R[.]) *([0-9]+), *([0-9]+)',
       urlTemplate:
-          'https://sanskrit-lexicon-scans.github.io/ramayanagorr/?\$2,\$3,1',
+          '(\$2 == "1" || \$2 == "2") ? "https://sanskrit-lexicon-scans.github.io/ramayanaschl/?\$2,\$3,1" : (\$2 == "7") ? "https://sanskrit-lexicon-scans.github.io/ramayanabom/app1/?\$2,\$3,1" : "https://sanskrit-lexicon-scans.github.io/ramayanagorr/?\$2,\$3,1"',
       dicts: ['pwg'],
     ),
     // Panini - Ashtadhyayi (P. N,N,N)
