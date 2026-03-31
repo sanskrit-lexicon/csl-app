@@ -47,6 +47,11 @@ class DownloadNotifier {
   final Ref _ref;
   DownloadNotifier(this._ref);
 
+  // Track if downloadAll is currently running and its cancel token
+  final _downloadAllCancelToken = StateProvider<bool>((ref) => false);
+
+  bool get isDownloadAllRunning => _ref.read(_downloadAllCancelToken);
+
   Future<void> download(String dictCode) async {
     final info = DictionaryRegistry.byCode(dictCode);
     if (info == null) return;
@@ -86,6 +91,9 @@ class DownloadNotifier {
   }
 
   Future<void> downloadAll() async {
+    // Set the cancel token to false at the start
+    _ref.read(_downloadAllCancelToken.notifier).state = false;
+
     final available = await _ref.read(availableDictsProvider.future);
 
     // Get dictionaries that need downloading (not available)
@@ -120,10 +128,30 @@ class DownloadNotifier {
         .toList();
 
     for (final code in allToProcess) {
+      // Check if user wants to cancel the entire operation
+      if (_ref.read(_downloadAllCancelToken)) {
+        break;
+      }
+
       // Check if already downloading via progress provider
       if (_ref.read(downloadProgressProvider(code)) == null) {
         await download(code);
       }
+    }
+
+    // Reset the cancel token after completion
+    if (!_ref.read(_downloadAllCancelToken)) {
+      _ref.read(_downloadAllCancelToken.notifier).state = false;
+    }
+  }
+
+  void cancelDownloadAll() {
+    // Set the cancel token to true to signal cancellation
+    _ref.read(_downloadAllCancelToken.notifier).state = true;
+
+    // Also cancel any ongoing individual downloads
+    for (final tokenProvider in _cancelTokens.values) {
+      _ref.read(tokenProvider.notifier).state = true;
     }
   }
 
@@ -133,3 +161,6 @@ class DownloadNotifier {
     return StateProvider<bool>((ref) => false);
   }
 }
+
+// Provider for tracking downloadAll cancellation state
+final downloadAllCancelProvider = StateProvider<bool>((ref) => false);

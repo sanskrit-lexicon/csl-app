@@ -21,11 +21,46 @@ class ManageDictionariesScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Manage Dictionaries'),
         actions: [
-          IconButton(
-            tooltip: 'Download All',
-            icon: const Icon(Icons.download_for_offline),
-            onPressed: () {
-              ref.read(downloadNotifierProvider).downloadAll();
+          Consumer(
+            builder: (context, ref, child) {
+              // Check if any dictionary is currently downloading
+              bool isAnyDownloading = false;
+              for (final info in DictionaryRegistry.all) {
+                if (ref.read(downloadProgressProvider(info.codeLo)) != null) {
+                  isAnyDownloading = true;
+                  break;
+                }
+              }
+
+              // Check if downloadAll is specifically running
+              final isDownloadAllRunning = ref.watch(downloadNotifierProvider
+                  .select((value) => value.isDownloadAllRunning));
+
+              if (isDownloadAllRunning) {
+                return IconButton(
+                  tooltip: 'Cancel Download All',
+                  icon: const Icon(Icons.cancel),
+                  onPressed: () {
+                    ref.read(downloadNotifierProvider).cancelDownloadAll();
+                  },
+                );
+              } else if (isAnyDownloading) {
+                return IconButton(
+                  tooltip: 'Download All',
+                  icon: const Icon(Icons.download_for_offline),
+                  onPressed: () {
+                    ref.read(downloadNotifierProvider).downloadAll();
+                  },
+                );
+              } else {
+                return IconButton(
+                  tooltip: 'Download All',
+                  icon: const Icon(Icons.download_for_offline),
+                  onPressed: () {
+                    ref.read(downloadNotifierProvider).downloadAll();
+                  },
+                );
+              }
             },
           ),
         ],
