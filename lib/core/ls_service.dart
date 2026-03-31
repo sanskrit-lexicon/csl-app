@@ -252,11 +252,15 @@ class LsService {
 
   static String? generateHref(
       String dict, String key, String? nAttribute, String data) {
-    String data1;
+    final String data1;
     if (nAttribute != null && nAttribute.isNotEmpty) {
-      data1 = '$nAttribute $data';
+      data1 = '$nAttribute$data';
     } else {
       data1 = data;
+    }
+
+    if (dict == 'gra' && data1.trim().startsWith('{') && data1.trim().endsWith('}')) {
+      return hrefGraBraces(data1);
     }
 
     // First try pattern-driven approach
@@ -737,6 +741,43 @@ class LsService {
       return 'https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1/?$s,$a';
     }
     return 'https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?$s,$a';
+  }
+
+  static String? hrefGraBraces(String data1) {
+    // Format: {Hymn,Verse} where Hymn is 1-1028 sequential
+    final regex = RegExp(r'\{([0-9]+), *([0-9]+)\}');
+    final match = regex.firstMatch(data1);
+    if (match == null) return null;
+
+    final seqHymn = int.tryParse(match.group(1)!) ?? 0;
+    final verse = int.tryParse(match.group(2)!) ?? 0;
+
+    if (seqHymn < 1 || seqHymn > 1028) return null;
+
+    // Sequential hymn starts for each mandala
+    const mandalaStarts = [
+      1, 192, 235, 297, 355, 442, 517, 621, 724, 838, 1029
+    ];
+
+    int mandala = 0;
+    for (int i = 0; i < 10; i++) {
+      if (seqHymn >= mandalaStarts[i] && seqHymn < mandalaStarts[i + 1]) {
+        mandala = i + 1;
+        break;
+      }
+    }
+
+    if (mandala == 0) return null;
+
+    final mandalaHymn = seqHymn - mandalaStarts[mandala - 1] + 1;
+
+    final mStr = mandala.toString().padLeft(2, '0');
+    final hStr = mandalaHymn.toString().padLeft(3, '0');
+    final vStr = verse.toString().padLeft(2, '0');
+
+    final hymnPfx = 'rv$mStr.$hStr';
+    final dir = 'https://sanskrit-lexicon.github.io/rvlinks/rvhymns';
+    return '$dir/$hymnPfx.html#$hymnPfx.$vStr';
   }
 
   static String? hrefPanini(String data1, String dict) {
