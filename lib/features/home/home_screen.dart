@@ -338,12 +338,16 @@ class _DictionaryView extends ConsumerWidget {
         final result = results[index];
         final parsed = EntryParser.parse(result.data, result.lnum);
         final slp1Key = parsed.key2Slp1 ?? parsed.key1Slp1;
-        final displayKey = TransliterationService.fromSlp1(
-          slp1Key,
-          settings.outputTranslit,
-          useAccented: settings.showAccent,
-          dictCode: dictCode,
-        );
+        final isEnglishDict =
+            ['ae', 'mwe', 'bor'].contains(dictCode.toLowerCase());
+        final displayKey = isEnglishDict
+            ? slp1Key
+            : TransliterationService.fromSlp1(
+                slp1Key,
+                settings.outputTranslit,
+                useAccented: settings.showAccent,
+                dictCode: dictCode,
+              );
         final titleText = parsed.homonym != null
             ? '$displayKey (${parsed.homonym})'
             : displayKey;

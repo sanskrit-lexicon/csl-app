@@ -88,9 +88,11 @@ class EntryRenderer {
 
     // 2. Build headword display string
     final slp1Key = _resolveHeadwordSlp1(entry);
-    final displayKey = TransliterationService.fromSlp1(
-        slp1Key, settings.outputTranslit,
-        useAccented: settings.showAccent, dictCode: dictCode);
+    final isEnglishDict = ['ae', 'mwe', 'bor'].contains(dictCode.toLowerCase());
+    final displayKey = isEnglishDict
+        ? slp1Key
+        : TransliterationService.fromSlp1(slp1Key, settings.outputTranslit,
+            useAccented: settings.showAccent, dictCode: dictCode);
 
     // 3. Process body HTML
     final isEnglish = ['ae', 'mwe', 'bor'].contains(dictCode.toLowerCase());
