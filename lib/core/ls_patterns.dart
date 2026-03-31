@@ -849,10 +849,10 @@ class LsPatterns {
       regex: r'^(RV[.|]AV[.]) *([ivxl]+), *([0-9]+)',
       urlTemplate: 'rvAvHymnUrl2',
     ),
-    // Panini
+    // Panini - handles both lowercase and uppercase Roman numerals (i,ii,iii,I,II,III -> 1,2,3)
     LsPattern(
       prefixes: ['Pāṇ.'],
-      regex: r'^(Pāṇ[.]) *([iv]+)[ ,]+([0-9]+)[ ,]+([0-9]+)',
+      regex: r'^(Pāṇ[.]) *([ivxlIVXL]+)[ ,]+([0-9]+)[ ,]+([0-9]+)',
       urlTemplate: 'https://ashtadhyayi.com/sutraani/\$2/\$3/\$4',
     ),
     // R. 7,N,N,N (Bombay)
@@ -876,7 +876,7 @@ class LsPatterns {
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/ramayanabom/app1/?\$2,\$3,\$4',
     ),
-    // Ramayana Gorresio/Schlegel
+    // Ramayana Gorresio/Schlegel - with lowercase Roman numerals
     LsPattern(
       prefixes: [
         'R.',
@@ -887,10 +887,17 @@ class LsPatterns {
         'R. ed. Gorresio'
       ],
       regex:
-          r'^(R[.|]R[.] G[.|]R[.] \(G\)[.|]R[.] \(ed[.] Gorr\)[.|]R[.] \[G\][.|]R[.] ed[.] Gorresio[.]) *([iv]+)[ ,]+([0-9]+)[ ,]+([0-9]+)(.*)$',
+          r'^(R[.|]R[.] G[.|]R[.] \(G\)[.|]R[.] \(ed[.] Gorr\)[.|]R[.] \[G\][.|]R[.] ed[.] Gorresio[.]) *([ivxlIVXL]+)[ ,]+([0-9]+)[ ,]+([0-9]+)(.*)$',
       urlTemplate: 'ramayanaUrl',
     ),
-    // Ramayana Bombay
+    // R. (B.) with lowercase Roman numerals - specific for Bombay
+    LsPattern(
+      prefixes: ['R. (B.)'],
+      regex: r'^(R[.] \(B\)[.]) *([ivxlIVXL]+)[ ,]+([0-9]+)[ ,]+([0-9]+)(.*)$',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/ramayanabom/app1/?\$2,\$3,\$4',
+    ),
+    // Ramayana Bombay - with lowercase Roman numerals (BEFORE generic R.)
     LsPattern(
       prefixes: [
         'R. ed. Bomb.',
@@ -902,9 +909,15 @@ class LsPatterns {
         'R. ed. Bombay'
       ],
       regex:
-          r'^(R[.] ed[.] Bomb[.|]R[.] \(B\)[.|]R[.] \(ed[.] Bomb\)[.|]R[.] B[.|]R[.] \[B\.\][.|]R[.] \[B\][.|]R[.] ed[.] Bombay[.]) *([iv]+)[ ,]+([0-9]+)[ ,]+([0-9]+)(.*)$',
+          r'^(R[.] ed[.] Bomb[.|]R[.] \(B\)[.|]R[.] \(ed[.] Bomb\)[.|]R[.] B[.|]R[.] \[B\.\][.|]R[.] \[B\][.|]R[.] ed[.] Bombay[.]) *([ivxlIVXL]+)[ ,]+([0-9]+)[ ,]+([0-9]+)(.*)$',
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/ramayanabom/app1/?\$2,\$3,\$4',
+    ),
+    // Ramayana Bombay - with numeric kanda (fallback)
+    LsPattern(
+      prefixes: ['R. ed. Bomb.', 'R. ed. Bombay'],
+      regex: r'^(R[.] ed[.] Bomb[.]|R[.] ed[.] Bombay[.]) *(.*)$',
+      urlTemplate: 'ramayanaBombayUrl',
     ),
     // Dhatus - specific
     LsPattern(
@@ -1003,7 +1016,15 @@ class LsPatterns {
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/shakuntala/app1?\$2',
     ),
-    // Satapatha Brahmana
+    // Satapatha Brahmana - with Roman numerals (all variations including x, xiv, etc.)
+    LsPattern(
+      prefixes: ['Śat. Br.', 'ŚBr.'],
+      regex:
+          r'^(Śat[.] Br[.]|ŚBr[.]) *([ivxlIVXL]+), *([0-9]+), *([0-9]+), *([0-9]+)',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/shatapathabr/app1?\$2,\$3,\$4,\$5',
+    ),
+    // Satapatha Brahmana - with numeric kanda (4 params)
     LsPattern(
       prefixes: ['Śat. Br.', 'ŚBr.'],
       regex:

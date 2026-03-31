@@ -194,6 +194,14 @@ class LsService {
       'x': 10,
       'xi': 11,
       'xii': 12,
+      'xiii': 13,
+      'xiv': 14,
+      'xv': 15,
+      'xvi': 16,
+      'xvii': 17,
+      'xviii': 18,
+      'xix': 19,
+      'xx': 20,
     };
     return romanNums[roman.toLowerCase()] ?? 0;
   }
@@ -372,14 +380,15 @@ class LsService {
               // For _lc patterns, keep lowercase Roman numerals instead of converting to integers
               if (lowercase) {
                 replacement = replacement.toLowerCase();
-              } else if (replacement.length == 1 &&
-                  replacement.codeUnitAt(0) >= 97 &&
-                  replacement.codeUnitAt(0) <= 122) {
-                // Single lowercase letter (a-z) - keep as is
               } else {
+                // Convert Roman numerals to integers (including lowercase i, ii, iii, iv, v, vi, vii, viii, ix, x, etc.)
                 final romanVal = romanInt(replacement);
                 if (romanVal > 0) {
                   replacement = romanVal.toString();
+                } else if (replacement.length == 1 &&
+                    replacement.codeUnitAt(0) >= 97 &&
+                    replacement.codeUnitAt(0) <= 122) {
+                  // Single lowercase letter (a-z) that's not a Roman numeral - keep as is
                 }
               }
               url = url.replaceAll(placeholder, replacement);
