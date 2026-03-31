@@ -87,10 +87,16 @@ class LsPatterns {
       regex: r'^(HARIV[.]) *([0-9]+)[.]?',
       urlTemplate: 'https://sanskrit-lexicon-scans.github.io/hariv?\$2',
     ),
-    // Verz. d. Oxf. H.
+    // Verz. d. Oxf. H. - handle entries with letters like 19,a,19
     LsPattern(
       prefixes: ['Verz. d. Oxf. H.', 'Verz. der Oxf. H.'],
-      regex: r'^(Verz[.] d[.] Oxf[.] H[.]?) *([0-9]+)',
+      regex: r'^(Verz\. der Oxf\. H\.) *([0-9]+)',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/Oxf_Cat_Aufrecht/index.html?\$2',
+    ),
+    LsPattern(
+      prefixes: ['Verz. d. Oxf. H.'],
+      regex: r'^(Verz\. d\. Oxf\. H\.) *([0-9]+)',
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/Oxf_Cat_Aufrecht/index.html?\$2',
     ),
@@ -119,7 +125,7 @@ class LsPatterns {
     LsPattern(
       prefixes: ['RĀJA-TAR. ed. Calc.', 'RĀJAT. ed. Calc.'],
       regex:
-          r'^(RĀJA-TAR[.] ed[.] Calc[.|]RĀJAT[.] ed[.] Calc[.]) *([0-9]+), *([0-9]+)',
+          r'^(RĀJA-TAR\. ed\. Calc\.?|RĀJAT\. ed\. Calc\.?) *([0-9]+), *([0-9]+)',
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/rajatarcalc/app1?\$2,\$3',
     ),
@@ -254,17 +260,17 @@ class LsPatterns {
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/pantankose/app2?\$2,\$3',
     ),
-    // Pancatantra ed. orn.
+    // Pancatantra ed. orn. - Roman numerals
     LsPattern(
       prefixes: ['PAÑCAT. ed. orn.', 'ed. orn.'],
-      regex: r'^(PAÑCAT[.] ed[.] orn[.|]ed[.] orn[.]) ([VI]+), *([0-9]+)',
+      regex: r'^(PAÑCAT\.? ed\.? orn\.?|ed\.? orn\.?) *([VI]+), *([0-9]+)',
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/pantankoseorn/app2?\$2,\$3',
     ),
-    // Pancatantra ed. orn. - numeric
+    // Pancatantra ed. orn. - numeric with optional period and extra text at end
     LsPattern(
       prefixes: ['PAÑCAT. ed. orn.', 'ed. orn.'],
-      regex: r'^(PAÑCAT[.] ed[.] orn[.|]ed[.] orn[.]) *([0-9]+), *([0-9]+)',
+      regex: r'^(PAÑCAT\.? ed\.? orn\.?|ed\.? orn\.?) *([0-9]+), *([0-9]+)',
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/pantankoseorn/app1?\$2,\$3',
     ),
@@ -453,7 +459,7 @@ class LsPatterns {
     // Caurapancashika
     LsPattern(
       prefixes: ['CAURAP.'],
-      regex: r'^(CAURAP[.]) *([0-9]+)',
+      regex: r'^(CAURAP[.]?) *([0-9]+)',
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/bhartrhari/app1?\$2',
     ),
