@@ -160,6 +160,11 @@ class LsService {
       'Nir.': 'nir',
       'Nigh.': 'naigh',
     },
+    'pwg': {
+      'P.': 'p_pwg',
+      'ṚV.': 'rv_pwg',
+      'AV.': 'av_pwg',
+    },
   };
 
   static const Set<String> _authtooltipsDicts = {
@@ -325,13 +330,17 @@ class LsService {
           // Handle special URL generators
           if (url == 'rvAvHymnUrl') {
             final key = extractFirstKey(data1);
-            final pfx =
-                key?.toLowerCase().startsWith('rv') == true ? 'rv' : 'av';
+            final keyLower = key?.toLowerCase() ?? '';
+            final pfx = (keyLower.contains('rv') && !keyLower.contains('av'))
+                ? 'rv'
+                : 'av';
             return hrefRvAv(pfx, data1, dict);
           } else if (url == 'rvAvHymnUrl2') {
             final key = extractFirstKey(data1);
-            final pfx =
-                key?.toLowerCase().startsWith('rv') == true ? 'rv' : 'av';
+            final keyLower = key?.toLowerCase() ?? '';
+            final pfx = (keyLower.contains('rv') && !keyLower.contains('av'))
+                ? 'rv'
+                : 'av';
             return hrefRvAv2(pfx, data1, dict);
           } else if (url == 'ramayanaUrl') {
             return hrefRamayana(data1, dict);
@@ -346,10 +355,16 @@ class LsService {
             // Simple replacement with Roman numeral conversion
             for (int i = 1; i <= match.groupCount; i++) {
               var replacement = match.group(i) ?? '';
-              // Convert Roman numerals to integers
-              final romanVal = romanInt(replacement);
-              if (romanVal > 0) {
-                replacement = romanVal.toString();
+              // Convert Roman numerals to integers, but only if it's not a single lowercase letter
+              if (replacement.length == 1 &&
+                  replacement.toLowerCase().codeUnitAt(0) >= 97 &&
+                  replacement.toLowerCase().codeUnitAt(0) <= 122) {
+                // Single lowercase letter (a-z) - keep as is
+              } else {
+                final romanVal = romanInt(replacement);
+                if (romanVal > 0) {
+                  replacement = romanVal.toString();
+                }
               }
               url = url.replaceAll('\$$i', replacement);
             }

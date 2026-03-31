@@ -187,6 +187,13 @@ class LsPatterns {
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/shakuntala/app2?\$2,\$3,\$4',
     ),
+    // Shakuntala - 2 params (page, line) - goes to app2
+    LsPattern(
+      prefixes: ['ŚĀK.'],
+      regex: r'^(ŚĀK[.]) *([0-9]+), *([0-9]+)',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/shakuntala/app2?\$2,\$3',
+    ),
     LsPattern(
       prefixes: ['ŚĀK.'],
       regex: r'^(ŚĀK[.]) *([0-9]+)',
@@ -391,18 +398,18 @@ class LsPatterns {
       regex: r'^(PAÑCAR[.]) +S\. +([0-9]+)',
       urlTemplate: 'https://sanskrit-lexicon-scans.github.io/pancar/app0?\$2',
     ),
-    // Vikramorvashiya - single param (VIKR. 1)
-    LsPattern(
-      prefixes: ['VIKR.', 'VIKRAM.'],
-      regex: r'^(VIKR[.]|VIKRAM[.]?) *([0-9]+)',
-      urlTemplate: 'https://sanskrit-lexicon-scans.github.io/vikramor/app1?\$2',
-    ),
-    // Vikramorvashiya - two params (VIKR. 1,2)
+    // Vikramorvashiya - two params (VIKR. 1,2) - MORE SPECIFIC FIRST
     LsPattern(
       prefixes: ['VIKR.', 'VIKRAM.'],
       regex: r'^(VIKR[.]|VIKRAM[.]?) *([0-9]+), *([0-9]+)',
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/vikramor/app2?\$2,\$3',
+    ),
+    // Vikramorvashiya - single param (VIKR. 1)
+    LsPattern(
+      prefixes: ['VIKR.', 'VIKRAM.'],
+      regex: r'^(VIKR[.]|VIKRAM[.]?) *([0-9]+)',
+      urlTemplate: 'https://sanskrit-lexicon-scans.github.io/vikramor/app1?\$2',
     ),
     // Nalopakhyana
     LsPattern(
@@ -553,6 +560,36 @@ class LsPatterns {
       regex: r'^(BHĀG[.] P[.]) *([0-9]+)[ ,]+([0-9]+)[ ,]+([0-9]+)(.*)$',
       urlTemplate:
           '(\$2 == "10" || \$2 == "11" || \$2 == "12") ? "https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1?\$2,\$3,\$4" : "https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1?\$2,\$3,\$4"',
+    ),
+    // Panini - Ashtadhyayi (P. N,N,N)
+    LsPattern(
+      prefixes: ['P.'],
+      regex: r'^(P[.]) *([0-9]+), *([0-9]+), *([0-9]+)',
+      urlTemplate: 'https://ashtadhyayi.com/sutraani/\$2/\$3/\$4',
+    ),
+    // Rig Veda - 3 params (ṚV. N,N,N)
+    LsPattern(
+      prefixes: ['ṚV.'],
+      regex: r'^(ṚV[.]) *([0-9]+), *([0-9]+), *([0-9]+)',
+      urlTemplate: 'rvAvHymnUrl',
+    ),
+    // Rig Veda - 2 params (ṚV. N,N)
+    LsPattern(
+      prefixes: ['ṚV.'],
+      regex: r'^(ṚV[.]) *([0-9]+), *([0-9]+)',
+      urlTemplate: 'rvAvHymnUrl2',
+    ),
+    // Atharva Veda - 3 params (AV. N,N,N)
+    LsPattern(
+      prefixes: ['AV.'],
+      regex: r'^(AV[.]) *([0-9]+), *([0-9]+), *([0-9]+)',
+      urlTemplate: 'rvAvHymnUrl',
+    ),
+    // Atharva Veda - 2 params (AV. N,N)
+    LsPattern(
+      prefixes: ['AV.'],
+      regex: r'^(AV[.]) *([0-9]+), *([0-9]+)',
+      urlTemplate: 'rvAvHymnUrl2',
     ),
   ];
 
