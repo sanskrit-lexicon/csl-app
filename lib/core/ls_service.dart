@@ -254,7 +254,15 @@ class LsService {
       String dict, String key, String? nAttribute, String data) {
     final String data1;
     if (nAttribute != null && nAttribute.isNotEmpty) {
-      data1 = '$nAttribute$data';
+      if (!nAttribute.endsWith(' ') &&
+          !data.startsWith(' ') &&
+          RegExp(r'[a-zA-Z0-9āīūēōṇṭḍṇñṅśṣḥḍhṭh]$').hasMatch(nAttribute) &&
+          RegExp(r'^[a-zA-Z0-9āīūēōṇṭḍṇñṅśṣḥḍhṭh]').hasMatch(data)) {
+        // Insert space if border characters shouldn't be blindly merged
+        data1 = '$nAttribute $data';
+      } else {
+        data1 = '$nAttribute$data';
+      }
     } else {
       data1 = data;
     }

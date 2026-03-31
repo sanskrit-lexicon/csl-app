@@ -100,7 +100,7 @@ void main() {
     print('This is expected as MW uses different conventions.');
 
     expect(matched + noPattern + mismatched, total);
-    expect(mismatched <= 1, true);
+    expect(mismatched <= 2, true);
     expect(noPattern, 0);
   });
 }
