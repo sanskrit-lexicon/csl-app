@@ -719,7 +719,7 @@ class LsService {
     final s = match.group(1)!;
     final a = match.group(2)!;
     final v = match.group(3)!;
-    if (s == '10') {
+    if (s == '10' || s == '11' || s == '12') {
       return 'https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1/?$s,$a,$v';
     }
     return 'https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?$s,$a,$v';
@@ -733,7 +733,7 @@ class LsService {
     if (match == null) return null;
     final s = match.group(1)!;
     final a = match.group(2)!;
-    if (s == '10') {
+    if (s == '10' || s == '11' || s == '12') {
       return 'https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1/?$s,$a';
     }
     return 'https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?$s,$a';

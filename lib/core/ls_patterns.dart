@@ -1643,7 +1643,28 @@ class LsPatterns {
       regex: r'^(H\.)\s*([0-9]+)[.]?',
       urlTemplate: 'https://sanskrit-lexicon-scans.github.io/harivamsa/app1?\$2',
     ),
+    // Medini, Trikandashesha, Haravali for SCH
+    LsPattern(
+      prefixes: ['Med.'],
+      regex: r'^(Med\.)\s*([a-zA-Z])\.\s*([0-9]+)',
+      urlTemplate: 'https://sanskrit-lexicon-scans.github.io/medini/app1?\$2,\$3',
+    ),
+    LsPattern(
+      prefixes: ['Med.'],
+      regex: r'^(Med\.)\s*([0-9]+)',
+      urlTemplate: 'https://sanskrit-lexicon-scans.github.io/medini/app4?\$2',
+    ),
+    LsPattern(
+      prefixes: ['Trik.'],
+      regex: r'^(Trik\.)\s*([0-9]+),\s*([0-9]+),\s*([0-9]+)',
+      urlTemplate: 'https://sanskrit-lexicon-scans.github.io/medini/app2?\$2,\$3,\$4',
+    ),
+    LsPattern(
+      prefixes: ['Hār.'],
+      regex: r'^(Hār\.)\s*([0-9]+)',
+      urlTemplate: 'https://sanskrit-lexicon-scans.github.io/medini/app3?\$2',
+    ),
     // Include others from mw that are shared but check prefixes carefully
-    ...mw.where((p) => !['R.', 'MBh.', 'MBH.', 'Spr.', 'P.', 'Pāṇ.', 'BhP.', 'Bhāg.', 'Bhāg. P.', 'VarBṛS.', 'Varāh.', 'Varāh. Bṛh. S.', 'MārkP.', 'Mārk.', 'Mārk. P.', 'Mn.', 'M.', 'Sāh.', 'Sāh. D.', 'Mālav.', 'Vikr.', 'Vikram.', 'VIKR.', 'VIKRAM.', 'Vop.', 'Halāy.', 'AK.', 'VS.', 'TS.', 'ŚBr.', 'Śat. Br.', 'Kathās.', 'KSS.', 'Verz.', 'Verz. d. Oxf. H.'].any((pre) => p.prefixes.contains(pre))),
+    ...mw.where((p) => !['R.', 'MBh.', 'MBH.', 'Spr.', 'P.', 'Pāṇ.', 'BhP.', 'Bhāg.', 'Bhāg. P.', 'VarBṛS.', 'Varāh.', 'Varāh. Bṛh. S.', 'MārkP.', 'Mārk.', 'Mārk. P.', 'Mn.', 'M.', 'Sāh.', 'Sāh. D.', 'Mālav.', 'Vikr.', 'Vikram.', 'VIKR.', 'VIKRAM.', 'Vop.', 'Halāy.', 'AK.', 'VS.', 'TS.', 'ŚBr.', 'Śat. Br.', 'Kathās.', 'KSS.', 'Verz.', 'Verz. d. Oxf. H.', 'Med.', 'Trik.', 'Hār.'].any((pre) => p.prefixes.contains(pre))),
   ];
 }

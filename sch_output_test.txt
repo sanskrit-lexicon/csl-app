@@ -4,96 +4,15 @@
 
 ========== STATISTICS (SCH Dictionary) ==========
 Total tested: 3386
-Matched: 3370 (99.53%)
-Mismatched: 9 (0.27%)
-No pattern found: 7 (0.21%)
+Matched: 3386 (100.00%)
+Mismatched: 0 (0.00%)
+No pattern found: 0 (0.00%)
 
 ========== SAMPLE MISMATCHES ==========
-LS Tag: <ls>Bhāg. P. 11,9,30.</ls>
-  Content: Bhāg. P. 11,9,30.
-  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1/?11,9,30
-  Generated: https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?11,9,30
-
-LS Tag: <ls n="Bhāg. P.">11,29,12.</ls>
-  Content: Bhāg. P.11,29,12.
-  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1/?11,29,12
-  Generated: https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?11,29,12
-
-LS Tag: <ls>Bhāg. P. 11,11,7.</ls>
-  Content: Bhāg. P. 11,11,7.
-  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1/?11,11,7
-  Generated: https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?11,11,7
-
-LS Tag: <ls>Bhāg. P. 11,8,31.</ls>
-  Content: Bhāg. P. 11,8,31.
-  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1/?11,8,31
-  Generated: https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?11,8,31
-
-LS Tag: <ls>Bhāg. P. 11,26,4.</ls>
-  Content: Bhāg. P. 11,26,4.
-  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1/?11,26,4
-  Generated: https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?11,26,4
-
-LS Tag: <ls>Bhāg. P. 11,26,33.</ls>
-  Content: Bhāg. P. 11,26,33.
-  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1/?11,26,33
-  Generated: https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?11,26,33
-
-LS Tag: <ls>Bhāg. P. 12,2,6.</ls>
-  Content: Bhāg. P. 12,2,6.
-  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1/?12,2,6
-  Generated: https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?12,2,6
-
-LS Tag: <ls>Bhāg. P. 11,29,34.</ls>
-  Content: Bhāg. P. 11,29,34.
-  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1/?11,29,34
-  Generated: https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?11,29,34
-
-LS Tag: <ls>Bhāg. P. 12,6,58.</ls>
-  Content: Bhāg. P. 12,6,58.
-  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1/?12,6,58
-  Generated: https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?12,6,58
-
 
 ========== SAMPLES WITH NO PATTERN ==========
-LS Tag: <ls>Hār. 220.</ls>
-  Content: Hār. 220.
-  Expected: https://sanskrit-lexicon-scans.github.io/medini/app3?220
-
-LS Tag: <ls>Trik. 1,2,9.</ls>
-  Content: Trik. 1,2,9.
-  Expected: https://sanskrit-lexicon-scans.github.io/medini/app2?1,2,9
-
-LS Tag: <ls>Med. k. 109.</ls>
-  Content: Med. k. 109.
-  Expected: https://sanskrit-lexicon-scans.github.io/medini/app1?k,109
-
-LS Tag: <ls>Trik. 3,3,278</ls>
-  Content: Trik. 3,3,278
-  Expected: https://sanskrit-lexicon-scans.github.io/medini/app2?3,3,278
-
-LS Tag: <ls>Trik. 2,2,6.</ls>
-  Content: Trik. 2,2,6.
-  Expected: https://sanskrit-lexicon-scans.github.io/medini/app2?2,2,6
-
-LS Tag: <ls>Med. k. 202.</ls>
-  Content: Med. k. 202.
-  Expected: https://sanskrit-lexicon-scans.github.io/medini/app1?k,202
-
-LS Tag: <ls>Trik. 2,7,27.</ls>
-  Content: Trik. 2,7,27.
-  Expected: https://sanskrit-lexicon-scans.github.io/medini/app2?2,7,27
-
 Matched + No Pattern + Mismatched: 3386 (3386)
 
 This is expected as SCH uses different conventions.
-00:01 +0 -1: LS URL generation - SCH dictionary full test [E]
-  Expected: <0>
-    Actual: <9>
-  
-  package:matcher                                     expect
-  package:flutter_test/src/widget_tester.dart 473:18  expect
-  test/ls_url_sch_test.dart 99:5                      main.<fn>
-  
-00:01 +0 -1: (tearDownAll)
-00:01 +0 -1: Some tests failed.
+00:00 +1: (tearDownAll)
+00:00 +1: All tests passed!
