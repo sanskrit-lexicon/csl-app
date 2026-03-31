@@ -580,12 +580,10 @@ class LsService {
 
     final mandala = match.group(2)!;
     var imandala = romanInt20(mandala);
-    // For MW/PWG, digits like '1' in mandala should convert to 0 via roman_int
-    // Existing code fallback to int.tryParse was too permissive for MW
-    if (imandala == 0 && (dict != 'mw' && dict != 'pw' && dict != 'pwg')) {
+    if (imandala == 0) {
       imandala = int.tryParse(mandala) ?? 0;
     }
-    if (imandala == 0 && (dict != 'mw' && dict != 'pw' && dict != 'pwg')) return null;
+    if (imandala == 0) return null;
 
     final ihymn = int.parse(match.group(3)!);
     final iverse = 1;
@@ -613,69 +611,43 @@ class LsService {
     return '$dir?section=$section';
   }
 
-  // Public href generators
   static String? hrefRvAv(String pfx, String data1, String dict) {
     RegExpMatch? match;
+    var is3Seg = true;
 
     if (dict == 'ap90') {
       final regex =
           RegExp(r'^(.*?)[.] *([0-9]+)[.] +([0-9]+)[.] +([0-9]+)(.*)$');
       match = regex.firstMatch(data1);
-      if (match != null) {
-        final imandala = int.parse(match.group(2)!);
-        final ihymn = int.parse(match.group(3)!);
-        final iverse = int.parse(match.group(4)!);
+    }
 
-        final hymnFilePfx =
-            '${pfx == 'rv' ? 'rv' : 'av'}${imandala.toString().padLeft(2, '0')}.${ihymn.toString().padLeft(3, '0')}';
-        final anchor = '$hymnFilePfx.${iverse.toString().padLeft(2, '0')}';
-        final dir =
-            'https://sanskrit-lexicon.github.io/${pfx}links/${pfx}hymns';
-        return '$dir/$hymnFilePfx.html#$anchor';
+    if (match == null) {
+      final regex3 =
+          RegExp(r'^(.*?)\. *([^ ,]+)[ ,]+([0-9]+)[ ,]+([0-9]+)(.*)$');
+      match = regex3.firstMatch(data1);
+      if (match == null) {
+        final regex2 = RegExp(r'^(.*?)\. *([^ ,]+)[ ,]+([0-9]+)(.*)$');
+        match = regex2.firstMatch(data1);
+        is3Seg = false;
       }
     }
 
-    final regex = RegExp(r'^(.*?)\. *([^ ,]+)[ ,]+([0-9]+)[ ,]+([0-9]+)(.*)$');
-    match = regex.firstMatch(data1);
     if (match != null) {
       final mandala = match.group(2)!;
       var imandala = romanInt20(mandala);
-      if (imandala == 0 && (dict != 'mw' && dict != 'pw' && dict != 'pwg')) {
+      if (imandala == 0) {
         imandala = int.tryParse(mandala) ?? 0;
       }
       final ihymn = int.parse(match.group(3)!);
-      final iverse = int.parse(match.group(4)!);
+      final iverse = is3Seg ? int.parse(match.group(4)!) : 1;
 
       final isMw = (dict == 'mw' || dict == 'pw' || dict == 'pwg');
       final force00 = isMw && imandala == 0;
 
-      final mandalaStr =
-          force00 ? '00' : imandala.toString().padLeft(2, '0');
+      final mandalaStr = force00 ? '00' : imandala.toString().padLeft(2, '0');
       final hymnFilePfx =
           '${pfx == 'rv' ? 'rv' : 'av'}$mandalaStr.${ihymn.toString().padLeft(3, '0')}';
       final anchor = '$hymnFilePfx.${iverse.toString().padLeft(2, '0')}';
-      final dir = 'https://sanskrit-lexicon.github.io/${pfx}links/${pfx}hymns';
-      return '$dir/$hymnFilePfx.html#$anchor';
-    }
-
-    final regex2 = RegExp(r'^(.*?)\. *([^ ,]+)[ ,]+([0-9]+)(.*)$');
-    match = regex2.firstMatch(data1);
-    if (match != null) {
-      final mandala = match.group(2)!;
-      var imandala = romanInt20(mandala);
-      if (imandala == 0 && (dict != 'mw' && dict != 'pw' && dict != 'pwg')) {
-        imandala = int.tryParse(mandala) ?? 0;
-      }
-      final ihymn = int.parse(match.group(3)!);
-
-      final isMw = (dict == 'mw' || dict == 'pw' || dict == 'pwg');
-      final force00 = isMw && imandala == 0;
-
-      final mandalaStr =
-          force00 ? '00' : imandala.toString().padLeft(2, '0');
-      final hymnFilePfx =
-          '${pfx == 'rv' ? 'rv' : 'av'}$mandalaStr.${ihymn.toString().padLeft(3, '0')}';
-      final anchor = '$hymnFilePfx.01';
       final dir = 'https://sanskrit-lexicon.github.io/${pfx}links/${pfx}hymns';
       return '$dir/$hymnFilePfx.html#$anchor';
     }

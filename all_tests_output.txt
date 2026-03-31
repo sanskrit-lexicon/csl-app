@@ -1,0 +1,237 @@
+00:00 +0: loading /Users/dhaval/Documents/GithubRepos/sanskrit-lexicon/csl-app/test/ls_url_test.dart
+00:00 +0: /Users/dhaval/Documents/GithubRepos/sanskrit-lexicon/csl-app/test/ls_url_test.dart: (setUpAll)
+00:00 +0: /Users/dhaval/Documents/GithubRepos/sanskrit-lexicon/csl-app/test/ls_url_test.dart: LS URL generation - test against SQLite database
+00:00 +0: /Users/dhaval/Documents/GithubRepos/sanskrit-lexicon/csl-app/test/ls_url_gra_test.dart: LS URL generation - GRA dictionary full test
+
+========== STATISTICS (GRA Dictionary) ==========
+Total tested: 138222
+Matched: 138222 (100.00%)
+Mismatched: 0 (0.00%)
+No pattern found: 0 (0.00%)
+00:00 +1: /Users/dhaval/Documents/GithubRepos/sanskrit-lexicon/csl-app/test/ls_url_test.dart: LS URL generation - test against SQLite database
+00:00 +1: /Users/dhaval/Documents/GithubRepos/sanskrit-lexicon/csl-app/test/ls_url_sch_test.dart: LS URL generation - SCH dictionary full test
+
+========== STATISTICS (SCH Dictionary) ==========
+Total tested: 3386
+Matched: 3386 (100.00%)
+Mismatched: 0 (0.00%)
+No pattern found: 0 (0.00%)
+
+========== SAMPLE MISMATCHES ==========
+
+========== SAMPLES WITH NO PATTERN ==========
+Matched + No Pattern + Mismatched: 3386 (3386)
+
+This is expected as SCH uses different conventions.
+00:00 +2: /Users/dhaval/Documents/GithubRepos/sanskrit-lexicon/csl-app/test/ls_url_test.dart: LS URL generation - test against SQLite database
+00:01 +2: /Users/dhaval/Documents/GithubRepos/sanskrit-lexicon/csl-app/test/ls_url_pw_test.dart: LS URL generation - PW dictionary full test
+
+========== STATISTICS (PW Dictionary) ==========
+Total tested: 30778
+Matched: 30777 (100.00%)
+Mismatched: 0 (0.00%)
+No pattern found: 1 (0.00%)
+
+========== SAMPLE MISMATCHES ==========
+
+========== SAMPLES WITH NO PATTERN ==========
+LS Tag: <ls>P. 1,1. 36</ls>
+  Content: P. 1,1. 36
+  Expected: https://ashtadhyayi.com/sutraani/1/1/1
+
+00:01 +3: /Users/dhaval/Documents/GithubRepos/sanskrit-lexicon/csl-app/test/ls_url_test.dart: LS URL generation - test against SQLite database
+00:01 +3: /Users/dhaval/Documents/GithubRepos/sanskrit-lexicon/csl-app/test/ls_url_mw_test.dart: LS URL generation - MW dictionary full test
+
+========== STATISTICS (MW Dictionary) ==========
+Total tested: 42819
+Matched: 42608 (99.51%)
+Mismatched: 2 (0.00%)
+No pattern found: 209 (0.49%)
+
+========== SAMPLE MISMATCHES ==========
+LS Tag: <ls n="RV. x.">148, 5</ls>
+  Content: RV. x.148, 5
+  Expected: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv00.148.html#rv00.148.05
+  Generated: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv00.005.html#rv00.005.01
+
+LS Tag: <ls>AV. 1, 25, 2.</ls>
+  Content: AV. 1, 25, 2.
+  Expected: https://sanskrit-lexicon.github.io/avlinks/avhymns/av00.025.html#av00.025.02
+  Generated: https://sanskrit-lexicon.github.io/avlinks/avhymns/av01.025.html#av01.025.02
+
+
+========== SAMPLES WITH NO PATTERN ==========
+LS Tag: <ls n="Pāṇ. viii, 3">118</ls>
+  Content: Pāṇ. viii, 3118
+  Expected: https://ashtadhyayi.com/sutraani/8/3/118
+
+LS Tag: <ls n="Pāṇ. ii">2, 11</ls>
+  Content: Pāṇ. ii2, 11
+  Expected: https://ashtadhyayi.com/sutraani/2/2/11
+
+LS Tag: <ls n="Pāṇ. viii, 2">116</ls>
+  Content: Pāṇ. viii, 2116
+  Expected: https://ashtadhyayi.com/sutraani/8/2/116
+
+LS Tag: <ls n="Pāṇ. vi, 2">30</ls>
+  Content: Pāṇ. vi, 230
+  Expected: https://ashtadhyayi.com/sutraani/6/2/30
+
+LS Tag: <ls n="Pāṇ. vii, 3">27</ls>
+  Content: Pāṇ. vii, 327
+  Expected: https://ashtadhyayi.com/sutraani/7/3/27
+
+LS Tag: <ls n="Pāṇ. v, 3">41</ls>
+  Content: Pāṇ. v, 341
+  Expected: https://ashtadhyayi.com/sutraani/5/3/41
+
+LS Tag: <ls n="Pāṇ. iv, 2">22</ls>
+  Content: Pāṇ. iv, 222
+  Expected: https://ashtadhyayi.com/sutraani/4/2/22
+
+LS Tag: <ls n="Pāṇ. v, 4">55</ls>
+  Content: Pāṇ. v, 455
+  Expected: https://ashtadhyayi.com/sutraani/5/4/55
+
+LS Tag: <ls n="Pāṇ. ii">3, 10</ls>
+  Content: Pāṇ. ii3, 10
+  Expected: https://ashtadhyayi.com/sutraani/2/3/10
+
+LS Tag: <ls n="Pāṇ. viii, 2">104</ls>
+  Content: Pāṇ. viii, 2104
+  Expected: https://ashtadhyayi.com/sutraani/8/2/104
+
+LS Tag: <ls n="Pāṇ. iv">3, 100</ls>
+  Content: Pāṇ. iv3, 100
+  Expected: https://ashtadhyayi.com/sutraani/4/3/100
+
+LS Tag: <ls n="Pāṇ. v">6, 169</ls>
+  Content: Pāṇ. v6, 169
+  Expected: https://ashtadhyayi.com/sutraani/5/6/169
+
+LS Tag: <ls n="Pāṇ. vi, 3">8</ls>
+  Content: Pāṇ. vi, 38
+  Expected: https://ashtadhyayi.com/sutraani/6/3/8
+
+LS Tag: <ls n="Pāṇ. i">3, 12</ls>
+  Content: Pāṇ. i3, 12
+  Expected: https://ashtadhyayi.com/sutraani/1/3/12
+
+LS Tag: <ls n="Pāṇ. i, 1">52</ls>
+  Content: Pāṇ. i, 152
+  Expected: https://ashtadhyayi.com/sutraani/1/1/52
+
+LS Tag: <ls n="Pāṇ. i, 3">75</ls>
+  Content: Pāṇ. i, 375
+  Expected: https://ashtadhyayi.com/sutraani/1/3/75
+
+LS Tag: <ls n="Pāṇ. iii, 4">117</ls>
+  Content: Pāṇ. iii, 4117
+  Expected: https://ashtadhyayi.com/sutraani/3/4/117
+
+LS Tag: <ls n="Pāṇ. iv, 1">104</ls>
+  Content: Pāṇ. iv, 1104
+  Expected: https://ashtadhyayi.com/sutraani/4/1/104
+
+LS Tag: <ls n="Pāṇ. iv, 3">2</ls>
+  Content: Pāṇ. iv, 32
+  Expected: https://ashtadhyayi.com/sutraani/4/3/2
+
+LS Tag: <ls n="Pāṇ. iv, 3">2</ls>
+  Content: Pāṇ. iv, 32
+  Expected: https://ashtadhyayi.com/sutraani/4/3/2
+
+LS Tag: <ls n="Pāṇ. vii, 1">26</ls>
+  Content: Pāṇ. vii, 126
+  Expected: https://ashtadhyayi.com/sutraani/7/1/26
+
+LS Tag: <ls n="Pāṇ. iii, 3">4</ls>
+  Content: Pāṇ. iii, 34
+  Expected: https://ashtadhyayi.com/sutraani/3/3/4
+
+LS Tag: <ls n="Pāṇ. iii, 3">75</ls>
+  Content: Pāṇ. iii, 375
+  Expected: https://ashtadhyayi.com/sutraani/3/3/75
+
+LS Tag: <ls n="Pāṇ. i, 3">42</ls>
+  Content: Pāṇ. i, 342
+  Expected: https://ashtadhyayi.com/sutraani/1/3/42
+
+LS Tag: <ls n="Pāṇ. i, 3">42</ls>
+  Content: Pāṇ. i, 342
+  Expected: https://ashtadhyayi.com/sutraani/1/3/42
+
+LS Tag: <ls n="Pāṇ. vi, 3">122</ls>
+  Content: Pāṇ. vi, 3122
+  Expected: https://ashtadhyayi.com/sutraani/6/3/122
+
+LS Tag: <ls n="Pāṇ. v, 4">147</ls>
+  Content: Pāṇ. v, 4147
+  Expected: https://ashtadhyayi.com/sutraani/5/4/147
+
+LS Tag: <ls n="Pāṇ. i, 4">98</ls>
+  Content: Pāṇ. i, 498
+  Expected: https://ashtadhyayi.com/sutraani/1/4/98
+
+LS Tag: <ls n="Pāṇ. vi, 3">108</ls>
+  Content: Pāṇ. vi, 3108
+  Expected: https://ashtadhyayi.com/sutraani/6/3/108
+
+LS Tag: <ls n="Pāṇ. iii, 4">17</ls>
+  Content: Pāṇ. iii, 417
+  Expected: https://ashtadhyayi.com/sutraani/3/4/17
+
+Matched + No Pattern: 42817 (42817)
+
+NOTE: MW dictionary has 2 mismatches and 209 no-pattern cases.
+This is expected as MW uses different conventions.
+00:01 +3 -1: /Users/dhaval/Documents/GithubRepos/sanskrit-lexicon/csl-app/test/ls_url_test.dart: LS URL generation - test against SQLite database
+00:01 +3 -1: /Users/dhaval/Documents/GithubRepos/sanskrit-lexicon/csl-app/test/ls_url_mw_test.dart: LS URL generation - MW dictionary full test [E]
+  Expected: <true>
+    Actual: <false>
+  
+  package:matcher                                     expect
+  package:flutter_test/src/widget_tester.dart 473:18  expect
+  test/ls_url_mw_test.dart 103:5                      main.<fn>
+  
+00:01 +3 -1: /Users/dhaval/Documents/GithubRepos/sanskrit-lexicon/csl-app/test/ls_url_test.dart: LS URL generation - test against SQLite database
+
+========== STATISTICS (PWG Dictionary) ==========
+Total tested: 558789
+Matched: 558784 (100.00%)
+Mismatched: 0 (0.00%)
+No pattern found: 5 (0.00%)
+
+========== SAMPLE MISMATCHES ==========
+
+========== SAMPLES WITH NO PATTERN ==========
+LS Tag: <ls n="PAÑCAR.">S. 238.</ls>
+  Content: PAÑCAR.S. 238.
+  Expected: https://sanskrit-lexicon-scans.github.io/pancar/app0?238
+
+LS Tag: <ls n="PAÑCAR. S.">278.</ls>
+  Content: PAÑCAR. S.278.
+  Expected: https://sanskrit-lexicon-scans.github.io/pancar/app0?278
+
+LS Tag: <ls n="PAÑCAR.">S. 249</ls>
+  Content: PAÑCAR.S. 249
+  Expected: https://sanskrit-lexicon-scans.github.io/pancar/app0?249
+
+LS Tag: <ls n="PAÑCAR.">S. 249</ls>
+  Content: PAÑCAR.S. 249
+  Expected: https://sanskrit-lexicon-scans.github.io/pancar/app0?249
+
+LS Tag: <ls>ṚV. II,248,19. 249,1.</ls>
+  Content: ṚV. II,248,19. 249,1.
+  Expected: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv249.001.html#rv249.001.01
+
+00:07 +3 -2: /Users/dhaval/Documents/GithubRepos/sanskrit-lexicon/csl-app/test/ls_url_test.dart: LS URL generation - test against SQLite database [E]
+  Expected: <true>
+    Actual: <false>
+  
+  package:matcher                                     expect
+  package:flutter_test/src/widget_tester.dart 473:18  expect
+  test/ls_url_test.dart 107:5                         main.<fn>
+  
+00:07 +3 -2: /Users/dhaval/Documents/GithubRepos/sanskrit-lexicon/csl-app/test/ls_url_test.dart: (tearDownAll)
+00:07 +3 -2: Some tests failed.

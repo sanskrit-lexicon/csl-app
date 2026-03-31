@@ -17,14 +17,14 @@ class LsPatterns {
     // Spr. 1st edition (pwg) - matches "Spr. 123" (without (II))
     LsPattern(
       prefixes: ['Spr.'],
-      regex: r'^(Spr[.]) ([0-9]+)',
+      regex: r'^(Spr[.]) *([0-9]+)',
       urlTemplate: 'https://sanskrit-lexicon-scans.github.io/boesp1/app1/?\$2',
       dicts: ['pwg'],
     ),
     // Spr. 2nd edition (pw, pwkvn)
     LsPattern(
       prefixes: ['Spr.'],
-      regex: r'^(Spr[.]) ([0-9]+)',
+      regex: r'^(Spr[.]) *([0-9]+)',
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/boesp2/web1/boesp.html?\$2',
       dicts: ['pw', 'pwkvn'],
@@ -32,7 +32,7 @@ class LsPatterns {
     // Spr. (II) 2nd edition (pwg)
     LsPattern(
       prefixes: ['Spr. (II)'],
-      regex: r'^(Spr[.]) \(II\) ([0-9]+)',
+      regex: r'^(Spr[.]) *\(II\) *([0-9]+)',
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/boesp2/web1/boesp.html?\$2',
       dicts: ['pwg'],
@@ -40,20 +40,20 @@ class LsPatterns {
     // Spr. (I) 1st edition (pwg)
     LsPattern(
       prefixes: ['Spr. (I)'],
-      regex: r'^(Spr[.] \(I\)) ([0-9]+)',
+      regex: r'^(Spr[.] *\(I\)) *([0-9]+)',
       urlTemplate: 'https://sanskrit-lexicon-scans.github.io/boesp1/app1/?\$2',
     ),
     // Spr. 2nd edition (pwg)
     LsPattern(
       prefixes: ['Spr. (II)'],
-      regex: r'^(Spr[.]) \(II\) ([0-9]+)',
+      regex: r'^(Spr[.]) *\(II\) *([0-9]+)',
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/boesp2/web1/boesp.html?\$2',
     ),
     // Spr. 1st edition (pwg)
     LsPattern(
       prefixes: ['Spr.'],
-      regex: r'^(Spr[.]) ([0-9]+)',
+      regex: r'^(Spr[.]) *([0-9]+)',
       urlTemplate: 'https://sanskrit-lexicon-scans.github.io/boesp1/app1/?\$2',
       dicts: ['pwg'],
     ),
@@ -435,7 +435,7 @@ class LsPatterns {
     ),
     LsPattern(
       prefixes: ['PAÑCAR.'],
-      regex: r'^(PAÑCAR[.]) +S\. +([0-9]+)',
+      regex: r'^(PAÑCAR[.]) *S\. *([0-9]+)',
       urlTemplate: 'https://sanskrit-lexicon-scans.github.io/pancar/app0?\$2',
     ),
     // Vikramorvashiya - two params (VIKR. 1,2) - MORE SPECIFIC FIRST
@@ -518,14 +518,14 @@ class LsPatterns {
       prefixes: ['MED.'],
       regex: r'^(MED[.]) *([a-zA-Z]+)[.] *([0-9]+)',
       urlTemplate:
-          'https://sanskrit-lexicon-scans.github.io/medini/app1?\$2,\$3',
+          'https://sanskrit-lexicon-scans.github.io/medini/app1?\$2_lc,\$3',
     ),
     // MED. with diacritic letters (like ś, ḍh, ṭh)
     LsPattern(
       prefixes: ['MED.'],
       regex: r'^(MED[.]) *([a-zA-Zāīūēōṇṭḍṇñṅśṣḥḍhṭh]+)[.] *([0-9]+)',
       urlTemplate:
-          'https://sanskrit-lexicon-scans.github.io/medini/app1?\$2,\$3',
+          'https://sanskrit-lexicon-scans.github.io/medini/app1?\$2_lc,\$3',
     ),
     // Ramayana SCHL prefix - kanda 1,2 -> schlegel
     LsPattern(
