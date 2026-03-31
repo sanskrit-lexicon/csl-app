@@ -4,144 +4,244 @@
 
 ========== STATISTICS (MW Dictionary) ==========
 Total tested: 42819
-Matched: 42223 (98.61%)
-Mismatched: 0 (0.00%)
-No pattern found: 596 (1.39%)
+Matched: 42682 (99.68%)
+Mismatched: 29 (0.07%)
+No pattern found: 108 (0.25%)
 
 ========== SAMPLE MISMATCHES ==========
+LS Tag: <ls>Sāh. 399</ls>
+  Content: Sāh. 399
+  Expected: https://sanskrit-lexicon-scans.github.io/sahityadarpana/app1?399
+  Generated: https://sanskrit-lexicon-scans.github.io/sahityadarpana_mw/app1?399
+
+LS Tag: <ls>Sāh. 324</ls>
+  Content: Sāh. 324
+  Expected: https://sanskrit-lexicon-scans.github.io/sahityadarpana/app1?324
+  Generated: https://sanskrit-lexicon-scans.github.io/sahityadarpana_mw/app1?324
+
+LS Tag: <ls n="Sāh.">325</ls>
+  Content: Sāh.325
+  Expected: https://sanskrit-lexicon-scans.github.io/sahityadarpana/app1?325
+  Generated: https://sanskrit-lexicon-scans.github.io/sahityadarpana_mw/app1?325
+
+LS Tag: <ls>Sāh. 266.</ls>
+  Content: Sāh. 266.
+  Expected: https://sanskrit-lexicon-scans.github.io/sahityadarpana/app1?266
+  Generated: https://sanskrit-lexicon-scans.github.io/sahityadarpana_mw/app1?266
+
+LS Tag: <ls>Sāh. 519.</ls>
+  Content: Sāh. 519.
+  Expected: https://sanskrit-lexicon-scans.github.io/sahityadarpana/app1?519
+  Generated: https://sanskrit-lexicon-scans.github.io/sahityadarpana_mw/app1?519
+
+LS Tag: <ls>Sāh. 219.</ls>
+  Content: Sāh. 219.
+  Expected: https://sanskrit-lexicon-scans.github.io/sahityadarpana/app1?219
+  Generated: https://sanskrit-lexicon-scans.github.io/sahityadarpana_mw/app1?219
+
+LS Tag: <ls>Sāh. 289.</ls>
+  Content: Sāh. 289.
+  Expected: https://sanskrit-lexicon-scans.github.io/sahityadarpana/app1?289
+  Generated: https://sanskrit-lexicon-scans.github.io/sahityadarpana_mw/app1?289
+
+LS Tag: <ls>Sāh. 300</ls>
+  Content: Sāh. 300
+  Expected: https://sanskrit-lexicon-scans.github.io/sahityadarpana/app1?300
+  Generated: https://sanskrit-lexicon-scans.github.io/sahityadarpana_mw/app1?300
+
+LS Tag: <ls>Sāh. 449</ls>
+  Content: Sāh. 449
+  Expected: https://sanskrit-lexicon-scans.github.io/sahityadarpana/app1?449
+  Generated: https://sanskrit-lexicon-scans.github.io/sahityadarpana_mw/app1?449
+
+LS Tag: <ls>Sāh. 276</ls>
+  Content: Sāh. 276
+  Expected: https://sanskrit-lexicon-scans.github.io/sahityadarpana/app1?276
+  Generated: https://sanskrit-lexicon-scans.github.io/sahityadarpana_mw/app1?276
+
+LS Tag: <ls>Sāh. 539</ls>
+  Content: Sāh. 539
+  Expected: https://sanskrit-lexicon-scans.github.io/sahityadarpana/app1?539
+  Generated: https://sanskrit-lexicon-scans.github.io/sahityadarpana_mw/app1?539
+
+LS Tag: <ls>Sāh. 332</ls>
+  Content: Sāh. 332
+  Expected: https://sanskrit-lexicon-scans.github.io/sahityadarpana/app1?332
+  Generated: https://sanskrit-lexicon-scans.github.io/sahityadarpana_mw/app1?332
+
+LS Tag: <ls>Sāh. 14</ls>
+  Content: Sāh. 14
+  Expected: https://sanskrit-lexicon-scans.github.io/sahityadarpana/app1?14
+  Generated: https://sanskrit-lexicon-scans.github.io/sahityadarpana_mw/app1?14
+
+LS Tag: <ls>Sāh. 545.</ls>
+  Content: Sāh. 545.
+  Expected: https://sanskrit-lexicon-scans.github.io/sahityadarpana/app1?545
+  Generated: https://sanskrit-lexicon-scans.github.io/sahityadarpana_mw/app1?545
+
+LS Tag: <ls>Sāh. 486</ls>
+  Content: Sāh. 486
+  Expected: https://sanskrit-lexicon-scans.github.io/sahityadarpana/app1?486
+  Generated: https://sanskrit-lexicon-scans.github.io/sahityadarpana_mw/app1?486
+
+LS Tag: <ls>Sāh. 562.</ls>
+  Content: Sāh. 562.
+  Expected: https://sanskrit-lexicon-scans.github.io/sahityadarpana/app1?562
+  Generated: https://sanskrit-lexicon-scans.github.io/sahityadarpana_mw/app1?562
+
+LS Tag: <ls>Sāh. 567</ls>
+  Content: Sāh. 567
+  Expected: https://sanskrit-lexicon-scans.github.io/sahityadarpana/app1?567
+  Generated: https://sanskrit-lexicon-scans.github.io/sahityadarpana_mw/app1?567
+
+LS Tag: <ls>Sāh. 290</ls>
+  Content: Sāh. 290
+  Expected: https://sanskrit-lexicon-scans.github.io/sahityadarpana/app1?290
+  Generated: https://sanskrit-lexicon-scans.github.io/sahityadarpana_mw/app1?290
+
+LS Tag: <ls>Sāh. 558</ls>
+  Content: Sāh. 558
+  Expected: https://sanskrit-lexicon-scans.github.io/sahityadarpana/app1?558
+  Generated: https://sanskrit-lexicon-scans.github.io/sahityadarpana_mw/app1?558
+
+LS Tag: <ls>Sāh. 227, 18.</ls>
+  Content: Sāh. 227, 18.
+  Expected: https://sanskrit-lexicon-scans.github.io/sahityadarpana/app1?227,18
+  Generated: https://sanskrit-lexicon-scans.github.io/sahityadarpana_mw/app1?227,18
+
 
 ========== SAMPLES WITH NO PATTERN ==========
-LS Tag: <ls>Kathās. xc, 18.</ls>
-  Content: Kathās. xc, 18.
-  Expected: https://sanskrit-lexicon-scans.github.io/kss/index.html?90,18
+LS Tag: <ls>Mālav. v, 9/10</ls>
+  Content: Mālav. v, 9/10
+  Expected: https://sanskrit-lexicon-scans.github.io/malavikagni/app3?5,9
 
-LS Tag: <ls>Kathās. cx, 141.</ls>
-  Content: Kathās. cx, 141.
-  Expected: https://sanskrit-lexicon-scans.github.io/kss/index.html?110,141
+LS Tag: <ls>Mālav. iv, 2</ls>
+  Content: Mālav. iv, 2
+  Expected: https://sanskrit-lexicon-scans.github.io/malavikagni/app3?4,2
 
-LS Tag: <ls>MārkP. xiii, 15</ls>
-  Content: MārkP. xiii, 15
-  Expected: https://sanskrit-lexicon-scans.github.io/markandeyapurana/app1?13,15
+LS Tag: <ls>Ragh. (C) iii, 51</ls>
+  Content: Ragh. (C) iii, 51
+  Expected: https://sanskrit-lexicon-scans.github.io/raghuvamsacalc/app1?3,51
 
-LS Tag: <ls>Kathās. cxxiii, 196</ls>
-  Content: Kathās. cxxiii, 196
-  Expected: https://sanskrit-lexicon-scans.github.io/kss/index.html?123,196
+LS Tag: <ls>Mālav. v, 12/13</ls>
+  Content: Mālav. v, 12/13
+  Expected: https://sanskrit-lexicon-scans.github.io/malavikagni/app3?5,12
 
-LS Tag: <ls>Kathās. xci, 55.</ls>
-  Content: Kathās. xci, 55.
-  Expected: https://sanskrit-lexicon-scans.github.io/kss/index.html?91,55
+LS Tag: <ls>Mālav. i, 6</ls>
+  Content: Mālav. i, 6
+  Expected: https://sanskrit-lexicon-scans.github.io/malavikagni/app3?1,6
 
-LS Tag: <ls>Kathās. cxviii, 76.</ls>
-  Content: Kathās. cxviii, 76.
-  Expected: https://sanskrit-lexicon-scans.github.io/kss/index.html?118,76
+LS Tag: <ls>Mālav. i, 1/2</ls>
+  Content: Mālav. i, 1/2
+  Expected: https://sanskrit-lexicon-scans.github.io/malavikagni/app3?1,1
 
-LS Tag: <ls>MārkP. xiv, 62</ls>
-  Content: MārkP. xiv, 62
-  Expected: https://sanskrit-lexicon-scans.github.io/markandeyapurana/app1?14,62
+LS Tag: <ls>Mālav. iv, 8</ls>
+  Content: Mālav. iv, 8
+  Expected: https://sanskrit-lexicon-scans.github.io/malavikagni/app3?4,8
 
-LS Tag: <ls>Kathās. cxx, 35.</ls>
-  Content: Kathās. cxx, 35.
-  Expected: https://sanskrit-lexicon-scans.github.io/kss/index.html?120,35
+LS Tag: <ls>Mālav. i, 10</ls>
+  Content: Mālav. i, 10
+  Expected: https://sanskrit-lexicon-scans.github.io/malavikagni/app3?1,10
 
-LS Tag: <ls>Kathās. cx, 148.</ls>
-  Content: Kathās. cx, 148.
-  Expected: https://sanskrit-lexicon-scans.github.io/kss/index.html?110,148
+LS Tag: <ls>Ragh. (C) vi, 32.</ls>
+  Content: Ragh. (C) vi, 32.
+  Expected: https://sanskrit-lexicon-scans.github.io/raghuvamsacalc/app1?6,32
 
-LS Tag: <ls>Kathās. cxvi, 10</ls>
-  Content: Kathās. cxvi, 10
-  Expected: https://sanskrit-lexicon-scans.github.io/kss/index.html?116,10
+LS Tag: <ls>Mālav. iii, 21</ls>
+  Content: Mālav. iii, 21
+  Expected: https://sanskrit-lexicon-scans.github.io/malavikagni/app3?3,21
 
-LS Tag: <ls>Kathās. cxxi, 278.</ls>
-  Content: Kathās. cxxi, 278.
-  Expected: https://sanskrit-lexicon-scans.github.io/kss/index.html?121,278
+LS Tag: <ls>Mālav. iii, 20.</ls>
+  Content: Mālav. iii, 20.
+  Expected: https://sanskrit-lexicon-scans.github.io/malavikagni/app3?3,20
 
-LS Tag: <ls>Kathās. cxxi, 111 ff.</ls>
-  Content: Kathās. cxxi, 111 ff.
-  Expected: https://sanskrit-lexicon-scans.github.io/kss/index.html?121,111
+LS Tag: <ls>Mālav. i, 19/20</ls>
+  Content: Mālav. i, 19/20
+  Expected: https://sanskrit-lexicon-scans.github.io/malavikagni/app3?1,19
 
-LS Tag: <ls>Kathās. civ, 89.</ls>
-  Content: Kathās. civ, 89.
-  Expected: https://sanskrit-lexicon-scans.github.io/kss/index.html?104,89
+LS Tag: <ls>Mālav. v, 7</ls>
+  Content: Mālav. v, 7
+  Expected: https://sanskrit-lexicon-scans.github.io/malavikagni/app3?5,7
 
-LS Tag: <ls>Kathās. cxii, 178</ls>
-  Content: Kathās. cxii, 178
-  Expected: https://sanskrit-lexicon-scans.github.io/kss/index.html?112,178
+LS Tag: <ls>Mālav. iv, 6/7</ls>
+  Content: Mālav. iv, 6/7
+  Expected: https://sanskrit-lexicon-scans.github.io/malavikagni/app3?4,6
 
-LS Tag: <ls>Kathās. cviii, 177</ls>
-  Content: Kathās. cviii, 177
-  Expected: https://sanskrit-lexicon-scans.github.io/kss/index.html?108,177
+LS Tag: <ls>Mālav. v, 19/20</ls>
+  Content: Mālav. v, 19/20
+  Expected: https://sanskrit-lexicon-scans.github.io/malavikagni/app3?5,19
 
-LS Tag: <ls>Kathās. xcii, 68.</ls>
-  Content: Kathās. xcii, 68.
-  Expected: https://sanskrit-lexicon-scans.github.io/kss/index.html?92,68
+LS Tag: <ls>Mālav. i, 4</ls>
+  Content: Mālav. i, 4
+  Expected: https://sanskrit-lexicon-scans.github.io/malavikagni/app3?1,4
 
-LS Tag: <ls>Kathās. cx, 34.</ls>
-  Content: Kathās. cx, 34.
-  Expected: https://sanskrit-lexicon-scans.github.io/kss/index.html?110,34
+LS Tag: <ls>Mālav. ii, 5/6</ls>
+  Content: Mālav. ii, 5/6
+  Expected: https://sanskrit-lexicon-scans.github.io/malavikagni/app3?2,5
 
-LS Tag: <ls>Kathās. cii, 119</ls>
-  Content: Kathās. cii, 119
-  Expected: https://sanskrit-lexicon-scans.github.io/kss/index.html?102,119
+LS Tag: <ls>Mālav. iv, 4/5, 6 f.</ls>
+  Content: Mālav. iv, 4/5, 6 f.
+  Expected: https://sanskrit-lexicon-scans.github.io/malavikagni/app3?4,4
 
-LS Tag: <ls>Kathās. cvii, 8.</ls>
-  Content: Kathās. cvii, 8.
-  Expected: https://sanskrit-lexicon-scans.github.io/kss/index.html?107,8
+LS Tag: <ls>Mālav. ii, 13/14.</ls>
+  Content: Mālav. ii, 13/14.
+  Expected: https://sanskrit-lexicon-scans.github.io/malavikagni/app3?2,13
 
-LS Tag: <ls>Kathās. cviii, 177.</ls>
-  Content: Kathās. cviii, 177.
-  Expected: https://sanskrit-lexicon-scans.github.io/kss/index.html?108,177
+LS Tag: <ls>Mālav. iii, 19</ls>
+  Content: Mālav. iii, 19
+  Expected: https://sanskrit-lexicon-scans.github.io/malavikagni/app3?3,19
 
-LS Tag: <ls>Kathās. cxi, 70</ls>
-  Content: Kathās. cxi, 70
-  Expected: https://sanskrit-lexicon-scans.github.io/kss/index.html?111,70
+LS Tag: <ls n="Mālav.">iv, 13</ls>
+  Content: Mālav.iv, 13
+  Expected: https://sanskrit-lexicon-scans.github.io/malavikagni/app3?4,13
 
-LS Tag: <ls n="Kathās. cxi,">81</ls>
-  Content: Kathās. cxi,81
-  Expected: https://sanskrit-lexicon-scans.github.io/kss/index.html?111,81
+LS Tag: <ls>Mālav. i, 3/4</ls>
+  Content: Mālav. i, 3/4
+  Expected: https://sanskrit-lexicon-scans.github.io/malavikagni/app3?1,3
 
-LS Tag: <ls>Kathās. xc, 110</ls>
-  Content: Kathās. xc, 110
-  Expected: https://sanskrit-lexicon-scans.github.io/kss/index.html?90,110
+LS Tag: <ls n="Mālav. i,">18/19</ls>
+  Content: Mālav. i,18/19
+  Expected: https://sanskrit-lexicon-scans.github.io/malavikagni/app3?1,18
 
-LS Tag: <ls>Kathās. cxviii, 5</ls>
-  Content: Kathās. cxviii, 5
-  Expected: https://sanskrit-lexicon-scans.github.io/kss/index.html?118,5
+LS Tag: <ls>Mālav. iii, 19/20.</ls>
+  Content: Mālav. iii, 19/20.
+  Expected: https://sanskrit-lexicon-scans.github.io/malavikagni/app3?3,19
 
-LS Tag: <ls>Kathās. ci, 290.</ls>
-  Content: Kathās. ci, 290.
-  Expected: https://sanskrit-lexicon-scans.github.io/kss/index.html?101,290
+LS Tag: <ls>Mālav. iii, 6.</ls>
+  Content: Mālav. iii, 6.
+  Expected: https://sanskrit-lexicon-scans.github.io/malavikagni/app3?3,6
 
-LS Tag: <ls>Kathās. cxx, 65.</ls>
-  Content: Kathās. cxx, 65.
-  Expected: https://sanskrit-lexicon-scans.github.io/kss/index.html?120,65
+LS Tag: <ls>Mālav. v, 4</ls>
+  Content: Mālav. v, 4
+  Expected: https://sanskrit-lexicon-scans.github.io/malavikagni/app3?5,4
 
-LS Tag: <ls>Kathās. xci, 17</ls>
-  Content: Kathās. xci, 17
-  Expected: https://sanskrit-lexicon-scans.github.io/kss/index.html?91,17
+LS Tag: <ls>Mālav. iv, 8</ls>
+  Content: Mālav. iv, 8
+  Expected: https://sanskrit-lexicon-scans.github.io/malavikagni/app3?4,8
 
-LS Tag: <ls n="Kathās. xci,">19.</ls>
-  Content: Kathās. xci,19.
-  Expected: https://sanskrit-lexicon-scans.github.io/kss/index.html?91,19
+LS Tag: <ls>Mālav. v, 9/10</ls>
+  Content: Mālav. v, 9/10
+  Expected: https://sanskrit-lexicon-scans.github.io/malavikagni/app3?5,9
 
-LS Tag: <ls>Kathās. ci, 266.</ls>
-  Content: Kathās. ci, 266.
-  Expected: https://sanskrit-lexicon-scans.github.io/kss/index.html?101,266
+LS Tag: <ls>Mālav. v, 11/12</ls>
+  Content: Mālav. v, 11/12
+  Expected: https://sanskrit-lexicon-scans.github.io/malavikagni/app3?5,11
 
-LS Tag: <ls>Kathās. cxvii, 92.</ls>
-  Content: Kathās. cxvii, 92.
-  Expected: https://sanskrit-lexicon-scans.github.io/kss/index.html?117,92
+LS Tag: <ls>Mālav. i, 8/9</ls>
+  Content: Mālav. i, 8/9
+  Expected: https://sanskrit-lexicon-scans.github.io/malavikagni/app3?1,8
 
-Matched + No Pattern: 42819 (42819)
+Matched + No Pattern: 42790 (42790)
 
-NOTE: MW dictionary has 0 mismatches and 596 no-pattern cases.
+NOTE: MW dictionary has 29 mismatches and 108 no-pattern cases.
 This is expected as MW uses different conventions.
 00:01 +0 -1: LS URL generation - MW dictionary full test [E]
   Expected: <true>
-    Actual: <0>
+    Actual: <false>
   
   package:matcher                                     expect
   package:flutter_test/src/widget_tester.dart 473:18  expect
-  test/ls_url_mw_test.dart 104:5                      main.<fn>
+  test/ls_url_mw_test.dart 103:5                      main.<fn>
   
 00:01 +0 -1: (tearDownAll)
 00:01 +0 -1: Some tests failed.
