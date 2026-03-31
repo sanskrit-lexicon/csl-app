@@ -219,6 +219,23 @@ class LsService {
   }
 
   static String? extractFirstKey(String data) {
+    // Specific multi-word prefixes for SCH and logic
+    const complexPrefixes = [
+      'R. ed. Bomb.',
+      'Bhāg. P.',
+      'Varāh. Bṛh. S.',
+      'Mārk. P.',
+      'Śat. Br.',
+      'Sāh. D.',
+      'Verz. d. Oxf. H.',
+    ];
+
+    for (final complex in complexPrefixes) {
+      if (data.startsWith(complex)) {
+        return complex;
+      }
+    }
+
     final match = RegExp(r"^([^ .,']+\.?)").firstMatch(data);
     return match?.group(1);
   }
@@ -368,8 +385,14 @@ class LsService {
             return hrefRamayana(data1, dict);
           } else if (url == 'ramayanaSchUrl') {
             return ramayanaSchUrl(data1);
+          } else if (url == 'ramayanaBombSchUrl') {
+            return ramayanaBombSchUrl(data1);
           } else if (url == 'ramayanaBombayUrl') {
             return hrefRamayanaBombay(data1);
+          } else if (url == 'bhagSchUrl') {
+            return bhagSchUrl(data1);
+          } else if (url == 'bhagSchUrl2') {
+            return bhagSchUrl2(data1);
           } else if (url == 'dhatuUrl') {
             return hrefDhatu(data1);
           }
@@ -435,7 +458,9 @@ class LsService {
       if (outerMatch != null) {
         final outerCondition = outerMatch.group(1)!;
         final urlTrue = outerMatch.group(2)!;
-        final rest = outerMatch.group(3)!;
+        // Strip trailing ')' that comes from the wrapping parens of the template
+        var rest = outerMatch.group(3)!;
+        if (rest.endsWith(')')) rest = rest.substring(0, rest.length - 1);
 
         final orParts = outerCondition.split('||');
         for (final part in orParts) {
@@ -451,13 +476,12 @@ class LsService {
                 var resultUrl = urlTrue;
                 for (int i = 1; i <= match.groupCount; i++) {
                   var replacement = match.group(i) ?? '';
-                  final placeholder = r'$' + i.toString();
                   // For the conditional result replacement, we also want Roman conversion
                   final romanVal = romanInt(replacement);
                   if (romanVal > 0) {
                     replacement = romanVal.toString();
                   }
-                  resultUrl = resultUrl.replaceAll(placeholder, replacement);
+                  resultUrl = resultUrl.replaceAll(r'$' + i.toString(), replacement);
                 }
                 return resultUrl;
               }
@@ -472,6 +496,7 @@ class LsService {
           }
         }
 
+        // Handle: rest is a nested ternary (contains '? "')
         if (rest.contains('? "')) {
           final elseMatch = RegExp(r':\s*"([^"]+)"$').firstMatch(rest);
           if (elseMatch != null) {
@@ -482,6 +507,19 @@ class LsService {
             }
             return resultUrl;
           }
+        }
+
+        // Handle: rest is a plain quoted string "url_false" (simple else branch)
+        final plainElseMatch = RegExp(r'^"([^"]+)"$').firstMatch(rest.trim());
+        if (plainElseMatch != null) {
+          var resultUrl = plainElseMatch.group(1)!;
+          for (int i = 1; i <= match.groupCount; i++) {
+            var replacement = match.group(i) ?? '';
+            final romanVal = romanInt(replacement);
+            if (romanVal > 0) replacement = romanVal.toString();
+            resultUrl = resultUrl.replaceAll(r'$' + i.toString(), replacement);
+          }
+          return resultUrl;
         }
       }
 
@@ -657,6 +695,48 @@ class LsService {
       return 'https://sanskrit-lexicon-scans.github.io/ramayanabom/app1?$k,$s,$v';
     }
     return null;
+  }
+
+  // R. ed. Bomb. X,Y,Z -> always ramayanabom
+  static String? ramayanaBombSchUrl(String data1) {
+    final regex = RegExp(
+        r'^(?:R\. ed\. Bomb\.|R\.)\s*([0-9ivxlcmIVXLCM]+),\s*([0-9]+),\s*([0-9]+)');
+    final match = regex.firstMatch(data1);
+    if (match == null) return null;
+    final kStr = match.group(1)!;
+    final k = int.tryParse(kStr) ?? romanInt(kStr);
+    final s = match.group(2)!;
+    final v = match.group(3)!;
+    return 'https://sanskrit-lexicon-scans.github.io/ramayanabom/app1?$k,$s,$v';
+  }
+
+  // Bhāg. P. X,Y,Z  -> bhagp_bom (skandha 10) or bhagp_bur (others)
+  static String? bhagSchUrl(String data1) {
+    final regex = RegExp(
+        r'(?:Bhāg\.\s*P\.|Bhāg\.|BhP\.)\s*([0-9]+),\s*([0-9]+),\s*([0-9]+)');
+    final match = regex.firstMatch(data1);
+    if (match == null) return null;
+    final s = match.group(1)!;
+    final a = match.group(2)!;
+    final v = match.group(3)!;
+    if (s == '10') {
+      return 'https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1/?$s,$a,$v';
+    }
+    return 'https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?$s,$a,$v';
+  }
+
+  // Bhāg. P. X,Y  -> bhagp_bom (skandha 10) or bhagp_bur (others)
+  static String? bhagSchUrl2(String data1) {
+    final regex =
+        RegExp(r'(?:Bhāg\.\s*P\.|Bhāg\.|BhP\.)\s*([0-9]+),\s*([0-9]+)');
+    final match = regex.firstMatch(data1);
+    if (match == null) return null;
+    final s = match.group(1)!;
+    final a = match.group(2)!;
+    if (s == '10') {
+      return 'https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1/?$s,$a';
+    }
+    return 'https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?$s,$a';
   }
 
   static String? hrefPanini(String data1, String dict) {

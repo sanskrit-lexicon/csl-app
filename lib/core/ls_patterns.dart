@@ -1407,168 +1407,243 @@ class LsPatterns {
   }
 
   static final List<LsPattern> sch = [
+    // R. ed. Bomb. specific (High priority)
+    LsPattern(
+      prefixes: ['R. ed. Bomb.'],
+      regex: r'^(R\. ed\. Bomb\.)\s*([0-9ivxlcmIVXLCM]+),\s*([0-9]+),\s*([0-9]+)',
+      urlTemplate: 'ramayanaBombSchUrl',
+    ),
+    // Bhāg. P. specific
+    LsPattern(
+      prefixes: ['Bhāg. P.'],
+      regex: r'^(Bhāg\. P\.)\s*([0-9]+),\s*([0-9]+),\s*([0-9]+)',
+      urlTemplate: 'bhagSchUrl',
+    ),
+    LsPattern(
+      prefixes: ['Bhāg. P.'],
+      regex: r'^(Bhāg\. P\.)\s*([0-9]+),\s*([0-9]+)',
+      urlTemplate: 'bhagSchUrl2',
+    ),
     // Panini for SCH
     LsPattern(
       prefixes: ['P.', 'Pāṇ.'],
-      regex: r'^(P\.|Pāṇ\.) *([0-9]+), *([0-9]+), *([0-9]+)',
+      regex: r'^(Pāṇ\.|P\.)\s*([0-9]+),\s*([0-9]+),\s*([0-9]+)',
       urlTemplate: 'https://ashtadhyayi.com/sutraani/\$2/\$3/\$4',
     ),
     LsPattern(
       prefixes: ['P.', 'Pāṇ.'],
-      regex: r'^(P\.|Pāṇ\.) *([0-9]+), *([0-9]+)',
+      regex: r'^(Pāṇ\.|P\.)\s*([0-9]+),\s*([0-9]+)',
       urlTemplate: 'https://ashtadhyayi.com/sutraani/\$2/\$3',
     ),
-    // Ramayana for SCH
+    // Ramayana (generic R. after ed. Bomb.)
     LsPattern(
       prefixes: ['R.'],
-      regex: r'^(R\.) *([0-9ivxlcmIVXLCM]+), *([0-9]+), *([0-9]+)',
+      regex: r'^(R\.)\s*([0-9ivxlcmIVXLCM]+),\s*([0-9]+),\s*([0-9]+)',
       urlTemplate: 'ramayanaSchUrl',
-    ),
-    LsPattern(
-      prefixes: ['R.'],
-      regex: r'^(R\. ed\. Bomb\.) *([0-9ivxlcmIVXLCM]+), *([0-9]+), *([0-9]+)',
-      urlTemplate: 'https://sanskrit-lexicon-scans.github.io/ramayanabom/app1?\$2,\$3,\$4',
     ),
     // Mahabharata for SCH
     LsPattern(
       prefixes: ['MBh.', 'MBH.'],
-      regex: r'^(MBh\.|MBH\.) *([0-9]+), *([0-9]+), *([0-9]+)',
-      urlTemplate: 'https://sanskrit-lexicon-scans.github.io/mbhbomb/app1?\$2,\$3,\$4',
+      regex: r'^(MBh\.|MBH\.)\s*([0-9]+),\s*([0-9]+),\s*([0-9]+)',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/mbhbomb/app1?\$2,\$3,\$4',
     ),
     LsPattern(
       prefixes: ['MBh.', 'MBH.'],
-      regex: r'^(MBh\.|MBH\.) *([0-9]+), *([0-9]+)',
+      regex: r'^(MBh\.|MBH\.)\s*([0-9]+),\s*([0-9]+)',
       urlTemplate: 'https://sanskrit-lexicon-scans.github.io/mbhcalc?\$2.\$3',
     ),
     // Subhashita for SCH
     LsPattern(
       prefixes: ['Spr.'],
-      regex: r'^(Spr\.) *([0-9]+)',
-      urlTemplate: 'https://sanskrit-lexicon-scans.github.io/boesp2/web1/boesp.html?\$2',
-    ),
-    // Bhagavata Purana for SCH
-    LsPattern(
-      prefixes: ['Bhāg. P.', 'Bhāg.', 'BhP.'],
-      regex: r'^(Bhāg\. P\.|Bhāg\.|BhP\.)\s*([0-9]+),\s*([0-9]+),\s*([0-9]+)',
+      regex: r'^(Spr\.)\s*([0-9]+)',
       urlTemplate:
-          '(\$2 == "10" ? "https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1/?\$2,\$3,\$4" : "https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?\$2,\$3,\$4")',
+          'https://sanskrit-lexicon-scans.github.io/boesp2/web1/boesp.html?\$2',
+    ),
+    // Bhagavata Purana (generic variants)
+    LsPattern(
+      prefixes: ['Bhāg.', 'BhP.'],
+      regex: r'^((?:Bhāg\.|BhP\.))\s*([0-9]+),\s*([0-9]+),\s*([0-9]+)',
+      urlTemplate: 'bhagSchUrl',
     ),
     LsPattern(
-      prefixes: ['Bhāg. P.', 'Bhāg.', 'BhP.'],
-      regex: r'^(Bhāg\. P\.|Bhāg\.|BhP\.)\s*([0-9]+),\s*([0-9]+)',
+      prefixes: ['Bhāg.', 'BhP.'],
+      regex: r'^((?:Bhāg\.|BhP\.))\s*([0-9]+),\s*([0-9]+)',
+      urlTemplate: 'bhagSchUrl2',
+    ),
+    // Varaha Brihat Samhita
+    LsPattern(
+      prefixes: ['Varāh. Bṛh. S.'],
+      regex: r'^(Varāh\. Bṛh\. S\.)\s*([0-9ivxlcmIVXLCM]+),\s*([0-9]+),\s*([0-9]+)',
       urlTemplate:
-          '(\$2 == "10" ? "https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1/?\$2,\$3" : "https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?\$2,\$3")',
-    ),
-    // Varaha Brihat Samhita for SCH
-    LsPattern(
-      prefixes: ['Varāh. Bṛh. S.', 'Varāh.', 'VarBṛS.'],
-      regex: r'^(Varāh\. Bṛh\. S\.|Varāh\.|VarBṛS\.) *([0-9ivxlcmIVXLCM]+), *([0-9]+), *([0-9]+)',
-      urlTemplate: 'https://sanskrit-lexicon-scans.github.io/brihatsam/app1?\$2,\$3,\$4',
+          'https://sanskrit-lexicon-scans.github.io/brihatsam/app1?\$2,\$3,\$4',
     ),
     LsPattern(
-      prefixes: ['Varāh. Bṛh. S.', 'Varāh.', 'VarBṛS.'],
-      regex: r'^(Varāh\. Bṛh\. S\.|Varāh\.|VarBṛS\.) *([0-9ivxlcmIVXLCM]+), *([0-9]+)',
-      urlTemplate: 'https://sanskrit-lexicon-scans.github.io/brihatsam/app1?\$2,\$3',
+      prefixes: ['Varāh. Bṛh. S.'],
+      regex: r'^(Varāh\. Bṛh\. S\.)\s*([0-9ivxlcmIVXLCM]+),\s*([0-9]+)',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/brihatsam/app1?\$2,\$3',
     ),
-    // Markandeya Purana for SCH
+    LsPattern(
+      prefixes: ['Varāh.', 'VarBṛS.'],
+      regex: r'^(Varāh\.|VarBṛS\.)\s*([0-9ivxlcmIVXLCM]+),\s*([0-9]+),\s*([0-9]+)',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/brihatsam/app1?\$2,\$3,\$4',
+    ),
+    // Markandeya Purana
+    LsPattern(
+      prefixes: ['Mārk. P.'],
+      regex: r'^(Mārk\. P\.)\s*([0-9ivxlcmIVXLCM]+),\s*([0-9]+)',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/markandeyapurana/app1?\$2,\$3',
+    ),
     LsPattern(
       prefixes: ['Mārk.', 'MārkP.'],
-      regex: r'^(Mārk\. P\.|MārkP\.) *([0-9ivxlcmIVXLCM]+), *([0-9]+)',
-      urlTemplate: 'https://sanskrit-lexicon-scans.github.io/markandeyapurana/app1?\$2,\$3',
+      regex: r'^(Mārk\.|MārkP\.)\s*([0-9ivxlcmIVXLCM]+),\s*([0-9]+)',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/markandeyapurana/app1?\$2,\$3',
     ),
-    // Mn. / M.
+    // Mn. / M. for SCH
     LsPattern(
       prefixes: ['Mn.', 'M.'],
-      regex: r'^(Mn\.|M\.) *([0-9ivxlcmIVXLCM]+), *([0-9]+)',
-      urlTemplate: 'https://sanskrit-lexicon-scans.github.io/manu/index.html?\$2,\$3',
+      regex: r'^(Mn\.|M\.)\s*([0-9ivxlcmIVXLCM]+),\s*([0-9]+)',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/manu/index.html?\$2,\$3',
     ),
     // Sahitya Darpana
     LsPattern(
-      prefixes: ['Sāh.'],
-      regex: r'^(Sāh\. D\.) *([0-9ivxlcmIVXLCM]+), *([0-9]+)',
-      urlTemplate: 'https://sanskrit-lexicon-scans.github.io/sahityadarpana/app1?\$2,\$3',
+      prefixes: ['Sāh. D.'],
+      regex: r'^(Sāh\. D\.)\s*([0-9ivxlcmIVXLCM]+),\s*([0-9]+)',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/sahityadarpana/app1?\$2,\$3',
+    ),
+    LsPattern(
+      prefixes: ['Sāh. D.'],
+      regex: r'^(Sāh\. D\.)\s*([0-9ivxlcmIVXLCM]+)',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/sahityadarpana/app1?\$2',
     ),
     LsPattern(
       prefixes: ['Sāh.'],
-      regex: r'^(Sāh\. D\.) *([0-9ivxlcmIVXLCM]+)',
-      urlTemplate: 'https://sanskrit-lexicon-scans.github.io/sahityadarpana/app1?\$2',
+      regex: r'^(Sāh\.)\s*([0-9ivxlcmIVXLCM]+),\s*([0-9]+)',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/sahityadarpana/app1?\$2,\$3',
+    ),
+    LsPattern(
+      prefixes: ['Sāh.'],
+      regex: r'^(Sāh\.)\s*([0-9ivxlcmIVXLCM]+)',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/sahityadarpana/app1?\$2',
     ),
     // Malavikagnimitra
     LsPattern(
       prefixes: ['Mālav.'],
-      regex: r'^(Mālav\.) *([0-9ivxlcmIVXLCM]+), *([0-9]+)',
-      urlTemplate: 'https://sanskrit-lexicon-scans.github.io/malavikagni/app1?\$2,\$3',
+      regex: r'^(Mālav\.)\s*([0-9ivxlcmIVXLCM]+),\s*([0-9]+)',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/malavikagni/app2?\$2,\$3',
     ),
     LsPattern(
       prefixes: ['Mālav.'],
-      regex: r'^(Mālav\.) *([0-9]+)',
-      urlTemplate: 'https://sanskrit-lexicon-scans.github.io/malavikagni/app1?\$2',
+      regex: r'^(Mālav\.)\s*([0-9]+)',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/malavikagni/app1?\$2',
+    ),
+    // Vikramorvashiya
+    LsPattern(
+      prefixes: ['Vikram.', 'Vikr.'],
+      regex: r'^(Vikram\.|Vikr\.)\s*([0-9ivxlcmIVXLCM]+),\s*([0-9]+)',
+      urlTemplate: 'https://sanskrit-lexicon-scans.github.io/vikramor/app2?\$2,\$3',
+    ),
+    LsPattern(
+      prefixes: ['Vikram.', 'Vikr.'],
+      regex: r'^(Vikram\.|Vikr\.)\s*([0-9]+)',
+      urlTemplate: 'https://sanskrit-lexicon-scans.github.io/vikramor/app1?\$2',
     ),
     // Vopadeva
     LsPattern(
       prefixes: ['Vop.'],
-      regex: r'^(Vop\.) *([0-9ivxlcmIVXLCM]+), *([0-9]+)',
-      urlTemplate: 'https://sanskrit-lexicon-scans.github.io/vopadeva/app1?\$2,\$3',
+      regex: r'^(Vop\.)\s*([0-9ivxlcmIVXLCM]+),\s*([0-9]+)',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/mugdhabodha/app1?\$2,\$3',
     ),
     // Halayudha
     LsPattern(
       prefixes: ['Halāy.'],
-      regex: r'^(Halāy\.) *([0-9ivxlcmIVXLCM]+), *([0-9]+)',
+      regex: r'^(Halāy\.)\s*([0-9ivxlcmIVXLCM]+),\s*([0-9]+)',
       urlTemplate: 'https://sanskrit-lexicon-scans.github.io/armh2/app1?\$2,\$3',
     ),
     // Amara Kosha
     LsPattern(
       prefixes: ['AK.'],
-      regex: r'^(AK\.) *([0-9]+), *([0-9]+), *([0-9]+), *([0-9]+)',
-      urlTemplate: 'https://sanskrit-lexicon-scans.github.io/amara_dlc/app1?\$2,\$3,\$4,\$5',
+      regex: r'^(AK\.)\s*([0-9]+),\s*([0-9]+),\s*([0-9]+),\s*([0-9]+)',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/amara_dlc/app1?\$2,\$3,\$4,\$5',
     ),
     LsPattern(
       prefixes: ['AK.'],
-      regex: r'^(AK\.) *([0-9]+), *([0-9]+), *([0-9]+)',
-      urlTemplate: 'https://sanskrit-lexicon-scans.github.io/amara_dlc/app1?\$2,\$3,\$4',
+      regex: r'^(AK\.)\s*([0-9]+),\s*([0-9]+),\s*([0-9]+)',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/amara_dlc/app1?\$2,\$3,\$4',
+    ),
+    // Kathasaritsagara
+    LsPattern(
+      prefixes: ['Kathās.', 'KSS.'],
+      regex: r'^(Kathās\.|KSS\.)\s*([0-9ivxlcmIVXLCM]+),\s*([0-9]+)',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/kss/index.html?\$2,\$3',
+    ),
+    // Oxford Catalogue
+    LsPattern(
+      prefixes: ['Verz. d. Oxf. H.'],
+      regex: r'^(Verz\. d\. Oxf\. H\.)\s*([0-9]+)',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/Oxf_Cat_Aufrecht/index.html?\$2',
+    ),
+    LsPattern(
+      prefixes: ['Verz.'],
+      regex: r'^(Verz\.)\s+([0-9]+)',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/Oxf_Cat_Aufrecht/index.html?\$2',
     ),
     // Vajasasanhita
     LsPattern(
       prefixes: ['VS.'],
-      regex: r'^(VS\.) *([0-9]+), *([0-9]+)',
+      regex: r'^(VS\.)\s*([0-9]+),\s*([0-9]+)',
       urlTemplate: 'https://sanskrit-lexicon-scans.github.io/vajasasa/app1?\$2,\$3',
     ),
     // Taittiriya Samhita
     LsPattern(
       prefixes: ['TS.'],
-      regex: r'^(TS\.) *([0-9]+), *([0-9]+), *([0-9]+), *([0-9]+)',
-      urlTemplate: 'https://sanskrit-lexicon-scans.github.io/taittiriyas/app1?\$2,\$3,\$4,\$5',
+      regex: r'^(TS\.)\s*([0-9]+),\s*([0-9]+),\s*([0-9]+),\s*([0-9]+)',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/taittiriyas/app1?\$2,\$3,\$4,\$5',
     ),
     LsPattern(
       prefixes: ['TS.'],
-      regex: r'^(TS\.) *([0-9]+), *([0-9]+), *([0-9]+)',
-      urlTemplate: 'https://sanskrit-lexicon-scans.github.io/taittiriyas/app1?\$2,\$3,\$4',
+      regex: r'^(TS\.)\s*([0-9]+),\s*([0-9]+),\s*([0-9]+)',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/taittiriyas/app1?\$2,\$3,\$4',
     ),
     // Shatapatha Brahmana
     LsPattern(
-      prefixes: ['ŚBr.', 'Śat. Br.'],
-      regex: r'^(ŚBr\.|Śat\. Br\.) *([0-9]+), *([0-9]+), *([0-9]+), *([0-9]+)',
-      urlTemplate: 'https://sanskrit-lexicon-scans.github.io/shatapathabr/app1?\$2,\$3,\$4,\$5',
+      prefixes: ['Śat. Br.'],
+      regex: r'^(Śat\. Br\.)\s*([0-9]+),\s*([0-9]+),\s*([0-9]+),\s*([0-9]+)',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/shatapathabr/app1?\$2,\$3,\$4,\$5',
+    ),
+    LsPattern(
+      prefixes: ['ŚBr.'],
+      regex: r'^(ŚBr\.)\s*([0-9]+),\s*([0-9]+),\s*([0-9]+),\s*([0-9]+)',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/shatapathabr/app1?\$2,\$3,\$4,\$5',
     ),
     // Harivansha
     LsPattern(
       prefixes: ['H.'],
-      regex: r'^(H\.) *([0-9]+)[.]?',
+      regex: r'^(H\.)\s*([0-9]+)[.]?',
       urlTemplate: 'https://sanskrit-lexicon-scans.github.io/harivamsa/app1?\$2',
     ),
-    // Kathasaritsagara
-    LsPattern(
-      prefixes: ['Kathās.', 'KSS.'],
-      regex: r'^(Kathās\.|KSS\.) *([0-9ivxlcmIVXLCM]+), *([0-9]+)',
-      urlTemplate: 'https://sanskrit-lexicon-scans.github.io/kss/index.html?\$2,\$3',
-    ),
-    // Oxford Catalogue
-    LsPattern(
-      prefixes: ['Verz.'],
-      regex: r'^(Verz\. d\. Oxf\. H\.) *([0-9]+)',
-      urlTemplate: 'https://sanskrit-lexicon-scans.github.io/Oxf_Cat_Aufrecht/index.html?\$2',
-    ),
-    // Include others from mw that are shared but check prefixes
-    ...mw.where((p) => !['R.', 'MBh.', 'MBH.', 'Spr.', 'P.', 'Pāṇ.', 'BhP.', 'Bhāg.', 'Bhāg. P.', 'VarBṛS.', 'Varāh.', 'Varāh. Bṛh. S.', 'MārkP.', 'Mārk.', 'Mn.', 'M.', 'Sāh.', 'Mālav.', 'Vop.', 'Halāy.', 'AK.', 'VS.', 'TS.', 'ŚBr.', 'Śat. Br.', 'Kathās.', 'KSS.', 'Verz.'].any((pre) => p.prefixes.contains(pre))),
+    // Include others from mw that are shared but check prefixes carefully
+    ...mw.where((p) => !['R.', 'MBh.', 'MBH.', 'Spr.', 'P.', 'Pāṇ.', 'BhP.', 'Bhāg.', 'Bhāg. P.', 'VarBṛS.', 'Varāh.', 'Varāh. Bṛh. S.', 'MārkP.', 'Mārk.', 'Mārk. P.', 'Mn.', 'M.', 'Sāh.', 'Sāh. D.', 'Mālav.', 'Vikr.', 'Vikram.', 'VIKR.', 'VIKRAM.', 'Vop.', 'Halāy.', 'AK.', 'VS.', 'TS.', 'ŚBr.', 'Śat. Br.', 'Kathās.', 'KSS.', 'Verz.', 'Verz. d. Oxf. H.'].any((pre) => p.prefixes.contains(pre))),
   ];
 }

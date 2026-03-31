@@ -4,148 +4,96 @@
 
 ========== STATISTICS (SCH Dictionary) ==========
 Total tested: 3386
-Matched: 3167 (93.53%)
-Mismatched: 13 (0.38%)
-No pattern found: 206 (6.08%)
+Matched: 3370 (99.53%)
+Mismatched: 9 (0.27%)
+No pattern found: 7 (0.21%)
 
 ========== SAMPLE MISMATCHES ==========
-LS Tag: <ls>Vikr. 55,10.</ls>
-  Content: Vikr. 55,10.
-  Expected: https://sanskrit-lexicon-scans.github.io/vikramor/app2?55,10
-  Generated: https://sanskrit-lexicon-scans.github.io/vikramor_mw/app1?55,10
+LS Tag: <ls>Bhāg. P. 11,9,30.</ls>
+  Content: Bhāg. P. 11,9,30.
+  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1/?11,9,30
+  Generated: https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?11,9,30
 
-LS Tag: <ls>Vikr. 64,3.</ls>
-  Content: Vikr. 64,3.
-  Expected: https://sanskrit-lexicon-scans.github.io/vikramor/app2?64,3
-  Generated: https://sanskrit-lexicon-scans.github.io/vikramor_mw/app1?64,3
+LS Tag: <ls n="Bhāg. P.">11,29,12.</ls>
+  Content: Bhāg. P.11,29,12.
+  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1/?11,29,12
+  Generated: https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?11,29,12
 
-LS Tag: <ls>Vikr. 86,11.</ls>
-  Content: Vikr. 86,11.
-  Expected: https://sanskrit-lexicon-scans.github.io/vikramor/app2?86,11
-  Generated: https://sanskrit-lexicon-scans.github.io/vikramor_mw/app1?86,11
+LS Tag: <ls>Bhāg. P. 11,11,7.</ls>
+  Content: Bhāg. P. 11,11,7.
+  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1/?11,11,7
+  Generated: https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?11,11,7
 
-LS Tag: <ls>Vikr. 49,11.</ls>
-  Content: Vikr. 49,11.
-  Expected: https://sanskrit-lexicon-scans.github.io/vikramor/app2?49,11
-  Generated: https://sanskrit-lexicon-scans.github.io/vikramor_mw/app1?49,11
+LS Tag: <ls>Bhāg. P. 11,8,31.</ls>
+  Content: Bhāg. P. 11,8,31.
+  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1/?11,8,31
+  Generated: https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?11,8,31
 
-LS Tag: <ls>Vikr. 81,11</ls>
-  Content: Vikr. 81,11
-  Expected: https://sanskrit-lexicon-scans.github.io/vikramor/app2?81,11
-  Generated: https://sanskrit-lexicon-scans.github.io/vikramor_mw/app1?81,11
+LS Tag: <ls>Bhāg. P. 11,26,4.</ls>
+  Content: Bhāg. P. 11,26,4.
+  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1/?11,26,4
+  Generated: https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?11,26,4
 
-LS Tag: <ls>Mālav. 22,19.</ls>
-  Content: Mālav. 22,19.
-  Expected: https://sanskrit-lexicon-scans.github.io/malavikagni/app2?22,19
-  Generated: https://sanskrit-lexicon-scans.github.io/malavikagni/app1?22,19
+LS Tag: <ls>Bhāg. P. 11,26,33.</ls>
+  Content: Bhāg. P. 11,26,33.
+  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1/?11,26,33
+  Generated: https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?11,26,33
 
-LS Tag: <ls>Mālav. 71,22.</ls>
-  Content: Mālav. 71,22.
-  Expected: https://sanskrit-lexicon-scans.github.io/malavikagni/app2?71,22
-  Generated: https://sanskrit-lexicon-scans.github.io/malavikagni/app1?71,22
+LS Tag: <ls>Bhāg. P. 12,2,6.</ls>
+  Content: Bhāg. P. 12,2,6.
+  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1/?12,2,6
+  Generated: https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?12,2,6
 
-LS Tag: <ls>Vop. 6,53,</ls>
-  Content: Vop. 6,53,
-  Expected: https://sanskrit-lexicon-scans.github.io/mugdhabodha/app1?6,53
-  Generated: https://sanskrit-lexicon-scans.github.io/vopadeva/app1?6,53
+LS Tag: <ls>Bhāg. P. 11,29,34.</ls>
+  Content: Bhāg. P. 11,29,34.
+  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1/?11,29,34
+  Generated: https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?11,29,34
 
-LS Tag: <ls>Vikram. 39,12.</ls>
-  Content: Vikram. 39,12.
-  Expected: https://sanskrit-lexicon-scans.github.io/vikramor/app2?39,12
-  Generated: https://sanskrit-lexicon-scans.github.io/vikramor_mw/app1?39,12
-
-LS Tag: <ls>Vikram. 78,13.</ls>
-  Content: Vikram. 78,13.
-  Expected: https://sanskrit-lexicon-scans.github.io/vikramor/app2?78,13
-  Generated: https://sanskrit-lexicon-scans.github.io/vikramor_mw/app1?78,13
-
-LS Tag: <ls>Vikram. 78,10.</ls>
-  Content: Vikram. 78,10.
-  Expected: https://sanskrit-lexicon-scans.github.io/vikramor/app2?78,10
-  Generated: https://sanskrit-lexicon-scans.github.io/vikramor_mw/app1?78,10
-
-LS Tag: <ls>Vikram. 73,4.</ls>
-  Content: Vikram. 73,4.
-  Expected: https://sanskrit-lexicon-scans.github.io/vikramor/app2?73,4
-  Generated: https://sanskrit-lexicon-scans.github.io/vikramor_mw/app1?73,4
-
-LS Tag: <ls>Vop. 21,17</ls>
-  Content: Vop. 21,17
-  Expected: https://sanskrit-lexicon-scans.github.io/mugdhabodha/app1?21,17
-  Generated: https://sanskrit-lexicon-scans.github.io/vopadeva/app1?21,17
+LS Tag: <ls>Bhāg. P. 12,6,58.</ls>
+  Content: Bhāg. P. 12,6,58.
+  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1/?12,6,58
+  Generated: https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?12,6,58
 
 
 ========== SAMPLES WITH NO PATTERN ==========
-LS Tag: <ls>Bhāg. P. 3,13,28.</ls>
-  Content: Bhāg. P. 3,13,28.
-  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?3,13,28
+LS Tag: <ls>Hār. 220.</ls>
+  Content: Hār. 220.
+  Expected: https://sanskrit-lexicon-scans.github.io/medini/app3?220
 
-LS Tag: <ls>Bhāg. P. 10,84,63.</ls>
-  Content: Bhāg. P. 10,84,63.
-  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1/?10,84,63
+LS Tag: <ls>Trik. 1,2,9.</ls>
+  Content: Trik. 1,2,9.
+  Expected: https://sanskrit-lexicon-scans.github.io/medini/app2?1,2,9
 
-LS Tag: <ls>Bhāg. P. 3,17,19.</ls>
-  Content: Bhāg. P. 3,17,19.
-  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?3,17,19
+LS Tag: <ls>Med. k. 109.</ls>
+  Content: Med. k. 109.
+  Expected: https://sanskrit-lexicon-scans.github.io/medini/app1?k,109
 
-LS Tag: <ls>Bhāg. P. 1,13,31.</ls>
-  Content: Bhāg. P. 1,13,31.
-  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?1,13,31
+LS Tag: <ls>Trik. 3,3,278</ls>
+  Content: Trik. 3,3,278
+  Expected: https://sanskrit-lexicon-scans.github.io/medini/app2?3,3,278
 
-LS Tag: <ls>Bhāg. P. 3,4,6.</ls>
-  Content: Bhāg. P. 3,4,6.
-  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?3,4,6
+LS Tag: <ls>Trik. 2,2,6.</ls>
+  Content: Trik. 2,2,6.
+  Expected: https://sanskrit-lexicon-scans.github.io/medini/app2?2,2,6
 
-LS Tag: <ls>Bhāg. P. 1,14,43</ls>
-  Content: Bhāg. P. 1,14,43
-  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?1,14,43
+LS Tag: <ls>Med. k. 202.</ls>
+  Content: Med. k. 202.
+  Expected: https://sanskrit-lexicon-scans.github.io/medini/app1?k,202
 
-LS Tag: <ls>Bhāg. P. 2,7,15.</ls>
-  Content: Bhāg. P. 2,7,15.
-  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?2,7,15
-
-LS Tag: <ls>Bhāg. P. 5,26,19.</ls>
-  Content: Bhāg. P. 5,26,19.
-  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?5,26,19
-
-LS Tag: <ls>Bhāg. P. 10,12,13.</ls>
-  Content: Bhāg. P. 10,12,13.
-  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1/?10,12,13
-
-LS Tag: <ls>Bhāg. P. 6,16,44</ls>
-  Content: Bhāg. P. 6,16,44
-  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?6,16,44
-
-LS Tag: <ls>Bhāg. P. 5,22,14.</ls>
-  Content: Bhāg. P. 5,22,14.
-  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?5,22,14
-
-LS Tag: <ls>Bhāg. P. 3,1,37.</ls>
-  Content: Bhāg. P. 3,1,37.
-  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?3,1,37
-
-LS Tag: <ls>Bhāg. P. 10,41,15.</ls>
-  Content: Bhāg. P. 10,41,15.
-  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1/?10,41,15
-
-LS Tag: <ls>Bhāg. P. 10,83,12.</ls>
-  Content: Bhāg. P. 10,83,12.
-  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1/?10,83,12
-
-LS Tag: <ls>Bhāg. P. 5,3,3.</ls>
-  Content: Bhāg. P. 5,3,3.
-  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?5,3,3
+LS Tag: <ls>Trik. 2,7,27.</ls>
+  Content: Trik. 2,7,27.
+  Expected: https://sanskrit-lexicon-scans.github.io/medini/app2?2,7,27
 
 Matched + No Pattern + Mismatched: 3386 (3386)
 
 This is expected as SCH uses different conventions.
-00:00 +0 -1: LS URL generation - SCH dictionary full test [E]
+00:01 +0 -1: LS URL generation - SCH dictionary full test [E]
   Expected: <0>
-    Actual: <13>
+    Actual: <9>
   
   package:matcher                                     expect
   package:flutter_test/src/widget_tester.dart 473:18  expect
   test/ls_url_sch_test.dart 99:5                      main.<fn>
   
-00:00 +0 -1: (tearDownAll)
-00:00 +0 -1: Some tests failed.
+00:01 +0 -1: (tearDownAll)
+00:01 +0 -1: Some tests failed.
