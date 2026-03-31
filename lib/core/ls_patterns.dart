@@ -309,17 +309,17 @@ class LsPatterns {
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/amara_dlc/app1?\$2,\$3,\$4',
     ),
-    // Amarakosha Colebrooke - 4 params (simplified pattern)
+    // Amarakosha Colebrooke - 4 params
     LsPattern(
       prefixes: ['COL.', 'COLEBR.'],
-      regex: r'^(COL[.|]COLEBR[.]) *([0-9]+), *([0-9]+), *([0-9]+), *([0-9]+)',
+      regex: r'^(COL|COLEBR)[.] *([0-9]+), *([0-9]+), *([0-9]+), *([0-9]+)',
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/amara_col/app1?\$2,\$3,\$4,\$5',
     ),
-    // Amarakosha Colebrooke - 3 params (simplified pattern)
+    // Amarakosha Colebrooke - 3 params
     LsPattern(
       prefixes: ['COL.', 'COLEBR.'],
-      regex: r'^(COL[.|]COLEBR[.]) *([0-9]+), *([0-9]+), *([0-9]+)',
+      regex: r'^(COL|COLEBR)[.] *([0-9]+), *([0-9]+), *([0-9]+)',
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/amara_col/app1?\$2,\$3,\$4',
     ),
