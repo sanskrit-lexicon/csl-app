@@ -226,56 +226,61 @@ class LsPatterns {
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/malavikagni/app1?\$2',
     ),
-    // Pancatantra Kosegarten
-    LsPattern(
-      prefixes: ['PAÑCAT.'],
-      regex: r'^(PAÑCAT[.]) *([0-9]+), *([0-9]+)',
-      urlTemplate:
-          'https://sanskrit-lexicon-scans.github.io/pantankose/app2?\$2,\$3',
-    ),
+    // Pancatantra Kosegarten - MORE SPECIFIC first (Roman numerals)
     LsPattern(
       prefixes: ['PAÑCAT.'],
       regex: r'^(PAÑCAT[.]) ([VI]+), *([0-9]+)',
       urlTemplate:
-          'https://sanskrit-lexicon-scans.github.io/pantankose/app1?\$2,\$3',
+          'https://sanskrit-lexicon-scans.github.io/pantankose/app1?\$2_lc,\$3',
     ),
+    // Pancatantra Kosegarten - Prastavana
     LsPattern(
       prefixes: ['PAÑCAT.'],
       regex: r'^(PAÑCAT[.]) *(Pr[.]) *([0-9]+)',
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/pantankose/app1?0,\$3',
     ),
-    // Pancatantra ed. orn.
+    // Pancatantra Kosegarten - numeric (page,line)
     LsPattern(
-      prefixes: ['PAÑCAT. ed. orn.', 'ed. orn.'],
-      regex: r'^(PAÑCAT[.] ed[.] orn[.|]ed[.] orn[.]) *([0-9]+), *([0-9]+)',
+      prefixes: ['PAÑCAT.'],
+      regex: r'^(PAÑCAT[.]) *([0-9]+), *([0-9]+)',
       urlTemplate:
-          'https://sanskrit-lexicon-scans.github.io/pantankoseorn/app1?\$2,\$3',
+          'https://sanskrit-lexicon-scans.github.io/pantankose/app2?\$2,\$3',
     ),
+    // Pancatantra ed. orn.
     LsPattern(
       prefixes: ['PAÑCAT. ed. orn.', 'ed. orn.'],
       regex: r'^(PAÑCAT[.] ed[.] orn[.|]ed[.] orn[.]) ([VI]+), *([0-9]+)',
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/pantankoseorn/app2?\$2,\$3',
     ),
-    // Hitopadesha
+    // Pancatantra ed. orn. - numeric
     LsPattern(
-      prefixes: ['HIT.'],
-      regex: r'^(HIT[.]) *([0-9]+), *([0-9]+)',
+      prefixes: ['PAÑCAT. ed. orn.', 'ed. orn.'],
+      regex: r'^(PAÑCAT[.] ed[.] orn[.|]ed[.] orn[.]) *([0-9]+), *([0-9]+)',
       urlTemplate:
-          'https://sanskrit-lexicon-scans.github.io/hitopadesha/app2?\$2,\$3',
+          'https://sanskrit-lexicon-scans.github.io/pantankoseorn/app1?\$2,\$3',
     ),
+    // Hitopadesha - MORE SPECIFIC first (Roman numerals)
     LsPattern(
       prefixes: ['HIT.'],
       regex: r'^(HIT[.]) ([IV]+), *([0-9]+)',
       urlTemplate:
-          'https://sanskrit-lexicon-scans.github.io/hitopadesha/app1?\$2,\$3',
+          'https://sanskrit-lexicon-scans.github.io/hitopadesha/app1?\$2_lc,\$3',
     ),
+    // Hitopadesha - Prastavana
     LsPattern(
       prefixes: ['HIT.'],
       regex: r'^(HIT[.]) *(Pr[.]) *([0-9]+)',
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/hitopadesha/app1?0,\$3',
+    ),
+    // Hitopadesha - numeric (page,line)
+    LsPattern(
+      prefixes: ['HIT.'],
+      regex: r'^(HIT[.]) *([0-9]+), *([0-9]+)',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/hitopadesha/app2?\$2,\$3',
     ),
     // Amarakosha deslongchamp
     LsPattern(
@@ -322,7 +327,8 @@ class LsPatterns {
     LsPattern(
       prefixes: ['NIR.'],
       regex: r'^(NIR[.]) *([IVXL]+)',
-      urlTemplate: 'https://sanskrit-lexicon-scans.github.io/nirukta/app0?\$2',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/nirukta/app0?\$2_lc',
     ),
     // Nighantuka
     LsPattern(
@@ -559,7 +565,16 @@ class LsPatterns {
       prefixes: ['BHĀG. P.'],
       regex: r'^(BHĀG[.] P[.]) *([0-9]+)[ ,]+([0-9]+)[ ,]+([0-9]+)(.*)$',
       urlTemplate:
-          '(\$2 == "10" || \$2 == "11" || \$2 == "12") ? "https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1?\$2,\$3,\$4" : "https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1?\$2,\$3,\$4"',
+          '(\$2 == "10" || \$2 == "11" || \$2 == "12") ? "https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1?/\$2,\$3,\$4" : "https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1?/\$2,\$3,\$4"',
+    ),
+    // Ramayana Schlegel (R. N,N,N) - kanda 1,2
+    // Ramayana Gorresio (R. N,N,N) - kanda 3,4,5,6,7
+    LsPattern(
+      prefixes: ['R.'],
+      regex: r'^(R[.]) *([0-9]+), *([0-9]+), *([0-9]+)',
+      urlTemplate:
+          '(\$2 == "1" || \$2 == "2") ? "https://sanskrit-lexicon-scans.github.io/ramayanaschl?/\$2,\$3,\$4" : "https://sanskrit-lexicon-scans.github.io/ramayanagorr?/\$2,\$3,\$4"',
+      dicts: ['pwg'],
     ),
     // Panini - Ashtadhyayi (P. N,N,N)
     LsPattern(

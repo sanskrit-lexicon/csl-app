@@ -355,10 +355,19 @@ class LsService {
             // Simple replacement with Roman numeral conversion
             for (int i = 1; i <= match.groupCount; i++) {
               var replacement = match.group(i) ?? '';
-              // Convert Roman numerals to integers, but only if it's not a single lowercase letter
+              // Check for _lc suffix (lowercase)
+              var lowercase = false;
+              final placeholder = r'$' + i.toString();
+              final lcPlaceholder = r'$' + i.toString() + '_lc';
+              if (url.contains(lcPlaceholder)) {
+                lowercase = true;
+                url = url.replaceAll(lcPlaceholder, placeholder);
+              }
+              // Convert Roman numerals to integers, but only if it's not a single lowercase letter (a-z)
+              // Note: Allow uppercase Roman numerals like I, V, X to be converted
               if (replacement.length == 1 &&
-                  replacement.toLowerCase().codeUnitAt(0) >= 97 &&
-                  replacement.toLowerCase().codeUnitAt(0) <= 122) {
+                  replacement.codeUnitAt(0) >= 97 &&
+                  replacement.codeUnitAt(0) <= 122) {
                 // Single lowercase letter (a-z) - keep as is
               } else {
                 final romanVal = romanInt(replacement);
@@ -366,7 +375,10 @@ class LsService {
                   replacement = romanVal.toString();
                 }
               }
-              url = url.replaceAll('\$$i', replacement);
+              if (lowercase) {
+                replacement = replacement.toLowerCase();
+              }
+              url = url.replaceAll(placeholder, replacement);
             }
           }
 
