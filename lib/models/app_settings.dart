@@ -55,24 +55,24 @@ class CustomThemePresets {
     name: 'Cologne',
     primary: Color(0xFF36648B),
     background: Color(0xFFFFFFFF),
-    headword: Color(0xFFDBE4ED),
-    sanskritText: Color(0xFF339933),
+    headword: Color(0xFF1E3A5F),
+    sanskritText: Color(0xFF2D6B2D),
   );
 
   static const light = CustomThemePreset(
     name: 'Light',
     primary: Color(0xFF8B4513),
     background: Color(0xFFFFFFFF),
-    headword: Color(0xFFFFFFFF),
-    sanskritText: Color(0xFF546E7A),
+    headword: Color(0xFF1A1A1A),
+    sanskritText: Color(0xFF424242),
   );
 
   static const dark = CustomThemePreset(
     name: 'Dark',
     primary: Color(0xFF8B4513),
     background: Color(0xFF121212),
-    headword: Color(0xFF1E1E1E),
-    sanskritText: Color(0xFFB0BEC5),
+    headword: Color(0xFFE8E8E8),
+    sanskritText: Color(0xFFB0B0B0),
   );
 
   static const white = CustomThemePreset(
@@ -150,8 +150,8 @@ class AppSettings {
     this.themeMode = AppThemeMode.cologne,
     this.customPrimaryColor = 0xFF36648B,
     this.customBackgroundColor = 0xFFFFFFFF,
-    this.customHeadwordColor = 0xFFDBE4ED,
-    this.customSanskritTextColor = 0xFF339933,
+    this.customHeadwordColor = 0xFF1A1A1A,
+    this.customSanskritTextColor = 0xFF2D6B2D,
     this.enableBasicAdjust = true,
     this.enableBasicDisplay = true,
     this.listMode = false,

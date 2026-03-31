@@ -386,13 +386,19 @@ class _EntryCard extends StatelessWidget {
   });
 
   Color _getHeadwordColor(ThemeData theme) {
+    final isDark = theme.brightness == Brightness.dark;
+
     if (useCologneTheme) {
-      return const Color(0xFF36648B); // Cologne blue
+      return const Color(0xFF1E3A5F); // Darker blue for Cologne
     }
     if (customHeadwordColor != null) {
       return customHeadwordColor!;
     }
-    return theme.colorScheme.onSurface;
+    // For Light/Dark themes, use preset colors
+    if (isDark) {
+      return const Color(0xFFE8E8E8); // Off-white for dark
+    }
+    return const Color(0xFF1A1A1A); // Near-black for light
   }
 
   @override
@@ -516,7 +522,9 @@ class _EntryCard extends StatelessWidget {
                 if (element.classes.contains('sanskrit')) {
                   // Subtle color for Sanskrit text
                   if (useCologneTheme) {
-                    return {'color': '#339933'}; // Green for Cologne theme
+                    return {
+                      'color': '#2D6B2D'
+                    }; // Darker green for Cologne theme
                   }
                   if (customAccentColor != null) {
                     final hex =
@@ -524,20 +532,22 @@ class _EntryCard extends StatelessWidget {
                     return {'color': hex}; // Custom accent color
                   }
                   return {
-                    'color': isDark ? '#B0BEC5' : '#546E7A'
-                  }; // Blue-grey variants
+                    'color': isDark ? '#B0B0B0' : '#424242'
+                  }; // Dark gray for light, medium gray for dark
                 }
                 if (element.classes.contains('words')) {
-                  // Headwords within definitions
+                  // Headwords within definitions - use same color as main headword
                   if (useCologneTheme) {
-                    return {'color': '#36648B'}; // Cologne blue for headwords
+                    return {'color': '#1E3A5F'}; // Darker blue for Cologne
                   }
                   if (customHeadwordColor != null) {
                     final hex =
                         '#${customHeadwordColor!.toARGB32().toRadixString(16).substring(2).padLeft(6, '0')}';
                     return {'color': hex}; // Custom headword color
                   }
-                  return {'color': primaryHex};
+                  return {
+                    'color': isDark ? '#E8E8E8' : '#1A1A1A'
+                  }; // Consistent with headword color
                 }
                 if (element.localName == 'b') {
                   return {'color': primaryHex};
