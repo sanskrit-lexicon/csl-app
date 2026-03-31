@@ -4,40 +4,15 @@
 
 ========== STATISTICS (SCH Dictionary) ==========
 Total tested: 3386
-Matched: 3129 (92.41%)
-Mismatched: 22 (0.65%)
-No pattern found: 235 (6.94%)
+Matched: 3167 (93.53%)
+Mismatched: 13 (0.38%)
+No pattern found: 206 (6.08%)
 
 ========== SAMPLE MISMATCHES ==========
-LS Tag: <ls>Halāy. 4,83.</ls>
-  Content: Halāy. 4,83.
-  Expected: https://sanskrit-lexicon-scans.github.io/armh2/app1?4,83
-  Generated: https://sanskrit-lexicon-scans.github.io/halayudha/app1?4,83
-
-LS Tag: <ls>AK. 1,1,7,29.</ls>
-  Content: AK. 1,1,7,29.
-  Expected: https://sanskrit-lexicon-scans.github.io/amara_dlc/app1?1,1,7,29
-  Generated: https://sanskrit-lexicon-scans.github.io/amarakosha/app1?1,1,7
-
-LS Tag: <ls>Halāy. 2,329.</ls>
-  Content: Halāy. 2,329.
-  Expected: https://sanskrit-lexicon-scans.github.io/armh2/app1?2,329
-  Generated: https://sanskrit-lexicon-scans.github.io/halayudha/app1?2,329
-
-LS Tag: <ls>AK. 2,7,55</ls>
-  Content: AK. 2,7,55
-  Expected: https://sanskrit-lexicon-scans.github.io/amara_dlc/app1?2,7,55
-  Generated: https://sanskrit-lexicon-scans.github.io/amarakosha/app1?2,7,55
-
 LS Tag: <ls>Vikr. 55,10.</ls>
   Content: Vikr. 55,10.
   Expected: https://sanskrit-lexicon-scans.github.io/vikramor/app2?55,10
   Generated: https://sanskrit-lexicon-scans.github.io/vikramor_mw/app1?55,10
-
-LS Tag: <ls>AK. 2,4,1,9.</ls>
-  Content: AK. 2,4,1,9.
-  Expected: https://sanskrit-lexicon-scans.github.io/amara_dlc/app1?2,4,1,9
-  Generated: https://sanskrit-lexicon-scans.github.io/amarakosha/app1?2,4,1
 
 LS Tag: <ls>Vikr. 64,3.</ls>
   Content: Vikr. 64,3.
@@ -59,16 +34,6 @@ LS Tag: <ls>Vikr. 81,11</ls>
   Expected: https://sanskrit-lexicon-scans.github.io/vikramor/app2?81,11
   Generated: https://sanskrit-lexicon-scans.github.io/vikramor_mw/app1?81,11
 
-LS Tag: <ls>AK. 3,4,14,68.</ls>
-  Content: AK. 3,4,14,68.
-  Expected: https://sanskrit-lexicon-scans.github.io/amara_dlc/app1?3,4,14,68
-  Generated: https://sanskrit-lexicon-scans.github.io/amarakosha/app1?3,4,14
-
-LS Tag: <ls>AK. 2,8,1,29.</ls>
-  Content: AK. 2,8,1,29.
-  Expected: https://sanskrit-lexicon-scans.github.io/amara_dlc/app1?2,8,1,29
-  Generated: https://sanskrit-lexicon-scans.github.io/amarakosha/app1?2,8,1
-
 LS Tag: <ls>Mālav. 22,19.</ls>
   Content: Mālav. 22,19.
   Expected: https://sanskrit-lexicon-scans.github.io/malavikagni/app2?22,19
@@ -83,6 +48,31 @@ LS Tag: <ls>Vop. 6,53,</ls>
   Content: Vop. 6,53,
   Expected: https://sanskrit-lexicon-scans.github.io/mugdhabodha/app1?6,53
   Generated: https://sanskrit-lexicon-scans.github.io/vopadeva/app1?6,53
+
+LS Tag: <ls>Vikram. 39,12.</ls>
+  Content: Vikram. 39,12.
+  Expected: https://sanskrit-lexicon-scans.github.io/vikramor/app2?39,12
+  Generated: https://sanskrit-lexicon-scans.github.io/vikramor_mw/app1?39,12
+
+LS Tag: <ls>Vikram. 78,13.</ls>
+  Content: Vikram. 78,13.
+  Expected: https://sanskrit-lexicon-scans.github.io/vikramor/app2?78,13
+  Generated: https://sanskrit-lexicon-scans.github.io/vikramor_mw/app1?78,13
+
+LS Tag: <ls>Vikram. 78,10.</ls>
+  Content: Vikram. 78,10.
+  Expected: https://sanskrit-lexicon-scans.github.io/vikramor/app2?78,10
+  Generated: https://sanskrit-lexicon-scans.github.io/vikramor_mw/app1?78,10
+
+LS Tag: <ls>Vikram. 73,4.</ls>
+  Content: Vikram. 73,4.
+  Expected: https://sanskrit-lexicon-scans.github.io/vikramor/app2?73,4
+  Generated: https://sanskrit-lexicon-scans.github.io/vikramor_mw/app1?73,4
+
+LS Tag: <ls>Vop. 21,17</ls>
+  Content: Vop. 21,17
+  Expected: https://sanskrit-lexicon-scans.github.io/mugdhabodha/app1?21,17
+  Generated: https://sanskrit-lexicon-scans.github.io/vopadeva/app1?21,17
 
 
 ========== SAMPLES WITH NO PATTERN ==========
@@ -151,7 +141,7 @@ Matched + No Pattern + Mismatched: 3386 (3386)
 This is expected as SCH uses different conventions.
 00:00 +0 -1: LS URL generation - SCH dictionary full test [E]
   Expected: <0>
-    Actual: <22>
+    Actual: <13>
   
   package:matcher                                     expect
   package:flutter_test/src/widget_tester.dart 473:18  expect
