@@ -87,12 +87,39 @@ class DownloadNotifier {
 
   Future<void> downloadAll() async {
     final available = await _ref.read(availableDictsProvider.future);
+
+    // Get dictionaries that need downloading (not available)
     final toDownload = DictionaryRegistry.all
         .where((d) => !available.contains(d.codeLo))
         .map((d) => d.codeLo)
         .toList();
 
-    for (final code in toDownload) {
+    // Get dictionaries that need updating (available but outdated)
+    final toUpdate = <String>[];
+    for (final info in DictionaryRegistry.all) {
+      if (available.contains(info.codeLo)) {
+        // Dictionary is downloaded, check if update is available
+        final localDate =
+            await _ref.read(localMetadataProvider(info.codeLo).future);
+        final remoteMeta =
+            await _ref.read(remoteMetadataProvider(info.codeLo).future);
+
+        if (localDate != null &&
+            remoteMeta.lastModified != null &&
+            remoteMeta.lastModified!.isAfter(localDate)) {
+          toUpdate.add(info.codeLo);
+        }
+      }
+    }
+
+    // Combine lists and remove duplicates
+    final allToProcess = (<String>[]
+          ..addAll(toDownload)
+          ..addAll(toUpdate))
+        .toSet()
+        .toList();
+
+    for (final code in allToProcess) {
       // Check if already downloading via progress provider
       if (_ref.read(downloadProgressProvider(code)) == null) {
         await download(code);
