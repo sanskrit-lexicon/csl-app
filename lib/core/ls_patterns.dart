@@ -565,15 +565,16 @@ class LsPatterns {
       prefixes: ['BHĀG. P.'],
       regex: r'^(BHĀG[.] P[.]) *([0-9]+)[ ,]+([0-9]+)[ ,]+([0-9]+)(.*)$',
       urlTemplate:
-          '(\$2 == "10" || \$2 == "11" || \$2 == "12") ? "https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1?/\$2,\$3,\$4" : "https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1?/\$2,\$3,\$4"',
+          '(\$2 == "10" || \$2 == "11" || \$2 == "12") ? "https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1/\$2,\$3,\$4" : "https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/\$2,\$3,\$4"',
     ),
     // Ramayana Schlegel (R. N,N,N) - kanda 1,2
-    // Ramayana Gorresio (R. N,N,N) - kanda 3,4,5,6,7
+    // Ramayana Gorresio (R. N,N,N) - kanda 3,4,5,6
+    // Ramayana Bombay (R. N,N,N) - kanda 7
     LsPattern(
       prefixes: ['R.'],
       regex: r'^(R[.]) *([0-9]+), *([0-9]+), *([0-9]+)',
       urlTemplate:
-          '(\$2 == "1" || \$2 == "2") ? "https://sanskrit-lexicon-scans.github.io/ramayanaschl?/\$2,\$3,\$4" : "https://sanskrit-lexicon-scans.github.io/ramayanagorr?/\$2,\$3,\$4"',
+          '(\$2 == "1" || \$2 == "2") ? "https://sanskrit-lexicon-scans.github.io/ramayanaschl/?\$2,\$3,\$4" : (\$2 == "7") ? "https://sanskrit-lexicon-scans.github.io/ramayanabom/app1/?\$2,\$3,\$4" : "https://sanskrit-lexicon-scans.github.io/ramayanagorr/?\$2,\$3,\$4"',
       dicts: ['pwg'],
     ),
     // Panini - Ashtadhyayi (P. N,N,N)

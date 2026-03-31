@@ -396,21 +396,44 @@ class LsService {
 
   static String _evaluateConditional(String expr, RegExpMatch match) {
     try {
-      final ternaryMatch = RegExp(
-              r'^\(?(\$2\s*==\s*"([^"]+)"\)?)\s*\?\s*"([^"]+)"\s*:\s*"([^"]+)"$')
-          .firstMatch(expr);
-      if (ternaryMatch != null) {
-        final varRef = ternaryMatch.group(1)!;
-        final compareVal = ternaryMatch.group(2)!;
-        final urlTrue = ternaryMatch.group(3)!;
-        final urlFalse = ternaryMatch.group(4)!;
+      // Check if this is a ternary expression with parentheses
+      if (expr.contains('(') && expr.contains('?') && expr.contains(':"')) {
+        // Extract the two URLs
+        final urlMatch = RegExp(r'\? "([^"]+)" : "([^"]+)"$').firstMatch(expr);
+        if (urlMatch != null) {
+          final urlTrue = urlMatch.group(1)!;
+          final urlFalse = urlMatch.group(2)!;
 
-        final varNum = int.tryParse(
-            varRef.replaceAll(r'$', '').replaceAll('==', '').trim());
-        if (varNum != null && varNum <= match.groupCount) {
-          final actualVal = match.group(varNum);
-          final resultUrl = (actualVal == compareVal) ? urlTrue : urlFalse;
-          return resultUrl.replaceAll('\$$varNum', match.group(varNum) ?? '');
+          // Check each condition in the OR chain (e.g., "$2 == "1" || $2 == "2"")
+          final orParts = expr.split('||');
+          for (final part in orParts) {
+            final condMatch =
+                RegExp(r'\$([0-9]+)\s*==\s*"([^"]+)"').firstMatch(part);
+            if (condMatch != null) {
+              final varNum = int.tryParse(condMatch.group(1)!);
+              final compareVal = condMatch.group(2)!;
+
+              if (varNum != null && varNum <= match.groupCount) {
+                final actualVal = match.group(varNum);
+                if (actualVal == compareVal) {
+                  var resultUrl = urlTrue;
+                  for (int i = 1; i <= match.groupCount; i++) {
+                    resultUrl = resultUrl.replaceAll(
+                        r'$' + i.toString(), match.group(i) ?? '');
+                  }
+                  return resultUrl;
+                }
+              }
+            }
+          }
+
+          // No condition matched, use false URL
+          var resultUrl = urlFalse;
+          for (int i = 1; i <= match.groupCount; i++) {
+            resultUrl =
+                resultUrl.replaceAll(r'$' + i.toString(), match.group(i) ?? '');
+          }
+          return resultUrl;
         }
       }
     } catch (e) {
