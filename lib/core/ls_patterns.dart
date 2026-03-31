@@ -565,7 +565,7 @@ class LsPatterns {
       prefixes: ['BHĀG. P.'],
       regex: r'^(BHĀG[.] P[.]) *([0-9]+)[ ,]+([0-9]+)[ ,]+([0-9]+)(.*)$',
       urlTemplate:
-          '(\$2 == "10" || \$2 == "11" || \$2 == "12") ? "https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1/\$2,\$3,\$4" : "https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/\$2,\$3,\$4"',
+          '(\$2 == "10" || \$2 == "11" || \$2 == "12") ? "https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1/?\$2,\$3,\$4" : "https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?\$2,\$3,\$4"',
     ),
     // Ramayana Schlegel (R. N,N,N) - kanda 1,2
     // Ramayana Gorresio (R. N,N,N) - kanda 3,4,5,6

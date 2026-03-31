@@ -330,17 +330,26 @@ class LsService {
           // Handle special URL generators
           if (url == 'rvAvHymnUrl') {
             final key = extractFirstKey(data1);
+            debugPrint('DEBUG rvAvHymnUrl: key = "$key"');
             final keyLower = key?.toLowerCase() ?? '';
-            final pfx = (keyLower.contains('rv') && !keyLower.contains('av'))
-                ? 'rv'
-                : 'av';
+            // Check for 'rv' or 'ṛ' (devanagari r with dot) to identify Rig Veda
+            final isRv = keyLower.contains('rv') ||
+                keyLower.contains('ṛ') ||
+                keyLower.startsWith('ṛ');
+            debugPrint(
+                'DEBUG rvAvHymnUrl: keyLower = "$keyLower", isRv = $isRv');
+            final pfx = isRv ? 'rv' : 'av';
             return hrefRvAv(pfx, data1, dict);
           } else if (url == 'rvAvHymnUrl2') {
             final key = extractFirstKey(data1);
+            debugPrint('DEBUG rvAvHymnUrl2: key = "$key"');
             final keyLower = key?.toLowerCase() ?? '';
-            final pfx = (keyLower.contains('rv') && !keyLower.contains('av'))
-                ? 'rv'
-                : 'av';
+            final isRv = keyLower.contains('rv') ||
+                keyLower.contains('ṛ') ||
+                keyLower.startsWith('ṛ');
+            debugPrint(
+                'DEBUG rvAvHymnUrl2: keyLower = "$keyLower", isRv = $isRv');
+            final pfx = isRv ? 'rv' : 'av';
             return hrefRvAv2(pfx, data1, dict);
           } else if (url == 'ramayanaUrl') {
             return hrefRamayana(data1, dict);
@@ -348,8 +357,13 @@ class LsService {
             return hrefDhatu(data1);
           }
 
-          // Handle conditional expressions
-          if (url.contains('(') && url.contains('?') && url.contains(':"')) {
+          // Handle conditional expressions - check if URL template contains ternary operator
+          // The template has \$ which becomes $ after replaceAll
+          final urlForCheck = url.replaceAll(r'\$', r'$');
+          // Check for ternary pattern: (condition) ? "url1" : "url2"
+          if (urlForCheck.contains('(') && urlForCheck.contains('? "')) {
+            debugPrint('DEBUG: Found conditional! url = "$urlForCheck"');
+            url = url.replaceAll(r'\$', r'$');
             url = _evaluateConditional(url, match);
           } else {
             // Simple replacement with Roman numeral conversion
@@ -396,48 +410,114 @@ class LsService {
 
   static String _evaluateConditional(String expr, RegExpMatch match) {
     try {
-      // Check if this is a ternary expression with parentheses
-      if (expr.contains('(') && expr.contains('?') && expr.contains(':"')) {
-        // Extract the two URLs
-        final urlMatch = RegExp(r'\? "([^"]+)" : "([^"]+)"$').firstMatch(expr);
-        if (urlMatch != null) {
-          final urlTrue = urlMatch.group(1)!;
-          final urlFalse = urlMatch.group(2)!;
+      // Handle nested ternary: ($2 == "1" || $2 == "2") ? "url1" : ($2 == "7") ? "url2" : "url3"
+      // First, check for the outer ternary with nested condition
+      final outerMatch =
+          RegExp(r'^\(([^)]+)\)\s*\?\s*"([^"]+)"\s*:\s*(.+)$').firstMatch(expr);
+      if (outerMatch != null) {
+        final outerCondition = outerMatch.group(1)!;
+        final urlTrue = outerMatch.group(2)!;
+        final rest = outerMatch.group(3)!;
 
-          // Check each condition in the OR chain (e.g., "$2 == "1" || $2 == "2"")
-          final orParts = expr.split('||');
-          for (final part in orParts) {
-            final condMatch =
-                RegExp(r'\$([0-9]+)\s*==\s*"([^"]+)"').firstMatch(part);
-            if (condMatch != null) {
-              final varNum = int.tryParse(condMatch.group(1)!);
-              final compareVal = condMatch.group(2)!;
+        debugPrint(
+            'DEBUG _evaluateConditional: outerCondition="$outerCondition"');
+        debugPrint('DEBUG _evaluateConditional: urlTrue="$urlTrue"');
+        debugPrint('DEBUG _evaluateConditional: rest="$rest"');
 
-              if (varNum != null && varNum <= match.groupCount) {
-                final actualVal = match.group(varNum);
-                if (actualVal == compareVal) {
-                  var resultUrl = urlTrue;
-                  for (int i = 1; i <= match.groupCount; i++) {
-                    resultUrl = resultUrl.replaceAll(
-                        r'$' + i.toString(), match.group(i) ?? '');
-                  }
-                  return resultUrl;
+        // Check if outer condition matches (e.g., $2 == "1" || $2 == "2")
+        final orParts = outerCondition.split('||');
+        for (final part in orParts) {
+          final condMatch =
+              RegExp(r'\$([0-9]+)\s*==\s*"([^"]+)"').firstMatch(part);
+          if (condMatch != null) {
+            final varNum = int.tryParse(condMatch.group(1)!);
+            final compareVal = condMatch.group(2)!;
+
+            if (varNum != null && varNum <= match.groupCount) {
+              final actualVal = match.group(varNum);
+              if (actualVal == compareVal) {
+                var resultUrl = urlTrue;
+                for (int i = 1; i <= match.groupCount; i++) {
+                  resultUrl = resultUrl.replaceAll(
+                      r'$' + i.toString(), match.group(i) ?? '');
                 }
+                return resultUrl;
               }
             }
           }
+        }
 
-          // No condition matched, use false URL
-          var resultUrl = urlFalse;
-          for (int i = 1; i <= match.groupCount; i++) {
-            resultUrl =
-                resultUrl.replaceAll(r'$' + i.toString(), match.group(i) ?? '');
+        // Outer condition didn't match, check the rest (nested ternary)
+        if (rest.startsWith('(')) {
+          final nestedResult = _evaluateConditional(rest, match);
+          if (nestedResult.isNotEmpty) {
+            return nestedResult;
           }
-          return resultUrl;
+        }
+
+        // No condition matched, use false URL (should be the final fallback)
+        if (rest.contains('? "')) {
+          // Try to get the final else part
+          final elseMatch = RegExp(r':\s*"([^"]+)"$').firstMatch(rest);
+          if (elseMatch != null) {
+            var resultUrl = elseMatch.group(1)!;
+            for (int i = 1; i <= match.groupCount; i++) {
+              resultUrl = resultUrl.replaceAll(
+                  r'$' + i.toString(), match.group(i) ?? '');
+            }
+            return resultUrl;
+          }
         }
       }
+
+      // Check if this is a simple ternary expression like: ($2 == "7") ? "url1" : "url2"
+      final urlMatch = RegExp(r'\(([^)]+)\)\s*\?\s*"([^"]+)"\s*:\s*"([^"]+)"')
+          .firstMatch(expr);
+      if (urlMatch != null) {
+        final condition = urlMatch.group(1)!;
+        final urlTrue = urlMatch.group(2)!;
+        final urlFalse = urlMatch.group(3)!;
+
+        debugPrint('DEBUG _evaluateConditional: simple condition="$condition"');
+        debugPrint(
+            'DEBUG _evaluateConditional: match.groups = ${List.generate(match.groupCount + 1, (i) => match.group(i))}');
+
+        // Check each condition in the OR chain (e.g., "$2 == "1" || $2 == "2"")
+        final orParts = condition.split('||');
+        for (final part in orParts) {
+          final condMatch =
+              RegExp(r'\$([0-9]+)\s*==\s*"([^"]+)"').firstMatch(part);
+          if (condMatch != null) {
+            final varNum = int.tryParse(condMatch.group(1)!);
+            final compareVal = condMatch.group(2)!;
+
+            debugPrint(
+                'DEBUG _evaluateConditional: varNum=$varNum, compareVal="$compareVal"');
+            if (varNum != null && varNum <= match.groupCount) {
+              final actualVal = match.group(varNum);
+              debugPrint('DEBUG _evaluateConditional: actualVal="$actualVal"');
+              if (actualVal == compareVal) {
+                var resultUrl = urlTrue;
+                for (int i = 1; i <= match.groupCount; i++) {
+                  resultUrl = resultUrl.replaceAll(
+                      r'$' + i.toString(), match.group(i) ?? '');
+                }
+                return resultUrl;
+              }
+            }
+          }
+        }
+
+        // No condition matched, use false URL
+        var resultUrl = urlFalse;
+        for (int i = 1; i <= match.groupCount; i++) {
+          resultUrl =
+              resultUrl.replaceAll(r'$' + i.toString(), match.group(i) ?? '');
+        }
+        return resultUrl;
+      }
     } catch (e) {
-      // Ignore
+      debugPrint('DEBUG _evaluateConditional: error=$e');
     }
     return '';
   }
@@ -477,6 +557,7 @@ class LsService {
   // Public href generators
   static String? hrefRvAv(String pfx, String data1, String dict) {
     RegExpMatch? match;
+    debugPrint('DEBUG hrefRvAv: pfx=$pfx, data1="$data1", dict=$dict');
 
     if (dict == 'ap90') {
       final regex =
@@ -498,10 +579,15 @@ class LsService {
 
     final regex = RegExp(r'^(.*?)\. *([^ ,]+)[ ,]+([0-9]+)[ ,]+([0-9]+)(.*)$');
     match = regex.firstMatch(data1);
-
+    debugPrint('DEBUG hrefRvAv: regex match = $match');
     if (match != null) {
       final mandala = match.group(2)!;
-      final imandala = romanInt(mandala);
+      var imandala = romanInt(mandala);
+      // If not a Roman numeral, try parsing as integer
+      if (imandala == 0) {
+        imandala = int.tryParse(mandala) ?? 0;
+      }
+      debugPrint('DEBUG hrefRvAv: mandala="$mandala", imandala=$imandala');
       final ihymn = int.parse(match.group(3)!);
       final iverse = int.parse(match.group(4)!);
 
@@ -511,7 +597,9 @@ class LsService {
         final anchor = '$hymnFilePfx.${iverse.toString().padLeft(2, '0')}';
         final dir =
             'https://sanskrit-lexicon.github.io/${pfx}links/${pfx}hymns';
-        return '$dir/$hymnFilePfx.html#$anchor';
+        final url = '$dir/$hymnFilePfx.html#$anchor';
+        debugPrint('DEBUG hrefRvAv: returning url = $url');
+        return url;
       }
     }
 
@@ -519,7 +607,10 @@ class LsService {
     match = regex2.firstMatch(data1);
     if (match != null) {
       final mandala = match.group(2)!;
-      final imandala = romanInt(mandala);
+      var imandala = romanInt(mandala);
+      if (imandala == 0) {
+        imandala = int.tryParse(mandala) ?? 0;
+      }
       final ihymn = int.parse(match.group(3)!);
 
       if (imandala > 0) {
@@ -528,10 +619,13 @@ class LsService {
         final anchor = '$hymnFilePfx.01';
         final dir =
             'https://sanskrit-lexicon.github.io/${pfx}links/${pfx}hymns';
-        return '$dir/$hymnFilePfx.html#$anchor';
+        final url = '$dir/$hymnFilePfx.html#$anchor';
+        debugPrint('DEBUG hrefRvAv: returning url2 = $url');
+        return url;
       }
     }
 
+    debugPrint('DEBUG hrefRvAv: returning null');
     return null;
   }
 
