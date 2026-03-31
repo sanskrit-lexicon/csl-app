@@ -4,8 +4,8 @@
 
 ========== STATISTICS (GRA Dictionary) ==========
 Total tested: 138222
-Matched: 137814 (99.70%)
-Mismatched: 408 (0.30%)
+Matched: 138052 (99.88%)
+Mismatched: 170 (0.12%)
 No pattern found: 0 (0.00%)
 
 ========== SAMPLE MISMATCHES ==========
@@ -34,125 +34,15 @@ LS Tag: {296,5}
   Expected: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv00.000.html#rv00.000.05
   Generated: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv03.062.html#rv03.062.05
 
-LS Tag: <ls>AV. 1,2,3</ls>
-  Content: AV. 1,2,3
-  Expected: https://sanskrit-lexicon.github.io/avlinks/avhymns/av01.002.html#av01.002.03
-  Generated: https://sanskrit-lexicon.github.io/avlinks/avhymns/av1_02.2_03.html#av1_02.2_03.3_02
-
-LS Tag: <ls>AV. 12,1,4</ls>
-  Content: AV. 12,1,4
-  Expected: https://sanskrit-lexicon.github.io/avlinks/avhymns/av12.001.html#av12.001.04
-  Generated: https://sanskrit-lexicon.github.io/avlinks/avhymns/av12_02.1_03.html#av12_02.1_03.4_02
-
-LS Tag: <ls>AV. 12,1,4</ls>
-  Content: AV. 12,1,4
-  Expected: https://sanskrit-lexicon.github.io/avlinks/avhymns/av12.001.html#av12.001.04
-  Generated: https://sanskrit-lexicon.github.io/avlinks/avhymns/av12_02.1_03.html#av12_02.1_03.4_02
-
-LS Tag: <ls>AV. 9,8,9</ls>
-  Content: AV. 9,8,9
-  Expected: https://sanskrit-lexicon.github.io/avlinks/avhymns/av09.008.html#av09.008.09
-  Generated: https://sanskrit-lexicon.github.io/avlinks/avhymns/av9_02.8_03.html#av9_02.8_03.9_02
-
-LS Tag: <ls>AV. 9,8,9</ls>
-  Content: AV. 9,8,9
-  Expected: https://sanskrit-lexicon.github.io/avlinks/avhymns/av09.008.html#av09.008.09
-  Generated: https://sanskrit-lexicon.github.io/avlinks/avhymns/av9_02.8_03.html#av9_02.8_03.9_02
-
 LS Tag: {296,15}
   Content: {296,15}
   Expected: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv00.000.html#rv00.000.15
   Generated: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv03.062.html#rv03.062.15
 
-LS Tag: <ls>AV. 14,2,71</ls>
-  Content: AV. 14,2,71
-  Expected: https://sanskrit-lexicon.github.io/avlinks/avhymns/av14.002.html#av14.002.71
-  Generated: https://sanskrit-lexicon.github.io/avlinks/avhymns/av14_02.2_03.html#av14_02.2_03.71_02
-
-LS Tag: <ls>AV. 4,6,5</ls>
-  Content: AV. 4,6,5
-  Expected: https://sanskrit-lexicon.github.io/avlinks/avhymns/av04.006.html#av04.006.05
-  Generated: https://sanskrit-lexicon.github.io/avlinks/avhymns/av4_02.6_03.html#av4_02.6_03.5_02
-
-LS Tag: <ls>AV. 4,6,5</ls>
-  Content: AV. 4,6,5
-  Expected: https://sanskrit-lexicon.github.io/avlinks/avhymns/av04.006.html#av04.006.05
-  Generated: https://sanskrit-lexicon.github.io/avlinks/avhymns/av4_02.6_03.html#av4_02.6_03.5_02
-
 LS Tag: {296,5}
   Content: {296,5}
   Expected: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv00.000.html#rv00.000.05
   Generated: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv03.062.html#rv03.062.05
-
-LS Tag: <ls>AV. 1,2,3</ls>
-  Content: AV. 1,2,3
-  Expected: https://sanskrit-lexicon.github.io/avlinks/avhymns/av01.002.html#av01.002.03
-  Generated: https://sanskrit-lexicon.github.io/avlinks/avhymns/av1_02.2_03.html#av1_02.2_03.3_02
-
-LS Tag: <ls>AV. 12,1,39</ls>
-  Content: AV. 12,1,39
-  Expected: https://sanskrit-lexicon.github.io/avlinks/avhymns/av12.001.html#av12.001.39
-  Generated: https://sanskrit-lexicon.github.io/avlinks/avhymns/av12_02.1_03.html#av12_02.1_03.39_02
-
-LS Tag: <ls>AV. 1,2,3</ls>
-  Content: AV. 1,2,3
-  Expected: https://sanskrit-lexicon.github.io/avlinks/avhymns/av01.002.html#av01.002.03
-  Generated: https://sanskrit-lexicon.github.io/avlinks/avhymns/av1_02.2_03.html#av1_02.2_03.3_02
-
-LS Tag: <ls>AV. 12,1,39</ls>
-  Content: AV. 12,1,39
-  Expected: https://sanskrit-lexicon.github.io/avlinks/avhymns/av12.001.html#av12.001.39
-  Generated: https://sanskrit-lexicon.github.io/avlinks/avhymns/av12_02.1_03.html#av12_02.1_03.39_02
-
-LS Tag: <ls>AV. 1,2,3</ls>
-  Content: AV. 1,2,3
-  Expected: https://sanskrit-lexicon.github.io/avlinks/avhymns/av01.002.html#av01.002.03
-  Generated: https://sanskrit-lexicon.github.io/avlinks/avhymns/av1_02.2_03.html#av1_02.2_03.3_02
-
-LS Tag: <ls>AV. 12,1,39</ls>
-  Content: AV. 12,1,39
-  Expected: https://sanskrit-lexicon.github.io/avlinks/avhymns/av12.001.html#av12.001.39
-  Generated: https://sanskrit-lexicon.github.io/avlinks/avhymns/av12_02.1_03.html#av12_02.1_03.39_02
-
-LS Tag: <ls>AV. 1,2,3</ls>
-  Content: AV. 1,2,3
-  Expected: https://sanskrit-lexicon.github.io/avlinks/avhymns/av01.002.html#av01.002.03
-  Generated: https://sanskrit-lexicon.github.io/avlinks/avhymns/av1_02.2_03.html#av1_02.2_03.3_02
-
-LS Tag: <ls>AV. 12,1,39</ls>
-  Content: AV. 12,1,39
-  Expected: https://sanskrit-lexicon.github.io/avlinks/avhymns/av12.001.html#av12.001.39
-  Generated: https://sanskrit-lexicon.github.io/avlinks/avhymns/av12_02.1_03.html#av12_02.1_03.39_02
-
-LS Tag: <ls>AV. 14,1,56</ls>
-  Content: AV. 14,1,56
-  Expected: https://sanskrit-lexicon.github.io/avlinks/avhymns/av14.001.html#av14.001.56
-  Generated: https://sanskrit-lexicon.github.io/avlinks/avhymns/av14_02.1_03.html#av14_02.1_03.56_02
-
-LS Tag: <ls>AV. 4,15,6</ls>
-  Content: AV. 4,15,6
-  Expected: https://sanskrit-lexicon.github.io/avlinks/avhymns/av04.015.html#av04.015.06
-  Generated: https://sanskrit-lexicon.github.io/avlinks/avhymns/av4_02.15_03.html#av4_02.15_03.6_02
-
-LS Tag: <ls>AV. 4,15,6</ls>
-  Content: AV. 4,15,6
-  Expected: https://sanskrit-lexicon.github.io/avlinks/avhymns/av04.015.html#av04.015.06
-  Generated: https://sanskrit-lexicon.github.io/avlinks/avhymns/av4_02.15_03.html#av4_02.15_03.6_02
-
-LS Tag: <ls>AV. 4,9,2</ls>
-  Content: AV. 4,9,2
-  Expected: https://sanskrit-lexicon.github.io/avlinks/avhymns/av04.009.html#av04.009.02
-  Generated: https://sanskrit-lexicon.github.io/avlinks/avhymns/av4_02.9_03.html#av4_02.9_03.2_02
-
-LS Tag: <ls>AV. 10,4,1</ls>
-  Content: AV. 10,4,1
-  Expected: https://sanskrit-lexicon.github.io/avlinks/avhymns/av10.004.html#av10.004.01
-  Generated: https://sanskrit-lexicon.github.io/avlinks/avhymns/av10_02.4_03.html#av10_02.4_03.1_02
-
-LS Tag: <ls>AV. 10,4,1</ls>
-  Content: AV. 10,4,1
-  Expected: https://sanskrit-lexicon.github.io/avlinks/avhymns/av10.004.html#av10.004.01
-  Generated: https://sanskrit-lexicon.github.io/avlinks/avhymns/av10_02.4_03.html#av10_02.4_03.1_02
 
 LS Tag: {296,8}
   Content: {296,8}
@@ -164,75 +54,20 @@ LS Tag: {296,3}
   Expected: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv00.000.html#rv00.000.03
   Generated: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv03.062.html#rv03.062.03
 
-LS Tag: <ls>AV. 2,35,1</ls>
-  Content: AV. 2,35,1
-  Expected: https://sanskrit-lexicon.github.io/avlinks/avhymns/av02.035.html#av02.035.01
-  Generated: https://sanskrit-lexicon.github.io/avlinks/avhymns/av2_02.35_03.html#av2_02.35_03.1_02
-
 LS Tag: {296,2}
   Content: {296,2}
   Expected: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv00.000.html#rv00.000.02
   Generated: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv03.062.html#rv03.062.02
-
-LS Tag: <ls>AV. 5,1,9</ls>
-  Content: AV. 5,1,9
-  Expected: https://sanskrit-lexicon.github.io/avlinks/avhymns/av05.001.html#av05.001.09
-  Generated: https://sanskrit-lexicon.github.io/avlinks/avhymns/av5_02.1_03.html#av5_02.1_03.9_02
 
 LS Tag: {296,9}
   Content: {296,9}
   Expected: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv00.000.html#rv00.000.09
   Generated: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv03.062.html#rv03.062.09
 
-LS Tag: <ls>AV. 8,2,19</ls>
-  Content: AV. 8,2,19
-  Expected: https://sanskrit-lexicon.github.io/avlinks/avhymns/av08.002.html#av08.002.19
-  Generated: https://sanskrit-lexicon.github.io/avlinks/avhymns/av8_02.2_03.html#av8_02.2_03.19_02
-
-LS Tag: <ls>AV. 2,27,4</ls>
-  Content: AV. 2,27,4
-  Expected: https://sanskrit-lexicon.github.io/avlinks/avhymns/av02.027.html#av02.027.04
-  Generated: https://sanskrit-lexicon.github.io/avlinks/avhymns/av2_02.27_03.html#av2_02.27_03.4_02
-
-LS Tag: <ls>AV. 6,45,1</ls>
-  Content: AV. 6,45,1
-  Expected: https://sanskrit-lexicon.github.io/avlinks/avhymns/av06.045.html#av06.045.01
-  Generated: https://sanskrit-lexicon.github.io/avlinks/avhymns/av6_02.45_03.html#av6_02.45_03.1_02
-
-LS Tag: <ls>AV. 6,67,2</ls>
-  Content: AV. 6,67,2
-  Expected: https://sanskrit-lexicon.github.io/avlinks/avhymns/av06.067.html#av06.067.02
-  Generated: https://sanskrit-lexicon.github.io/avlinks/avhymns/av6_02.67_03.html#av6_02.67_03.2_02
-
-LS Tag: <ls>AV. 6,54,1</ls>
-  Content: AV. 6,54,1
-  Expected: https://sanskrit-lexicon.github.io/avlinks/avhymns/av06.054.html#av06.054.01
-  Generated: https://sanskrit-lexicon.github.io/avlinks/avhymns/av6_02.54_03.html#av6_02.54_03.1_02
-
 LS Tag: {296,3}
   Content: {296,3}
   Expected: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv00.000.html#rv00.000.03
   Generated: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv03.062.html#rv03.062.03
-
-LS Tag: <ls>AV. 5,5,8</ls>
-  Content: AV. 5,5,8
-  Expected: https://sanskrit-lexicon.github.io/avlinks/avhymns/av05.005.html#av05.005.08
-  Generated: https://sanskrit-lexicon.github.io/avlinks/avhymns/av5_02.5_03.html#av5_02.5_03.8_02
-
-LS Tag: <ls>AV. 5,5,9</ls>
-  Content: AV. 5,5,9
-  Expected: https://sanskrit-lexicon.github.io/avlinks/avhymns/av05.005.html#av05.005.09
-  Generated: https://sanskrit-lexicon.github.io/avlinks/avhymns/av5_02.5_03.html#av5_02.5_03.9_02
-
-LS Tag: <ls>AV. 4,12,1</ls>
-  Content: AV. 4,12,1
-  Expected: https://sanskrit-lexicon.github.io/avlinks/avhymns/av04.012.html#av04.012.01
-  Generated: https://sanskrit-lexicon.github.io/avlinks/avhymns/av4_02.12_03.html#av4_02.12_03.1_02
-
-LS Tag: <ls>AV. 4,10,7</ls>
-  Content: AV. 4,10,7
-  Expected: https://sanskrit-lexicon.github.io/avlinks/avhymns/av04.010.html#av04.010.07
-  Generated: https://sanskrit-lexicon.github.io/avlinks/avhymns/av4_02.10_03.html#av4_02.10_03.7_02
 
 LS Tag: {296,15}
   Content: {296,15}
@@ -259,14 +94,179 @@ LS Tag: {296,7}
   Expected: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv00.000.html#rv00.000.07
   Generated: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv03.062.html#rv03.062.07
 
-00:00 +0 -1: LS URL generation - GRA dictionary full test [E]
+LS Tag: {296,14}
+  Content: {296,14}
+  Expected: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv00.000.html#rv00.000.14
+  Generated: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv03.062.html#rv03.062.14
+
+LS Tag: {296,3}
+  Content: {296,3}
+  Expected: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv00.000.html#rv00.000.03
+  Generated: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv03.062.html#rv03.062.03
+
+LS Tag: {296,15}
+  Content: {296,15}
+  Expected: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv00.000.html#rv00.000.15
+  Generated: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv03.062.html#rv03.062.15
+
+LS Tag: {296,2}
+  Content: {296,2}
+  Expected: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv00.000.html#rv00.000.02
+  Generated: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv03.062.html#rv03.062.02
+
+LS Tag: {296,7}
+  Content: {296,7}
+  Expected: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv00.000.html#rv00.000.07
+  Generated: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv03.062.html#rv03.062.07
+
+LS Tag: {296,15}
+  Content: {296,15}
+  Expected: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv00.000.html#rv00.000.15
+  Generated: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv03.062.html#rv03.062.15
+
+LS Tag: {296,11}
+  Content: {296,11}
+  Expected: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv00.000.html#rv00.000.11
+  Generated: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv03.062.html#rv03.062.11
+
+LS Tag: {296,2}
+  Content: {296,2}
+  Expected: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv00.000.html#rv00.000.02
+  Generated: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv03.062.html#rv03.062.02
+
+LS Tag: {296,7}
+  Content: {296,7}
+  Expected: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv00.000.html#rv00.000.07
+  Generated: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv03.062.html#rv03.062.07
+
+LS Tag: {296,1}
+  Content: {296,1}
+  Expected: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv00.000.html#rv00.000.01
+  Generated: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv03.062.html#rv03.062.01
+
+LS Tag: {296,1}
+  Content: {296,1}
+  Expected: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv00.000.html#rv00.000.01
+  Generated: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv03.062.html#rv03.062.01
+
+LS Tag: {296,3}
+  Content: {296,3}
+  Expected: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv00.000.html#rv00.000.03
+  Generated: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv03.062.html#rv03.062.03
+
+LS Tag: {296,12}
+  Content: {296,12}
+  Expected: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv00.000.html#rv00.000.12
+  Generated: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv03.062.html#rv03.062.12
+
+LS Tag: {296,14}
+  Content: {296,14}
+  Expected: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv00.000.html#rv00.000.14
+  Generated: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv03.062.html#rv03.062.14
+
+LS Tag: {296,1}
+  Content: {296,1}
+  Expected: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv00.000.html#rv00.000.01
+  Generated: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv03.062.html#rv03.062.01
+
+LS Tag: {296,16}
+  Content: {296,16}
+  Expected: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv00.000.html#rv00.000.16
+  Generated: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv03.062.html#rv03.062.16
+
+LS Tag: {296,16}
+  Content: {296,16}
+  Expected: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv00.000.html#rv00.000.16
+  Generated: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv03.062.html#rv03.062.16
+
+LS Tag: {296,17}
+  Content: {296,17}
+  Expected: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv00.000.html#rv00.000.17
+  Generated: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv03.062.html#rv03.062.17
+
+LS Tag: {296,18}
+  Content: {296,18}
+  Expected: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv00.000.html#rv00.000.18
+  Generated: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv03.062.html#rv03.062.18
+
+LS Tag: {296,13}
+  Content: {296,13}
+  Expected: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv00.000.html#rv00.000.13
+  Generated: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv03.062.html#rv03.062.13
+
+LS Tag: {296,18}
+  Content: {296,18}
+  Expected: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv00.000.html#rv00.000.18
+  Generated: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv03.062.html#rv03.062.18
+
+LS Tag: {296,5}
+  Content: {296,5}
+  Expected: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv00.000.html#rv00.000.05
+  Generated: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv03.062.html#rv03.062.05
+
+LS Tag: {296,5}
+  Content: {296,5}
+  Expected: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv00.000.html#rv00.000.05
+  Generated: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv03.062.html#rv03.062.05
+
+LS Tag: {296,1}
+  Content: {296,1}
+  Expected: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv00.000.html#rv00.000.01
+  Generated: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv03.062.html#rv03.062.01
+
+LS Tag: {296,1}
+  Content: {296,1}
+  Expected: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv00.000.html#rv00.000.01
+  Generated: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv03.062.html#rv03.062.01
+
+LS Tag: {296,16}
+  Content: {296,16}
+  Expected: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv00.000.html#rv00.000.16
+  Generated: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv03.062.html#rv03.062.16
+
+LS Tag: {296,13}
+  Content: {296,13}
+  Expected: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv00.000.html#rv00.000.13
+  Generated: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv03.062.html#rv03.062.13
+
+LS Tag: {296,13}
+  Content: {296,13}
+  Expected: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv00.000.html#rv00.000.13
+  Generated: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv03.062.html#rv03.062.13
+
+LS Tag: {296,18}
+  Content: {296,18}
+  Expected: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv00.000.html#rv00.000.18
+  Generated: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv03.062.html#rv03.062.18
+
+LS Tag: {296,8}
+  Content: {296,8}
+  Expected: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv00.000.html#rv00.000.08
+  Generated: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv03.062.html#rv03.062.08
+
+LS Tag: {296,16}
+  Content: {296,16}
+  Expected: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv00.000.html#rv00.000.16
+  Generated: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv03.062.html#rv03.062.16
+
+LS Tag: {296,14}
+  Content: {296,14}
+  Expected: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv00.000.html#rv00.000.14
+  Generated: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv03.062.html#rv03.062.14
+
+LS Tag: {296,6}
+  Content: {296,6}
+  Expected: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv00.000.html#rv00.000.06
+  Generated: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv03.062.html#rv03.062.06
+
+00:01 +0 -1: LS URL generation - GRA dictionary full test [E]
   Expected: <0>
-    Actual: <408>
+    Actual: <170>
   Some URLs were not generated correctly
   
   package:matcher                                     expect
   package:flutter_test/src/widget_tester.dart 473:18  expect
   test/ls_url_gra_test.dart 104:5                     main.<fn>
   
-00:00 +0 -1: (tearDownAll)
-00:00 +0 -1: Some tests failed.
+00:01 +0 -1: (tearDownAll)
+00:01 +0 -1: Some tests failed.

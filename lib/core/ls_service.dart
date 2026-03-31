@@ -397,6 +397,8 @@ class LsService {
             return bhagSchUrl(data1);
           } else if (url == 'bhagSchUrl2') {
             return bhagSchUrl2(data1);
+          } else if (url == 'avGraUrl') {
+            return avGraUrl(data1);
           } else if (url == 'dhatuUrl') {
             return hrefDhatu(data1);
           }
@@ -730,6 +732,19 @@ class LsService {
   }
 
   // Bhāg. P. X,Y  -> bhagp_bom (skandha 10) or bhagp_bur (others)
+  static String? avGraUrl(String data1) {
+    final regex = RegExp(r'AV\. *([0-9]+), *([0-9]+), *([0-9]+)');
+    final match = regex.firstMatch(data1);
+    if (match == null) return null;
+
+    final bStr = match.group(1)!.padLeft(2, '0');
+    final hStr = match.group(2)!.padLeft(3, '0');
+    final vStr = match.group(3)!.padLeft(2, '0');
+
+    final dir = 'https://sanskrit-lexicon.github.io/avlinks/avhymns';
+    return '$dir/av$bStr.$hStr.html#av$bStr.$hStr.$vStr';
+  }
+
   static String? bhagSchUrl2(String data1) {
     final regex =
         RegExp(r'(?:Bhāg\.\s*P\.|Bhāg\.|BhP\.)\s*([0-9]+),\s*([0-9]+)');

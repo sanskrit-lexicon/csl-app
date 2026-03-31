@@ -1390,8 +1390,7 @@ class LsPatterns {
     LsPattern(
       prefixes: [],
       regex: r'AV\. *([0-9]+), *([0-9]+), *([0-9]+)(?:, *[0-9]+)?',
-      urlTemplate:
-          'https://sanskrit-lexicon.github.io/avlinks/avhymns/av\$1_02.\$2_03.html#av\$1_02.\$2_03.\$3_02',
+      urlTemplate: 'avGraUrl',
       dicts: ['gra'],
     ),
     LsPattern(
