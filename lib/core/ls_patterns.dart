@@ -499,12 +499,25 @@ class LsPatterns {
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/medini/app1?\$2,\$3',
     ),
-    // MED. ś. (with diacritic letter)
+    // MED. with diacritic letters (like ś, ḍh, ṭh)
     LsPattern(
       prefixes: ['MED.'],
-      regex: r'^(MED[.]) *([a-zA-Zāīūēōṇṭḍṇñṅśṣḥ])[.] *([0-9]+)',
+      regex: r'^(MED[.]) *([a-zA-Zāīūēōṇṭḍṇñṅśṣḥḍhṭh]+)[.] *([0-9]+)',
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/medini/app1?\$2,\$3',
+    ),
+    // Ramayana SCHL prefix
+    LsPattern(
+      prefixes: ['R. SCHL.'],
+      regex: r'^(R[.] SCHL[.]) *([0-9]+), *([0-9]+), *([0-9]+)',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/ramayanaschl/?\$2,\$3,\$4',
+    ),
+    // Abhidhana Chintamani Parisishta - standalone ś
+    LsPattern(
+      prefixes: ['ś.'],
+      regex: r'^(ś[.]) *([0-9]+)',
+      urlTemplate: 'https://sanskrit-lexicon-scans.github.io/abch2/app2?\$2',
     ),
     // Trikandashesha
     LsPattern(

@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-import 'package:cologne_sanskrit_lexicon/core/ls_patterns.dart';
 import 'package:cologne_sanskrit_lexicon/core/ls_service.dart';
 
 String? parseLsTag(String lsTag) {
@@ -46,16 +45,8 @@ void main() {
       }
 
       final key = LsService.extractFirstKey(content);
-      var generatedUrl =
+      final generatedUrl =
           LsService.generateHref('pwg', key ?? '', null, content);
-
-      // Debug specific failing cases
-      if (content.contains('I,112') ||
-          content.contains('II,145') ||
-          content.contains('3,4,28,7')) {
-        print(
-            'DEBUG FAIL: content="$content", expected="$expectedUrl", generated="$generatedUrl"');
-      }
 
       if (generatedUrl == null) {
         noPattern++;
@@ -107,10 +98,8 @@ void main() {
       print('');
     }
 
-    // Assert near 100% match rate
-    final matchRate = total > 0 ? matched / total * 100 : 0.0;
-    expect(matchRate, greaterThan(99.0),
-        reason:
-            'Expected >99% match rate but got ${matchRate.toStringAsFixed(2)}%');
+    expect(matched, total);
+    expect(mismatched, 0);
+    expect(noPattern, 0);
   });
 }
