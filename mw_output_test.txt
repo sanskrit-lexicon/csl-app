@@ -4,119 +4,16 @@
 
 ========== STATISTICS (MW Dictionary) ==========
 Total tested: 42819
-Matched: 42796 (99.95%)
-Mismatched: 3 (0.01%)
-No pattern found: 20 (0.05%)
+Matched: 42819 (100.00%)
+Mismatched: 0 (0.00%)
+No pattern found: 0 (0.00%)
 
 ========== SAMPLE MISMATCHES ==========
-LS Tag: <ls>Sāh. 227, 18.</ls>
-  Content: Sāh. 227, 18.
-  Expected: https://sanskrit-lexicon-scans.github.io/sahityadarpana/app1?227,18
-  Generated: https://sanskrit-lexicon-scans.github.io/sahityadarpana_mw/app1?227,18
-
-LS Tag: <ls>Sāh. 337, 3</ls>
-  Content: Sāh. 337, 3
-  Expected: https://sanskrit-lexicon-scans.github.io/sahityadarpana/app1?337,3
-  Generated: https://sanskrit-lexicon-scans.github.io/sahityadarpana_mw/app1?337,3
-
-LS Tag: <ls>Caurap. 18.</ls>
-  Content: Caurap. 18.
-  Expected: https://sanskrit-lexicon-scans.github.io/bhartrhari/app1?18
-  Generated: https://sanskrit-lexicon-scans.github.io/caurapancha/app1?18
-
 
 ========== SAMPLES WITH NO PATTERN ==========
-LS Tag: <ls>Ragh. (C) iii, 51</ls>
-  Content: Ragh. (C) iii, 51
-  Expected: https://sanskrit-lexicon-scans.github.io/raghuvamsacalc/app1?3,51
+Matched + No Pattern: 42819 (42819)
 
-LS Tag: <ls>Ragh. (C) vi, 32.</ls>
-  Content: Ragh. (C) vi, 32.
-  Expected: https://sanskrit-lexicon-scans.github.io/raghuvamsacalc/app1?6,32
-
-LS Tag: <ls>Śṛṅgār. 1.</ls>
-  Content: Śṛṅgār. 1.
-  Expected: https://sanskrit-lexicon-scans.github.io/meghasrnga/app2?1
-
-LS Tag: <ls n="Dhātup.">iv f.</ls>
-  Content: Dhātup.iv f.
-  Expected: https://www.sanskrit-lexicon.uni-koeln.de/scans/csl-westergaard/disp/index.php?section=4
-
-LS Tag: <ls n="Dhātup.">iv f.</ls>
-  Content: Dhātup.iv f.
-  Expected: https://www.sanskrit-lexicon.uni-koeln.de/scans/csl-westergaard/disp/index.php?section=4
-
-LS Tag: <ls n="Dhātup.">iv f.</ls>
-  Content: Dhātup.iv f.
-  Expected: https://www.sanskrit-lexicon.uni-koeln.de/scans/csl-westergaard/disp/index.php?section=4
-
-LS Tag: <ls>Śṛṅgār. 15</ls>
-  Content: Śṛṅgār. 15
-  Expected: https://sanskrit-lexicon-scans.github.io/meghasrnga/app2?15
-
-LS Tag: <ls>Dhāt. xxii, 6</ls>
-  Content: Dhāt. xxii, 6
-  Expected: https://www.sanskrit-lexicon.uni-koeln.de/scans/csl-westergaard/disp/index.php?section=22
-
-LS Tag: <ls>Ragh. (C) xix, 28</ls>
-  Content: Ragh. (C) xix, 28
-  Expected: https://sanskrit-lexicon-scans.github.io/raghuvamsacalc/app1?19,28
-
-LS Tag: <ls n="RV. x.">148, 5</ls>
-  Content: RV. x.148, 5
-  Expected: https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv00.148.html#rv00.148.05
-
-LS Tag: <ls>Dhāt. xv, 58</ls>
-  Content: Dhāt. xv, 58
-  Expected: https://www.sanskrit-lexicon.uni-koeln.de/scans/csl-westergaard/disp/index.php?section=15
-
-LS Tag: <ls>Dhāt. xxiv, 26</ls>
-  Content: Dhāt. xxiv, 26
-  Expected: https://www.sanskrit-lexicon.uni-koeln.de/scans/csl-westergaard/disp/index.php?section=24
-
-LS Tag: <ls n="Dhāt.">xxviii, 104</ls>
-  Content: Dhāt.xxviii, 104
-  Expected: https://www.sanskrit-lexicon.uni-koeln.de/scans/csl-westergaard/disp/index.php?section=28
-
-LS Tag: <ls>Dhāt. xxiv, 26</ls>
-  Content: Dhāt. xxiv, 26
-  Expected: https://www.sanskrit-lexicon.uni-koeln.de/scans/csl-westergaard/disp/index.php?section=24
-
-LS Tag: <ls n="Dhāt.">xxviii, 104</ls>
-  Content: Dhāt.xxviii, 104
-  Expected: https://www.sanskrit-lexicon.uni-koeln.de/scans/csl-westergaard/disp/index.php?section=28
-
-LS Tag: <ls>Dhāt. xxviii, 92</ls>
-  Content: Dhāt. xxviii, 92
-  Expected: https://www.sanskrit-lexicon.uni-koeln.de/scans/csl-westergaard/disp/index.php?section=28
-
-LS Tag: <ls n=">Dhātup. iii,">4</ls>
-  Content: >Dhātup. iii,4
-  Expected: https://www.sanskrit-lexicon.uni-koeln.de/scans/csl-westergaard/disp/index.php?section=3
-
-LS Tag: <ls>Dhāt. xxiv, 48</ls>
-  Content: Dhāt. xxiv, 48
-  Expected: https://www.sanskrit-lexicon.uni-koeln.de/scans/csl-westergaard/disp/index.php?section=24
-
-LS Tag: <ls>Dhāt. ix, 27.</ls>
-  Content: Dhāt. ix, 27.
-  Expected: https://www.sanskrit-lexicon.uni-koeln.de/scans/csl-westergaard/disp/index.php?section=9
-
-LS Tag: <ls>AV. 1, 25, 2.</ls>
-  Content: AV. 1, 25, 2.
-  Expected: https://sanskrit-lexicon.github.io/avlinks/avhymns/av00.025.html#av00.025.02
-
-Matched + No Pattern: 42816 (42816)
-
-NOTE: MW dictionary has 3 mismatches and 20 no-pattern cases.
+NOTE: MW dictionary has 0 mismatches and 0 no-pattern cases.
 This is expected as MW uses different conventions.
-00:01 +0 -1: LS URL generation - MW dictionary full test [E]
-  Expected: <true>
-    Actual: <false>
-  
-  package:matcher                                     expect
-  package:flutter_test/src/widget_tester.dart 473:18  expect
-  test/ls_url_mw_test.dart 103:5                      main.<fn>
-  
-00:01 +0 -1: (tearDownAll)
-00:01 +0 -1: Some tests failed.
+00:01 +1: (tearDownAll)
+00:01 +1: All tests passed!

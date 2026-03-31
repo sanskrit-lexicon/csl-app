@@ -552,12 +552,15 @@ class LsService {
   }
 
   static String? hrefDhatu(String data1) {
-    final regex = RegExp(r'^(.*?[.]) *([0-9]+)[ ,]+([0-9]+)');
+    final regex = RegExp(
+        r'^(.*?[.]) *([0-9ivxlcmIVXLCM]+)([ ,]+([0-9]+))?.*',
+        caseSensitive: false);
     final match = regex.firstMatch(data1);
     if (match == null) return null;
 
-    final section = match.group(2)!;
-    if (section == '0') return null;
+    final sectionVal = match.group(2)!;
+    var section = int.tryParse(sectionVal) ?? romanInt(sectionVal);
+    if (section == 0) return null;
 
     final dir =
         'https://www.sanskrit-lexicon.uni-koeln.de/scans/csl-westergaard/disp/index.php';
@@ -597,14 +600,16 @@ class LsService {
       final ihymn = int.parse(match.group(3)!);
       final iverse = int.parse(match.group(4)!);
 
-      if (imandala > 0) {
-        final hymnFilePfx =
-            '${pfx == 'rv' ? 'rv' : 'av'}${imandala.toString().padLeft(2, '0')}.${ihymn.toString().padLeft(3, '0')}';
-        final anchor = '$hymnFilePfx.${iverse.toString().padLeft(2, '0')}';
-        final dir =
-            'https://sanskrit-lexicon.github.io/${pfx}links/${pfx}hymns';
-        return '$dir/$hymnFilePfx.html#$anchor';
-      }
+      final isMw = (dict == 'mw' || dict == 'pw' || dict == 'pwg');
+      final force00 = isMw && imandala == 0;
+
+      final mandalaStr =
+          force00 ? '00' : imandala.toString().padLeft(2, '0');
+      final hymnFilePfx =
+          '${pfx == 'rv' ? 'rv' : 'av'}$mandalaStr.${ihymn.toString().padLeft(3, '0')}';
+      final anchor = '$hymnFilePfx.${iverse.toString().padLeft(2, '0')}';
+      final dir = 'https://sanskrit-lexicon.github.io/${pfx}links/${pfx}hymns';
+      return '$dir/$hymnFilePfx.html#$anchor';
     }
 
     final regex2 = RegExp(r'^(.*?)\. *([^ ,]+)[ ,]+([0-9]+)(.*)$');
@@ -617,14 +622,16 @@ class LsService {
       }
       final ihymn = int.parse(match.group(3)!);
 
-      if (imandala > 0) {
-        final hymnFilePfx =
-            '${pfx == 'rv' ? 'rv' : 'av'}${imandala.toString().padLeft(2, '0')}.${ihymn.toString().padLeft(3, '0')}';
-        final anchor = '$hymnFilePfx.01';
-        final dir =
-            'https://sanskrit-lexicon.github.io/${pfx}links/${pfx}hymns';
-        return '$dir/$hymnFilePfx.html#$anchor';
-      }
+      final isMw = (dict == 'mw' || dict == 'pw' || dict == 'pwg');
+      final force00 = isMw && imandala == 0;
+
+      final mandalaStr =
+          force00 ? '00' : imandala.toString().padLeft(2, '0');
+      final hymnFilePfx =
+          '${pfx == 'rv' ? 'rv' : 'av'}$mandalaStr.${ihymn.toString().padLeft(3, '0')}';
+      final anchor = '$hymnFilePfx.01';
+      final dir = 'https://sanskrit-lexicon.github.io/${pfx}links/${pfx}hymns';
+      return '$dir/$hymnFilePfx.html#$anchor';
     }
 
     return null;

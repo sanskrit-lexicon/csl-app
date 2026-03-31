@@ -101,6 +101,6 @@ void main() {
 
     expect(matched + noPattern + mismatched, total);
     expect(mismatched <= 1, true);
-    expect(noPattern = 0, true);
+    expect(noPattern, 0);
   });
 }
