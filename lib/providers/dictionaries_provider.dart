@@ -47,10 +47,13 @@ class DownloadNotifier {
   final Ref _ref;
   DownloadNotifier(this._ref);
 
-  // Track if downloadAll is currently running and its cancel token
-  final _downloadAllCancelToken = StateProvider<bool>((ref) => false);
+  // Track if downloadAll is currently running (static so it's shared across instances)
+  static final _isDownloadAllRunning = StateProvider<bool>((ref) => false);
+  // Track if downloadAll has been canceled (static so it's shared across instances)
+  static final _downloadAllCancelToken = StateProvider<bool>((ref) => false);
 
-  bool get isDownloadAllRunning => _ref.read(_downloadAllCancelToken);
+  bool get isDownloadAllRunning =>
+      _ref.read(DownloadNotifier._isDownloadAllRunning);
 
   Future<void> download(String dictCode) async {
     final info = DictionaryRegistry.byCode(dictCode);
@@ -91,8 +94,9 @@ class DownloadNotifier {
   }
 
   Future<void> downloadAll() async {
-    // Set the cancel token to false at the start
-    _ref.read(_downloadAllCancelToken.notifier).state = false;
+    // Set the cancel token to false and running to true at the start
+    _ref.read(DownloadNotifier._downloadAllCancelToken.notifier).state = false;
+    _ref.read(DownloadNotifier._isDownloadAllRunning.notifier).state = true;
 
     final available = await _ref.read(availableDictsProvider.future);
 
@@ -129,7 +133,7 @@ class DownloadNotifier {
 
     for (final code in allToProcess) {
       // Check if user wants to cancel the entire operation
-      if (_ref.read(_downloadAllCancelToken)) {
+      if (_ref.read(DownloadNotifier._downloadAllCancelToken)) {
         break;
       }
 
@@ -137,17 +141,24 @@ class DownloadNotifier {
       if (_ref.read(downloadProgressProvider(code)) == null) {
         await download(code);
       }
+
+      // Check again after download in case it was cancelled during the download
+      if (_ref.read(DownloadNotifier._downloadAllCancelToken)) {
+        break;
+      }
     }
 
-    // Reset the cancel token after completion
-    if (!_ref.read(_downloadAllCancelToken)) {
-      _ref.read(_downloadAllCancelToken.notifier).state = false;
+    // Reset the running and cancel tokens after completion
+    _ref.read(DownloadNotifier._isDownloadAllRunning.notifier).state = false;
+    if (!_ref.read(DownloadNotifier._downloadAllCancelToken)) {
+      _ref.read(DownloadNotifier._downloadAllCancelToken.notifier).state =
+          false;
     }
   }
 
   void cancelDownloadAll() {
     // Set the cancel token to true to signal cancellation
-    _ref.read(_downloadAllCancelToken.notifier).state = true;
+    _ref.read(DownloadNotifier._downloadAllCancelToken.notifier).state = true;
 
     // Also cancel any ongoing individual downloads
     for (final tokenProvider in _cancelTokens.values) {
