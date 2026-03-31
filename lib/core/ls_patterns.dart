@@ -486,6 +486,13 @@ class LsPatterns {
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/medini/app1?\$2,\$3',
     ),
+    // MED. ś. (with diacritic letter)
+    LsPattern(
+      prefixes: ['MED.'],
+      regex: r'^(MED[.]) *([a-zA-Zāīūēōṇṭḍṇñṅśṣḥ])[.] *([0-9]+)',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/medini/app1?\$2,\$3',
+    ),
     // Trikandashesha
     LsPattern(
       prefixes: ['TRIK.'],
@@ -582,6 +589,12 @@ class LsPatterns {
       prefixes: ['P.'],
       regex: r'^(P[.]) *([0-9]+), *([0-9]+), *([0-9]+)',
       urlTemplate: 'https://ashtadhyayi.com/sutraani/\$2/\$3/\$4',
+    ),
+    // Rig Veda Pratisthana - MORE SPECIFIC first (before generic ṚV.)
+    LsPattern(
+      prefixes: ['ṚV. PRĀTIŚ.'],
+      regex: r'^(ṚV[.] PRĀTIŚ[.]) *([0-9]+), *([0-9]+)',
+      urlTemplate: 'rvAvHymnUrl2',
     ),
     // Rig Veda - 3 params (ṚV. N,N,N)
     LsPattern(

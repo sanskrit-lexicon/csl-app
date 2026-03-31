@@ -49,26 +49,8 @@ void main() {
       var generatedUrl =
           LsService.generateHref('pwg', key ?? '', null, content);
 
-      // Debug AV patterns
-      if (content.startsWith('AV. 12') && generatedUrl == null) {
-        print('DEBUG AV: key="$key", content="$content"');
-        var patterns = LsPatterns.getPatternsForDict('pwg');
-        print('DEBUG AV: found ${patterns.length} pwg patterns');
-
-        // Test the AV regex manually
-        var regex = RegExp(r'^(AV[.]) *([0-9]+), *([0-9]+), *([0-9]+)');
-        var match = regex.firstMatch(content);
-        print('DEBUG AV: regex match = $match');
-      }
-
       if (generatedUrl == null) {
         noPattern++;
-        // Debug some no-pattern cases
-        if (noPatternSamples.length < 3 &&
-            (content.startsWith('AV.') || content.startsWith('ṚV.'))) {
-          print(
-              'DEBUG NO PATTERN: content="$content", expected="$expectedUrl"');
-        }
         if (noPatternSamples.length < 15) {
           noPatternSamples.add({
             'ls_tag': lsTag,
@@ -80,11 +62,6 @@ void main() {
         matched++;
       } else {
         mismatched++;
-        // Debug Ramayana
-        if (content.startsWith('R. ') && mismatches.length < 5) {
-          print(
-              'DEBUG RAMAYANA: key=$key, content=$content, generated=$generatedUrl, expected=$expectedUrl');
-        }
         if (mismatches.length < 15) {
           mismatches.add({
             'ls_tag': lsTag,

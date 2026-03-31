@@ -342,7 +342,8 @@ class LsService {
             return hrefRvAv(pfx, data1, dict);
           } else if (url == 'rvAvHymnUrl2') {
             final key = extractFirstKey(data1);
-            debugPrint('DEBUG rvAvHymnUrl2: key = "$key"');
+            debugPrint(
+                'DEBUG rvAvHymnUrl2: key = "$key", urlTemplate = "$url"');
             final keyLower = key?.toLowerCase() ?? '';
             final isRv = keyLower.contains('rv') ||
                 keyLower.contains('ṛ') ||
@@ -350,7 +351,9 @@ class LsService {
             debugPrint(
                 'DEBUG rvAvHymnUrl2: keyLower = "$keyLower", isRv = $isRv');
             final pfx = isRv ? 'rv' : 'av';
-            return hrefRvAv2(pfx, data1, dict);
+            final result = hrefRvAv2(pfx, data1, dict);
+            debugPrint('DEBUG rvAvHymnUrl2: result = "$result"');
+            return result;
           } else if (url == 'ramayanaUrl') {
             return hrefRamayana(data1, dict);
           } else if (url == 'dhatuUrl') {
@@ -528,7 +531,10 @@ class LsService {
     if (match == null) return null;
 
     final mandala = match.group(2)!;
-    final imandala = romanInt(mandala);
+    var imandala = romanInt(mandala);
+    if (imandala == 0) {
+      imandala = int.tryParse(mandala) ?? 0;
+    }
     if (imandala == 0) return null;
 
     final ihymn = int.parse(match.group(3)!);
@@ -605,12 +611,14 @@ class LsService {
 
     final regex2 = RegExp(r'^(.*?)\. *([^ ,]+)[ ,]+([0-9]+)(.*)$');
     match = regex2.firstMatch(data1);
+    debugPrint('DEBUG hrefRvAv2: regex2 match = $match');
     if (match != null) {
       final mandala = match.group(2)!;
       var imandala = romanInt(mandala);
       if (imandala == 0) {
         imandala = int.tryParse(mandala) ?? 0;
       }
+      debugPrint('DEBUG hrefRvAv2: mandala="$mandala", imandala=$imandala');
       final ihymn = int.parse(match.group(3)!);
 
       if (imandala > 0) {
