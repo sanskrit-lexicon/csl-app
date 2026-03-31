@@ -63,47 +63,49 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         title: const Text('Cologne Sanskrit Lexicon'),
       ),
       drawer: const AppDrawer(),
-      body: Column(
-        children: [
-          _buildSearchBars(),
-          if (_tabController != null && _currentTabs.isNotEmpty)
-            TabBar(
-              controller: _tabController,
-              isScrollable: true,
-              labelColor: Theme.of(context).colorScheme.primary,
-              unselectedLabelColor: Colors.grey,
-              tabs: _currentTabs.map((code) {
-                final info = DictionaryRegistry.byCode(code)!;
-                return Tab(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(info.codeUp),
-                      const SizedBox(width: 4),
-                      GestureDetector(
-                        onTap: () {
-                          ref
-                              .read(closedTabsProvider.notifier)
-                              .update((s) => {...s, code});
-                        },
-                        child: const Icon(Icons.close, size: 14),
-                      ),
-                    ],
-                  ),
-                );
-              }).toList(),
+      body: SafeArea(
+        child: Column(
+          children: [
+            _buildSearchBars(),
+            if (_tabController != null && _currentTabs.isNotEmpty)
+              TabBar(
+                controller: _tabController,
+                isScrollable: true,
+                labelColor: Theme.of(context).colorScheme.primary,
+                unselectedLabelColor: Colors.grey,
+                tabs: _currentTabs.map((code) {
+                  final info = DictionaryRegistry.byCode(code)!;
+                  return Tab(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(info.codeUp),
+                        const SizedBox(width: 4),
+                        GestureDetector(
+                          onTap: () {
+                            ref
+                                .read(closedTabsProvider.notifier)
+                                .update((s) => {...s, code});
+                          },
+                          child: const Icon(Icons.close, size: 14),
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
+              ),
+            Expanded(
+              child: Container(
+                color: (settings.themeMode == AppThemeMode.cologne ||
+                        settings.themeMode == AppThemeMode.custom)
+                    ? Colors.white
+                    : null,
+                child: _buildBody(settings, settings.headwordSearchMode,
+                    settings.definitionSearchMode),
+              ),
             ),
-          Expanded(
-            child: Container(
-              color: (settings.themeMode == AppThemeMode.cologne ||
-                      settings.themeMode == AppThemeMode.custom)
-                  ? Colors.white
-                  : null,
-              child: _buildBody(settings, settings.headwordSearchMode,
-                  settings.definitionSearchMode),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

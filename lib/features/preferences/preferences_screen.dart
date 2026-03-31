@@ -15,240 +15,246 @@ class PreferencesScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Preferences')),
-      body: ListView(
-        children: [
-          // 1. Headword Search
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                child: Text('Headword Search Mode'),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
-                child: _SearchModeSelector(
-                  currentMode: settings.headwordSearchMode,
-                  onChanged: (v) =>
-                      notifier.update(settings.copyWith(headwordSearchMode: v)),
+      body: SafeArea(
+        child: ListView(
+          children: [
+            // 1. Headword Search
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                  child: Text('Headword Search Mode'),
                 ),
-              ),
-            ],
-          ),
-          // 2. Definition Search
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                child: Text('Definition Search Mode'),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
-                child: _SearchModeSelector(
-                  currentMode: settings.definitionSearchMode,
-                  onChanged: (v) => notifier
-                      .update(settings.copyWith(definitionSearchMode: v)),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
+                  child: _SearchModeSelector(
+                    currentMode: settings.headwordSearchMode,
+                    onChanged: (v) => notifier
+                        .update(settings.copyWith(headwordSearchMode: v)),
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const Divider(),
-          // 3. Input Transliteration
-          ListTile(
-            title: const Text('Input Transliteration'),
-            trailing: DropdownButton<String>(
-              value: settings.inputTranslit,
-              onChanged: (v) {
-                if (v != null) {
-                  notifier.update(settings.copyWith(inputTranslit: v));
-                }
-              },
-              items: TransliterationService.availableSchemes
-                  .map((s) => DropdownMenuItem(
-                      value: s,
-                      child: Text(TransliterationService.displayName(s))))
-                  .toList(),
+              ],
             ),
-          ),
-          // 4. Output Transliteration
-          ListTile(
-            title: const Text('Output Transliteration'),
-            trailing: DropdownButton<String>(
-              value: settings.outputTranslit,
-              onChanged: (v) {
-                if (v != null) {
-                  notifier.update(settings.copyWith(outputTranslit: v));
-                }
-              },
-              items: TransliterationService.availableSchemes
-                  .map((s) => DropdownMenuItem(
-                      value: s,
-                      child: Text(TransliterationService.displayName(s))))
-                  .toList(),
+            // 2. Definition Search
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                  child: Text('Definition Search Mode'),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
+                  child: _SearchModeSelector(
+                    currentMode: settings.definitionSearchMode,
+                    onChanged: (v) => notifier
+                        .update(settings.copyWith(definitionSearchMode: v)),
+                  ),
+                ),
+              ],
             ),
-          ),
-          // 5. List Mode
-          SwitchListTile(
-            title: const Text('List Mode'),
-            subtitle: const Text('Show only headwords (accordion view)'),
-            value: settings.listMode,
-            onChanged: (v) => notifier.update(settings.copyWith(listMode: v)),
-          ),
-          const Divider(),
-          // 6. Accent show/hide
-          SwitchListTile(
-            title: const Text('Vedic Accents'),
-            value: settings.showAccent,
-            onChanged: (v) => notifier.update(settings.copyWith(showAccent: v)),
-          ),
-          // 7. Highlight
-          SwitchListTile(
-            title: const Text('Highlight Search Results'),
-            value: settings.highlightEnabled,
-            onChanged: (v) =>
-                notifier.update(settings.copyWith(highlightEnabled: v)),
-          ),
-          const Divider(),
-          // 8. Max Results
-          ListTile(
-            title: const Text('Maximum Results'),
-            trailing: SizedBox(
-              width: 80,
-              child: TextFormField(
-                initialValue: settings.maxResults.toString(),
-                keyboardType: TextInputType.number,
-                textAlign: TextAlign.end,
-                onFieldSubmitted: (v) {
-                  final parsed = int.tryParse(v);
-                  if (parsed != null && parsed > 0) {
-                    notifier.update(settings.copyWith(maxResults: parsed));
+            const Divider(),
+            // 3. Input Transliteration
+            ListTile(
+              title: const Text('Input Transliteration'),
+              trailing: DropdownButton<String>(
+                value: settings.inputTranslit,
+                onChanged: (v) {
+                  if (v != null) {
+                    notifier.update(settings.copyWith(inputTranslit: v));
                   }
                 },
+                items: TransliterationService.availableSchemes
+                    .map((s) => DropdownMenuItem(
+                        value: s,
+                        child: Text(TransliterationService.displayName(s))))
+                    .toList(),
               ),
             ),
-          ),
-          // 9. Font Size
-          ListTile(
-            title: const Text('Font Size'),
-            subtitle: Slider(
-              value: settings.fontSize.toDouble(),
-              min: 12,
-              max: 24,
-              divisions: 12,
-              label: '${settings.fontSize}px',
-              onChanged: (v) {
-                notifier.update(settings.copyWith(fontSize: v.round()));
-              },
+            // 4. Output Transliteration
+            ListTile(
+              title: const Text('Output Transliteration'),
+              trailing: DropdownButton<String>(
+                value: settings.outputTranslit,
+                onChanged: (v) {
+                  if (v != null) {
+                    notifier.update(settings.copyWith(outputTranslit: v));
+                  }
+                },
+                items: TransliterationService.availableSchemes
+                    .map((s) => DropdownMenuItem(
+                        value: s,
+                        child: Text(TransliterationService.displayName(s))))
+                    .toList(),
+              ),
             ),
-            trailing: Text(
-              '${settings.fontSize}px',
-              style: const TextStyle(fontWeight: FontWeight.bold),
+            // 5. List Mode
+            SwitchListTile(
+              title: const Text('List Mode'),
+              subtitle: const Text('Show only headwords (accordion view)'),
+              value: settings.listMode,
+              onChanged: (v) => notifier.update(settings.copyWith(listMode: v)),
             ),
-          ),
-          const Divider(),
-          // 10. Theme Mode
-          ListTile(
-            title: const Text('App Theme'),
-            trailing: DropdownButton<AppThemeMode>(
-              value: settings.themeMode,
-              onChanged: (v) {
-                if (v != null) notifier.update(settings.copyWith(themeMode: v));
-              },
-              items: AppThemeMode.values
-                  .map((m) => DropdownMenuItem(value: m, child: Text(m.label)))
-                  .toList(),
-            ),
-          ),
-          // 11. Custom Theme Colors (only show when Custom theme is selected)
-          if (settings.themeMode == AppThemeMode.custom) ...[
             const Divider(),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-              child: Text(
-                'Custom Theme Colors',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+            // 6. Accent show/hide
+            SwitchListTile(
+              title: const Text('Vedic Accents'),
+              value: settings.showAccent,
+              onChanged: (v) =>
+                  notifier.update(settings.copyWith(showAccent: v)),
+            ),
+            // 7. Highlight
+            SwitchListTile(
+              title: const Text('Highlight Search Results'),
+              value: settings.highlightEnabled,
+              onChanged: (v) =>
+                  notifier.update(settings.copyWith(highlightEnabled: v)),
+            ),
+            const Divider(),
+            // 8. Max Results
+            ListTile(
+              title: const Text('Maximum Results'),
+              trailing: SizedBox(
+                width: 80,
+                child: TextFormField(
+                  initialValue: settings.maxResults.toString(),
+                  keyboardType: TextInputType.number,
+                  textAlign: TextAlign.end,
+                  onFieldSubmitted: (v) {
+                    final parsed = int.tryParse(v);
+                    if (parsed != null && parsed > 0) {
+                      notifier.update(settings.copyWith(maxResults: parsed));
+                    }
+                  },
+                ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                'Start with a preset or pick your own colors:',
-                style: Theme.of(context).textTheme.bodySmall,
+            // 9. Font Size
+            ListTile(
+              title: const Text('Font Size'),
+              subtitle: Slider(
+                value: settings.fontSize.toDouble(),
+                min: 12,
+                max: 24,
+                divisions: 12,
+                label: '${settings.fontSize}px',
+                onChanged: (v) {
+                  notifier.update(settings.copyWith(fontSize: v.round()));
+                },
+              ),
+              trailing: Text(
+                '${settings.fontSize}px',
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
-            const SizedBox(height: 12),
-            // Preset buttons
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Wrap(
-                spacing: 8,
-                children: CustomThemePresets.all.map((preset) {
-                  return OutlinedButton(
-                    onPressed: () {
-                      notifier.update(settings.copyWith(
-                        customPrimaryColor: preset.primary.toARGB32(),
-                        customBackgroundColor: preset.background.toARGB32(),
-                        customHeadwordColor: preset.headword.toARGB32(),
-                        customSanskritTextColor: preset.sanskritText.toARGB32(),
-                      ));
-                    },
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 8),
-                    ),
-                    child: Text(preset.name),
-                  );
-                }).toList(),
+            const Divider(),
+            // 10. Theme Mode
+            ListTile(
+              title: const Text('App Theme'),
+              trailing: DropdownButton<AppThemeMode>(
+                value: settings.themeMode,
+                onChanged: (v) {
+                  if (v != null)
+                    notifier.update(settings.copyWith(themeMode: v));
+                },
+                items: AppThemeMode.values
+                    .map(
+                        (m) => DropdownMenuItem(value: m, child: Text(m.label)))
+                    .toList(),
               ),
             ),
-            const SizedBox(height: 16),
-            // Color pickers
-            _ColorPickerTile(
-              label: 'Primary Color',
-              subtitle: 'App bar, buttons, links',
-              color: settings.customPrimary,
-              onColorChanged: (color) {
-                notifier.update(settings.copyWith(
-                  customPrimaryColor: color.toARGB32(),
-                ));
-              },
-            ),
-            _ColorPickerTile(
-              label: 'Background Color',
-              subtitle: 'Main screen background',
-              color: settings.customBackground,
-              onColorChanged: (color) {
-                notifier.update(settings.copyWith(
-                  customBackgroundColor: color.toARGB32(),
-                ));
-              },
-            ),
-            _ColorPickerTile(
-              label: 'Headword Color',
-              subtitle: 'Headwords within definitions',
-              color: settings.customHeadword,
-              onColorChanged: (color) {
-                notifier.update(settings.copyWith(
-                  customHeadwordColor: color.toARGB32(),
-                ));
-              },
-            ),
-            _ColorPickerTile(
-              label: 'Sanskrit Text Color',
-              subtitle: 'Sanskrit text in definitions',
-              color: settings.customSanskritText,
-              onColorChanged: (color) {
-                notifier.update(settings.copyWith(
-                  customSanskritTextColor: color.toARGB32(),
-                ));
-              },
-            ),
+            // 11. Custom Theme Colors (only show when Custom theme is selected)
+            if (settings.themeMode == AppThemeMode.custom) ...[
+              const Divider(),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                child: Text(
+                  'Custom Theme Colors',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Text(
+                  'Start with a preset or pick your own colors:',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ),
+              const SizedBox(height: 12),
+              // Preset buttons
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Wrap(
+                  spacing: 8,
+                  children: CustomThemePresets.all.map((preset) {
+                    return OutlinedButton(
+                      onPressed: () {
+                        notifier.update(settings.copyWith(
+                          customPrimaryColor: preset.primary.toARGB32(),
+                          customBackgroundColor: preset.background.toARGB32(),
+                          customHeadwordColor: preset.headword.toARGB32(),
+                          customSanskritTextColor:
+                              preset.sanskritText.toARGB32(),
+                        ));
+                      },
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 8),
+                      ),
+                      child: Text(preset.name),
+                    );
+                  }).toList(),
+                ),
+              ),
+              const SizedBox(height: 16),
+              // Color pickers
+              _ColorPickerTile(
+                label: 'Primary Color',
+                subtitle: 'App bar, buttons, links',
+                color: settings.customPrimary,
+                onColorChanged: (color) {
+                  notifier.update(settings.copyWith(
+                    customPrimaryColor: color.toARGB32(),
+                  ));
+                },
+              ),
+              _ColorPickerTile(
+                label: 'Background Color',
+                subtitle: 'Main screen background',
+                color: settings.customBackground,
+                onColorChanged: (color) {
+                  notifier.update(settings.copyWith(
+                    customBackgroundColor: color.toARGB32(),
+                  ));
+                },
+              ),
+              _ColorPickerTile(
+                label: 'Headword Color',
+                subtitle: 'Headwords within definitions',
+                color: settings.customHeadword,
+                onColorChanged: (color) {
+                  notifier.update(settings.copyWith(
+                    customHeadwordColor: color.toARGB32(),
+                  ));
+                },
+              ),
+              _ColorPickerTile(
+                label: 'Sanskrit Text Color',
+                subtitle: 'Sanskrit text in definitions',
+                color: settings.customSanskritText,
+                onColorChanged: (color) {
+                  notifier.update(settings.copyWith(
+                    customSanskritTextColor: color.toARGB32(),
+                  ));
+                },
+              ),
+            ],
+            const SizedBox(height: 32),
           ],
-          const SizedBox(height: 32),
-        ],
+        ),
       ),
     );
   }
