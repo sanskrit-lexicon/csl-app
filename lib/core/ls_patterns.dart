@@ -261,6 +261,13 @@ class LsPatterns {
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/pantankoseorn/app1?\$2,\$3',
     ),
+    // Hitopadesha - MORE SPECIFIC first (Roman numerals, uppercase)
+    LsPattern(
+      prefixes: ['HIT.'],
+      regex: r'^(HIT[.]) ([IVXL]+), *([0-9]+)',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/hitopadesha/app1?\$2,\$3',
+    ),
     // Hitopadesha - MORE SPECIFIC first (Roman numerals)
     LsPattern(
       prefixes: ['HIT.'],
@@ -296,6 +303,13 @@ class LsPatterns {
           'https://sanskrit-lexicon-scans.github.io/amara_dlc/app1?\$2,\$3,\$4',
     ),
     // Amarakosha Colebrooke
+    LsPattern(
+      prefixes: ['COL.', 'COLEBR.', 'AK. ed. COLEBR.'],
+      regex:
+          r'^(COL[.|]COLEBR[.|]AK[.] ed[.] COLEBR[.]) *([0-9]+), *([0-9]+), *([0-9]+), *([0-9]+)',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/amara_col/app1?\$2,\$3,\$4,\$5',
+    ),
     LsPattern(
       prefixes: ['COL.', 'COLEBR.', 'AK. ed. COLEBR.'],
       regex:
@@ -506,6 +520,12 @@ class LsPatterns {
       regex: r'^(HĀR[.]) *([0-9]+)',
       urlTemplate: 'https://sanskrit-lexicon-scans.github.io/medini/app3?\$2',
     ),
+    // Abhidhana Chintamani Parisishta - with special ś character
+    LsPattern(
+      prefixes: ['H. ś.'],
+      regex: r'^(H\. ś\.) *([0-9]+)',
+      urlTemplate: 'https://sanskrit-lexicon-scans.github.io/abch2/app2?\$2',
+    ),
     // Abhidhana Chintamani Parisishta
     LsPattern(
       prefixes: ['H. ś.', 'ś.'],
@@ -583,6 +603,13 @@ class LsPatterns {
       urlTemplate:
           '(\$2 == "1" || \$2 == "2") ? "https://sanskrit-lexicon-scans.github.io/ramayanaschl/?\$2,\$3,\$4" : (\$2 == "7") ? "https://sanskrit-lexicon-scans.github.io/ramayanabom/app1/?\$2,\$3,\$4" : "https://sanskrit-lexicon-scans.github.io/ramayanagorr/?\$2,\$3,\$4"',
       dicts: ['pwg'],
+    ),
+    // Ramayana Gorresio - uppercase GORR
+    LsPattern(
+      prefixes: ['R. GORR.'],
+      regex: r'^(R[.] GORR[.]) *([0-9]+), *([0-9]+), *([0-9]+)',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/ramayanagorr/?\$2,\$3,\$4',
     ),
     // Panini - Ashtadhyayi (P. N,N,N)
     LsPattern(
