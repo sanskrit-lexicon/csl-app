@@ -1396,7 +1396,7 @@ class LsPatterns {
     LsPattern(
       prefixes: [],
       regex: r'MBh\. *([0-9]+), *([0-9]+)',
-      urlTemplate: 'https://sanskrit-lexicon-scans.github.io/mbhcalc?\$1.\$2',
+      urlTemplate: 'https://sanskrit-lexicon-scans.github.io/mbhcalc?0.\$2',
       dicts: ['gra'],
     ),
   ];
