@@ -346,6 +346,8 @@ class LsService {
             return hrefRvAv2(pfx, data1, dict);
           } else if (url == 'ramayanaUrl') {
             return hrefRamayana(data1, dict);
+          } else if (url == 'ramayanaBombayUrl') {
+            return hrefRamayanaBombay(data1);
           } else if (url == 'dhatuUrl') {
             return hrefDhatu(data1);
           }

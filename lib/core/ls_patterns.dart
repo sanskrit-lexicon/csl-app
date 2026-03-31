@@ -658,6 +658,32 @@ class LsPatterns {
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/ramayanagorr/?\$2,\$3,1',
     ),
+    // Ramayana Bombay - numeric kanda numbers (PWG) - lenient with spacing
+    LsPattern(
+      prefixes: ['R. ed. Bomb.', 'R. ed. Bombay'],
+      regex:
+          r'^(R[.] ed[.] Bomb[.]|R[.] ed[.] Bombay[.]?) *([0-9]+) *,? *([0-9]+) *,? *([0-9]+)?',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/ramayanabom/app1/?\$2,\$3,\$4',
+    ),
+    // Ramayana Bombay - simpler pattern for edge cases
+    LsPattern(
+      prefixes: ['R. ed. Bomb.', 'R. ed. Bombay'],
+      regex: r'^(R[.] ed[.] Bomb[.]|R[.] ed[.] Bombay[.]) *(.*)$',
+      urlTemplate: 'ramayanaBombayUrl',
+    ),
+    // Ramayana Bombay - simpler pattern for edge cases
+    LsPattern(
+      prefixes: ['R. ed. Bomb.', 'R. ed. Bombay'],
+      regex: r'^(R[.] ed[.] Bomb[.]|R[.] ed[.] Bombay[.]) *(.*)$',
+      urlTemplate: 'ramayanaBombayUrl',
+    ),
+    // Ramayana Bombay - simpler pattern for edge cases
+    LsPattern(
+      prefixes: ['R. ed. Bomb.', 'R. ed. Bombay'],
+      regex: r'^(R[.] ed[.] Bomb[.]|R[.] ed[.] Bombay[.]) *(.*)$',
+      urlTemplate: 'ramayanaBombayUrl',
+    ),
     // Ramayana with 2 params (add default verse 1) - kanda 1,2 -> schlegel, kanda 7 -> bombay, else -> gorresio
     LsPattern(
       prefixes: ['R.'],
