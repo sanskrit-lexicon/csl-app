@@ -207,6 +207,17 @@ class LsService {
     return result;
   }
 
+  static int romanInt20(String roman) {
+    final s = roman.toLowerCase();
+    const romanNums = {
+      'i': 1, 'ii': 2, 'iii': 3, 'iv': 4, 'v': 5,
+      'vi': 6, 'vii': 7, 'viii': 8, 'ix': 9, 'x': 10,
+      'xi': 11, 'xii': 12, 'xiii': 13, 'xiv': 14, 'xv': 15,
+      'xvi': 16, 'xvii': 17, 'xviii': 18, 'xix': 19, 'xx': 20,
+    };
+    return romanNums[s] ?? 0;
+  }
+
   static String? extractFirstKey(String data) {
     final match = RegExp(r"^([^ .,']+\.?)").firstMatch(data);
     return match?.group(1);
@@ -374,13 +385,20 @@ class LsService {
               var lowercase = false;
               final placeholder = r'$' + i.toString();
               final lcPlaceholder = r'$' + i.toString() + '_lc';
+              final r20Placeholder = r'$' + i.toString() + '_r20';
+              var r20 = false;
               if (url.contains(lcPlaceholder)) {
                 lowercase = true;
                 url = url.replaceAll(lcPlaceholder, placeholder);
+              } else if (url.contains(r20Placeholder)) {
+                r20 = true;
+                url = url.replaceAll(r20Placeholder, placeholder);
               }
               // For _lc patterns, keep lowercase Roman numerals instead of converting to integers
               if (lowercase) {
                 replacement = replacement.toLowerCase();
+              } else if (r20) {
+                replacement = romanInt20(replacement).toString();
               } else {
                 // Convert Roman numerals to integers (including lowercase i, ii, iii, iv, v, vi, vii, viii, ix, x, etc.)
                 final romanVal = romanInt(replacement);
@@ -430,8 +448,14 @@ class LsService {
               if (actualVal == compareVal) {
                 var resultUrl = urlTrue;
                 for (int i = 1; i <= match.groupCount; i++) {
-                  resultUrl = resultUrl.replaceAll(
-                      r'$' + i.toString(), match.group(i) ?? '');
+                  var replacement = match.group(i) ?? '';
+                  final placeholder = r'$' + i.toString();
+                  // For the conditional result replacement, we also want Roman conversion
+                  final romanVal = romanInt(replacement);
+                  if (romanVal > 0) {
+                    replacement = romanVal.toString();
+                  }
+                  resultUrl = resultUrl.replaceAll(placeholder, replacement);
                 }
                 return resultUrl;
               }
