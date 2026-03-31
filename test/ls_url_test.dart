@@ -37,15 +37,20 @@ void main() {
       final lsTag = row['key'] as String;
       final expectedUrl = row['data'] as String;
 
-      final content = parseLsTag(lsTag);
-      if (content == null) {
+      final match =
+          RegExp(r'<ls(?:\s+n="([^"]*)")?>(.*?)</ls>').firstMatch(lsTag);
+      if (match == null) {
         noPattern++;
         continue;
       }
+      final nAttr = match.group(1);
+      final lsContent = match.group(2) ?? '';
+      final content =
+          (nAttr != null && nAttr.isNotEmpty) ? '$nAttr$lsContent' : lsContent;
 
       final key = LsService.extractFirstKey(content);
       final generatedUrl =
-          LsService.generateHref('pwg', key ?? '', null, content);
+          LsService.generateHref('pwg', key ?? '', nAttr, lsContent);
 
       if (generatedUrl == null) {
         noPattern++;
