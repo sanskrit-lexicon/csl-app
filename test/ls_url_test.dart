@@ -49,6 +49,14 @@ void main() {
       var generatedUrl =
           LsService.generateHref('pwg', key ?? '', null, content);
 
+      // Debug specific failing cases
+      if (content.contains('I,112') ||
+          content.contains('II,145') ||
+          content.contains('3,4,28,7')) {
+        print(
+            'DEBUG FAIL: content="$content", expected="$expectedUrl", generated="$generatedUrl"');
+      }
+
       if (generatedUrl == null) {
         noPattern++;
         if (noPatternSamples.length < 15) {

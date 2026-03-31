@@ -226,6 +226,13 @@ class LsPatterns {
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/malavikagni/app1?\$2',
     ),
+    // Pancatantra Kosegarten - uppercase Roman numerals (with optional space)
+    LsPattern(
+      prefixes: ['PAÑCAT.'],
+      regex: r'^(PAÑCAT[.]) *([IVXL]+), *([0-9]+)',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/pantankose/app1?\$2,\$3',
+    ),
     // Pancatantra Kosegarten - MORE SPECIFIC first (Roman numerals)
     LsPattern(
       prefixes: ['PAÑCAT.'],
@@ -261,10 +268,10 @@ class LsPatterns {
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/pantankoseorn/app1?\$2,\$3',
     ),
-    // Hitopadesha - MORE SPECIFIC first (Roman numerals, uppercase)
+    // Hitopadesha - uppercase Roman numerals (with optional space)
     LsPattern(
       prefixes: ['HIT.'],
-      regex: r'^(HIT[.]) ([IVXL]+), *([0-9]+)',
+      regex: r'^(HIT[.]) *([IVXL]+), *([0-9]+)',
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/hitopadesha/app1?\$2,\$3',
     ),
@@ -302,7 +309,7 @@ class LsPatterns {
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/amara_dlc/app1?\$2,\$3,\$4',
     ),
-    // Amarakosha Colebrooke
+    // Amarakosha Colebrooke - 4 params
     LsPattern(
       prefixes: ['COL.', 'COLEBR.', 'AK. ed. COLEBR.'],
       regex:
@@ -310,13 +317,7 @@ class LsPatterns {
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/amara_col/app1?\$2,\$3,\$4,\$5',
     ),
-    LsPattern(
-      prefixes: ['COL.', 'COLEBR.', 'AK. ed. COLEBR.'],
-      regex:
-          r'^(COL[.|]COLEBR[.|]AK[.] ed[.] COLEBR[.]) *([0-9]+), *([0-9]+), *([0-9]+), *([0-9]+)',
-      urlTemplate:
-          'https://sanskrit-lexicon-scans.github.io/amara_col/app1?\$2,\$3,\$4,\$5',
-    ),
+    // Amarakosha Colebrooke - 3 params
     LsPattern(
       prefixes: ['COL.', 'COLEBR.', 'AK. ed. COLEBR.'],
       regex:
