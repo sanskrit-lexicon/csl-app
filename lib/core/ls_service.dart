@@ -637,6 +637,26 @@ class LsService {
     return null;
   }
 
+  static String? ramayanaSchUrl(String data1) {
+    final regex = RegExp(r'^(R\.) *([0-9ivxlcmIVXLCM]+), *([0-9]+), *([0-9]+)');
+    final match = regex.firstMatch(data1);
+    if (match == null) return null;
+
+    final kStr = match.group(2)!;
+    final k = int.tryParse(kStr) ?? romanInt(kStr);
+    final s = match.group(3)!;
+    final v = match.group(4)!;
+
+    if (k == 1 || k == 2) {
+      return 'https://sanskrit-lexicon-scans.github.io/ramayanaschl/?$k,$s,$v';
+    } else if (k >= 3 && k <= 6) {
+      return 'https://sanskrit-lexicon-scans.github.io/ramayanagorr/?$k,$s,$v';
+    } else if (k == 7) {
+      return 'https://sanskrit-lexicon-scans.github.io/ramayanabom/app1?$k,$s,$v';
+    }
+    return null;
+  }
+
   static String? hrefPanini(String data1, String dict) {
     RegExpMatch? match;
 

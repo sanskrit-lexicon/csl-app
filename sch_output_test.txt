@@ -1,0 +1,161 @@
+00:00 +0: loading /Users/dhaval/Documents/GithubRepos/sanskrit-lexicon/csl-app/test/ls_url_sch_test.dart
+00:00 +0: (setUpAll)
+00:00 +0: LS URL generation - SCH dictionary full test
+
+========== STATISTICS (SCH Dictionary) ==========
+Total tested: 3386
+Matched: 2445 (72.21%)
+Mismatched: 691 (20.41%)
+No pattern found: 250 (7.38%)
+
+========== SAMPLE MISMATCHES ==========
+LS Tag: <ls>R. ed. Bomb. 4,43,7.</ls>
+  Content: R. ed. Bomb. 4,43,7.
+  Expected: https://sanskrit-lexicon-scans.github.io/ramayanabom/app1?4,43,7
+  Generated: https://sanskrit-lexicon-scans.github.io/ramayanabom/app1/?4,43,7
+
+LS Tag: <ls>R. ed. Bomb. 4,1,115.</ls>
+  Content: R. ed. Bomb. 4,1,115.
+  Expected: https://sanskrit-lexicon-scans.github.io/ramayanabom/app1?4,1,115
+  Generated: https://sanskrit-lexicon-scans.github.io/ramayanabom/app1/?4,1,115
+
+LS Tag: <ls>R. 2,109,27.</ls>
+  Content: R. 2,109,27.
+  Expected: https://sanskrit-lexicon-scans.github.io/ramayanaschl/?2,109,27
+  Generated: ramayanaSchUrl
+
+LS Tag: <ls>M. 5,67.</ls>
+  Content: M. 5,67.
+  Expected: https://sanskrit-lexicon-scans.github.io/manu/index.html?5,67
+  Generated: https://sanskrit-lexicon-scans.github.io/manusmriti/app1?5,67
+
+LS Tag: <ls>R. 1,7,13.</ls>
+  Content: R. 1,7,13.
+  Expected: https://sanskrit-lexicon-scans.github.io/ramayanaschl/?1,7,13
+  Generated: ramayanaSchUrl
+
+LS Tag: <ls>R. ed. Bomb. 3,73,15.</ls>
+  Content: R. ed. Bomb. 3,73,15.
+  Expected: https://sanskrit-lexicon-scans.github.io/ramayanabom/app1?3,73,15
+  Generated: https://sanskrit-lexicon-scans.github.io/ramayanabom/app1/?3,73,15
+
+LS Tag: <ls>R. ed. Bomb. 2,25,37</ls>
+  Content: R. ed. Bomb. 2,25,37
+  Expected: https://sanskrit-lexicon-scans.github.io/ramayanabom/app1?2,25,37
+  Generated: https://sanskrit-lexicon-scans.github.io/ramayanabom/app1/?2,25,37
+
+LS Tag: <ls>Sāh. D. 34,6.</ls>
+  Content: Sāh. D. 34,6.
+  Expected: https://sanskrit-lexicon-scans.github.io/sahityadarpana/app1?34,6
+  Generated: https://sanskrit-lexicon-scans.github.io/sahityadarpana_mw/app1?34,6
+
+LS Tag: <ls>R. 4,10,4.</ls>
+  Content: R. 4,10,4.
+  Expected: https://sanskrit-lexicon-scans.github.io/ramayanagorr/?4,10,4
+  Generated: ramayanaSchUrl
+
+LS Tag: <ls>M. 6,17.</ls>
+  Content: M. 6,17.
+  Expected: https://sanskrit-lexicon-scans.github.io/manu/index.html?6,17
+  Generated: https://sanskrit-lexicon-scans.github.io/manusmriti/app1?6,17
+
+LS Tag: <ls>R. ed. Bomb. 4,42,14.</ls>
+  Content: R. ed. Bomb. 4,42,14.
+  Expected: https://sanskrit-lexicon-scans.github.io/ramayanabom/app1?4,42,14
+  Generated: https://sanskrit-lexicon-scans.github.io/ramayanabom/app1/?4,42,14
+
+LS Tag: <ls>R. ed. Bomb. 4,41,26.</ls>
+  Content: R. ed. Bomb. 4,41,26.
+  Expected: https://sanskrit-lexicon-scans.github.io/ramayanabom/app1?4,41,26
+  Generated: https://sanskrit-lexicon-scans.github.io/ramayanabom/app1/?4,41,26
+
+LS Tag: <ls>R. 6,44,20.</ls>
+  Content: R. 6,44,20.
+  Expected: https://sanskrit-lexicon-scans.github.io/ramayanagorr/?6,44,20
+  Generated: ramayanaSchUrl
+
+LS Tag: <ls>Halāy. 4,83.</ls>
+  Content: Halāy. 4,83.
+  Expected: https://sanskrit-lexicon-scans.github.io/armh2/app1?4,83
+  Generated: https://sanskrit-lexicon-scans.github.io/halayudha/app1?4,83
+
+LS Tag: <ls>R. ed. Bomb. 4,50,18.</ls>
+  Content: R. ed. Bomb. 4,50,18.
+  Expected: https://sanskrit-lexicon-scans.github.io/ramayanabom/app1?4,50,18
+  Generated: https://sanskrit-lexicon-scans.github.io/ramayanabom/app1/?4,50,18
+
+
+========== SAMPLES WITH NO PATTERN ==========
+LS Tag: <ls>Bhāg. P. 3,13,28.</ls>
+  Content: Bhāg. P. 3,13,28.
+  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?3,13,28
+
+LS Tag: <ls>Bhāg. P. 10,84,63.</ls>
+  Content: Bhāg. P. 10,84,63.
+  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1/?10,84,63
+
+LS Tag: <ls>Bhāg. P. 3,17,19.</ls>
+  Content: Bhāg. P. 3,17,19.
+  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?3,17,19
+
+LS Tag: <ls>Bhāg. P. 1,13,31.</ls>
+  Content: Bhāg. P. 1,13,31.
+  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?1,13,31
+
+LS Tag: <ls>Bhāg. P. 3,4,6.</ls>
+  Content: Bhāg. P. 3,4,6.
+  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?3,4,6
+
+LS Tag: <ls>Bhāg. P. 1,14,43</ls>
+  Content: Bhāg. P. 1,14,43
+  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?1,14,43
+
+LS Tag: <ls>Bhāg. P. 2,7,15.</ls>
+  Content: Bhāg. P. 2,7,15.
+  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?2,7,15
+
+LS Tag: <ls>Sāh. D. 289.</ls>
+  Content: Sāh. D. 289.
+  Expected: https://sanskrit-lexicon-scans.github.io/sahityadarpana/app1?289
+
+LS Tag: <ls>Bhāg. P. 5,26,19.</ls>
+  Content: Bhāg. P. 5,26,19.
+  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?5,26,19
+
+LS Tag: <ls>Bhāg. P. 10,12,13.</ls>
+  Content: Bhāg. P. 10,12,13.
+  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1/?10,12,13
+
+LS Tag: <ls>Bhāg. P. 6,16,44</ls>
+  Content: Bhāg. P. 6,16,44
+  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?6,16,44
+
+LS Tag: <ls>Bhāg. P. 5,22,14.</ls>
+  Content: Bhāg. P. 5,22,14.
+  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?5,22,14
+
+LS Tag: <ls>Bhāg. P. 3,1,37.</ls>
+  Content: Bhāg. P. 3,1,37.
+  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?3,1,37
+
+LS Tag: <ls>Bhāg. P. 10,41,15.</ls>
+  Content: Bhāg. P. 10,41,15.
+  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1/?10,41,15
+
+LS Tag: <ls>Bhāg. P. 10,83,12.</ls>
+  Content: Bhāg. P. 10,83,12.
+  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1/?10,83,12
+
+Matched + No Pattern + Mismatched: 3386 (3386)
+
+This is expected as SCH uses different conventions.
+00:00 +0 -1: LS URL generation - SCH dictionary full test [E]
+  Expected: <0>
+    Actual: <691>
+  
+  package:matcher                                     expect
+  package:flutter_test/src/widget_tester.dart 473:18  expect
+  test/ls_url_sch_test.dart 99:5                      main.<fn>
+  
+00:00 +0 -1: (tearDownAll)
+00:00 +0 -1: Some tests failed.
