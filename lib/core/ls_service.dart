@@ -652,16 +652,34 @@ class LsService {
   static String? hrefRamayanaBombay(String data1) {
     final data2 = data1.replaceFirst(RegExp(r'^R\.?.*? *'), '');
 
-    final regex = RegExp(r' *([iv]+)[ ,]+([0-9]+)[ ,]+([0-9]+)(.*)$');
-    final match = regex.firstMatch(data2);
-    if (match == null) return null;
+    // First try Roman numerals (vii, etc.)
+    var regex = RegExp(r' *([iv]+)[ ,]+([0-9]+)[ ,]+([0-9]+)(.*)$');
+    var match = regex.firstMatch(data2);
+    if (match != null) {
+      final romanlo = match.group(1)!;
+      final k = romanInt(romanlo);
+      final s = int.parse(match.group(2)!);
+      final v = int.parse(match.group(3)!);
 
-    final romanlo = match.group(1)!;
-    final k = romanInt(romanlo);
-    final s = int.parse(match.group(2)!);
-    final v = int.parse(match.group(3)!);
+      return 'https://sanskrit-lexicon-scans.github.io/ramayanabom/app1/?$k,$s,$v';
+    }
 
-    return 'https://sanskrit-lexicon-scans.github.io/ramayanabom/app1/?$k,$s,$v';
+    // Try numeric kanda with 3+ params
+    regex = RegExp(r' *([0-9]+)[ ,]+([0-9]+)[ ,]+([0-9]+)[ ,]*([0-9]+)?');
+    match = regex.firstMatch(data2);
+    if (match != null) {
+      final k = match.group(1)!;
+      final s = match.group(2)!;
+      final v = match.group(3)!;
+      final v4 = match.group(4);
+
+      if (v4 != null) {
+        return 'https://sanskrit-lexicon-scans.github.io/ramayanabom/app1/?$k,$s,$v,$v4';
+      }
+      return 'https://sanskrit-lexicon-scans.github.io/ramayanabom/app1/?$k,$s,$v';
+    }
+
+    return null;
   }
 
   static String? hrefRamayanaGorresio(String data1) {
