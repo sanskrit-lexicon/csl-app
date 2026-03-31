@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/app_settings.dart';
@@ -31,7 +32,6 @@ class EntryRenderer {
   Future<Widget> buildEntryWidget({
     required ParsedEntry entry,
     required void Function(String slp1Word) onWordTap,
-    required VoidCallback onCopy,
     required String dictCodeUp,
     required double lnum,
     String? highlightTerm,
@@ -106,6 +106,10 @@ class EntryRenderer {
     final processedHtml = _buildBodyHtml(entry.bodyHtml, abbrCache, lsCache,
         lsHrefs, highlightSlp1, highlightTerm, dictCode);
 
+    // Build plain text for copy (strip HTML tags from rendered content)
+    final plainTextForCopy =
+        '$displayKey\n${processedHtml.replaceAll(RegExp(r'<[^>]*>'), '').replaceAll('&nbsp;', ' ').replaceAll('&amp;', '&').replaceAll('&lt;', '<').replaceAll('&gt;', '>').replaceAll('&quot;', '"').trim()}';
+
     return _EntryCard(
       displayKey: displayKey,
       slp1Key: slp1Key,
@@ -117,7 +121,7 @@ class EntryRenderer {
       lsCache: lsCache,
       abbrCache: abbrCache,
       onWordTap: onWordTap,
-      onCopy: onCopy,
+      plainTextForCopy: plainTextForCopy,
       outputTranslit: settings.outputTranslit,
       dictInfo: dictInfo,
       useCologneTheme: useCologneTheme,
@@ -359,7 +363,7 @@ class _EntryCard extends StatelessWidget {
   final Map<String, String> lsCache;
   final Map<String, String> abbrCache;
   final void Function(String slp1Word) onWordTap;
-  final VoidCallback onCopy;
+  final String plainTextForCopy;
   final String outputTranslit;
   final DictionaryInfo dictInfo;
   final bool useCologneTheme;
@@ -378,7 +382,7 @@ class _EntryCard extends StatelessWidget {
     required this.lsCache,
     required this.abbrCache,
     required this.onWordTap,
-    required this.onCopy,
+    required this.plainTextForCopy,
     required this.outputTranslit,
     required this.dictInfo,
     this.useCologneTheme = false,
@@ -445,7 +449,12 @@ class _EntryCard extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.copy, size: 18),
                 tooltip: 'Copy entry',
-                onPressed: onCopy,
+                onPressed: () {
+                  Clipboard.setData(ClipboardData(text: plainTextForCopy));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Copied to clipboard')),
+                  );
+                },
               ),
             ],
           ),
