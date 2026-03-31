@@ -309,19 +309,17 @@ class LsPatterns {
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/amara_dlc/app1?\$2,\$3,\$4',
     ),
-    // Amarakosha Colebrooke - 4 params
+    // Amarakosha Colebrooke - 4 params (simplified pattern)
     LsPattern(
-      prefixes: ['COL.', 'COLEBR.', 'AK. ed. COLEBR.'],
-      regex:
-          r'^(COL[.|]COLEBR[.|]AK[.] ed[.] COLEBR[.]) *([0-9]+), *([0-9]+), *([0-9]+), *([0-9]+)',
+      prefixes: ['COL.', 'COLEBR.'],
+      regex: r'^(COL[.|]COLEBR[.]) *([0-9]+), *([0-9]+), *([0-9]+), *([0-9]+)',
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/amara_col/app1?\$2,\$3,\$4,\$5',
     ),
-    // Amarakosha Colebrooke - 3 params
+    // Amarakosha Colebrooke - 3 params (simplified pattern)
     LsPattern(
-      prefixes: ['COL.', 'COLEBR.', 'AK. ed. COLEBR.'],
-      regex:
-          r'^(COL[.|]COLEBR[.|]AK[.] ed[.] COLEBR[.]) *([0-9]+), *([0-9]+), *([0-9]+)',
+      prefixes: ['COL.', 'COLEBR.'],
+      regex: r'^(COL[.|]COLEBR[.]) *([0-9]+), *([0-9]+), *([0-9]+)',
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/amara_col/app1?\$2,\$3,\$4',
     ),
@@ -611,6 +609,21 @@ class LsPatterns {
       regex: r'^(R[.] GORR[.]) *([0-9]+), *([0-9]+), *([0-9]+)',
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/ramayanagorr/?\$2,\$3,\$4',
+    ),
+    // Ramayana Gorresio - standalone GORR prefix
+    LsPattern(
+      prefixes: ['GORR.'],
+      regex: r'^(GORR[.]) *([0-9]+), *([0-9]+), *([0-9]+)',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/ramayanagorr/?\$2,\$3,\$4',
+    ),
+    // Ramayana with 2 params (add default verse 1)
+    LsPattern(
+      prefixes: ['R.'],
+      regex: r'^(R[.]) *([0-9]+), *([0-9]+)',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/ramayanagorr/?\$2,\$3,1',
+      dicts: ['pwg'],
     ),
     // Panini - Ashtadhyayi (P. N,N,N)
     LsPattern(
