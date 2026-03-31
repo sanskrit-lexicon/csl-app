@@ -1385,6 +1385,23 @@ class LsPatterns {
     ),
   ];
 
+  /// GRA (Grassmann) patterns
+  static final List<LsPattern> gra = [
+    LsPattern(
+      prefixes: [],
+      regex: r'AV\. *([0-9]+), *([0-9]+), *([0-9]+)(?:, *[0-9]+)?',
+      urlTemplate:
+          'https://sanskrit-lexicon.github.io/avlinks/avhymns/av\$1_02.\$2_03.html#av\$1_02.\$2_03.\$3_02',
+      dicts: ['gra'],
+    ),
+    LsPattern(
+      prefixes: [],
+      regex: r'MBh\. *([0-9]+), *([0-9]+)',
+      urlTemplate: 'https://sanskrit-lexicon-scans.github.io/mbhcalc?\$1.\$2',
+      dicts: ['gra'],
+    ),
+  ];
+
   static List<LsPattern> getPatternsForDict(String dict) {
     final d = dict.toLowerCase();
     switch (d) {
@@ -1392,8 +1409,9 @@ class LsPatterns {
       case 'pw':
       case 'pwkvn':
         return pwg;
-      case 'mw':
       case 'gra':
+        return gra;
+      case 'mw':
       case 'ap90':
       case 'ben':
       case 'ap':

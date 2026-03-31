@@ -744,32 +744,56 @@ class LsService {
   }
 
   static String? hrefGraBraces(String data1) {
-    // Format: {Hymn,Verse} where Hymn is 1-1028 sequential
-    final regex = RegExp(r'\{([0-9]+), *([0-9]+)\}');
+    // Format: {Hymn,Verse} where Hymn is 1-1028 sequential (Grassmann style)
+    final regex = RegExp(r'\{([0-9]+), *([0-9]+)(?:\.([a-z]))?\}');
     final match = regex.firstMatch(data1);
     if (match == null) return null;
 
     final seqHymn = int.tryParse(match.group(1)!) ?? 0;
     final verse = int.tryParse(match.group(2)!) ?? 0;
 
-    if (seqHymn < 1 || seqHymn > 1028) return null;
+    int mandala;
+    int mandalaHymn;
 
-    // Sequential hymn starts for each mandala
-    const mandalaStarts = [
-      1, 192, 235, 297, 355, 442, 517, 621, 724, 838, 1029
-    ];
-
-    int mandala = 0;
-    for (int i = 0; i < 10; i++) {
-      if (seqHymn >= mandalaStarts[i] && seqHymn < mandalaStarts[i + 1]) {
-        mandala = i + 1;
-        break;
-      }
+    if (seqHymn <= 191) {
+      mandala = 1;
+      mandalaHymn = seqHymn;
+    } else if (seqHymn <= 234) {
+      mandala = 2;
+      mandalaHymn = seqHymn - 191;
+    } else if (seqHymn <= 296) {
+      mandala = 3;
+      mandalaHymn = seqHymn - 234;
+    } else if (seqHymn <= 354) {
+      mandala = 4;
+      mandalaHymn = seqHymn - 296;
+    } else if (seqHymn <= 441) {
+      mandala = 5;
+      mandalaHymn = seqHymn - 354;
+    } else if (seqHymn <= 516) {
+      mandala = 6;
+      mandalaHymn = seqHymn - 441;
+    } else if (seqHymn <= 620) {
+      mandala = 7;
+      mandalaHymn = seqHymn - 516;
+    } else if (seqHymn <= 668) {
+      mandala = 8;
+      mandalaHymn = seqHymn - 621 + 1;
+    } else if (seqHymn <= 712) {
+      mandala = 8;
+      mandalaHymn = seqHymn - 669 + 60;
+    } else if (seqHymn <= 826) {
+      mandala = 9;
+      mandalaHymn = seqHymn - 713 + 1;
+    } else if (seqHymn <= 1017) {
+      mandala = 10;
+      mandalaHymn = seqHymn - 827 + 1;
+    } else if (seqHymn <= 1028) {
+      mandala = 8;
+      mandalaHymn = seqHymn - 1018 + 59;
+    } else {
+      return null;
     }
-
-    if (mandala == 0) return null;
-
-    final mandalaHymn = seqHymn - mandalaStarts[mandala - 1] + 1;
 
     final mStr = mandala.toString().padLeft(2, '0');
     final hStr = mandalaHymn.toString().padLeft(3, '0');
