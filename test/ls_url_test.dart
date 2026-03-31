@@ -22,8 +22,7 @@ void main() {
     final db = await databaseFactoryFfi
         .openDatabase('/tmp/pwg_lslinks_db/sqlite/pwg_lslinks.sqlite');
 
-    final result =
-        await db.rawQuery('SELECT key, data FROM keydoc_glob1 LIMIT 50000');
+    final result = await db.rawQuery('SELECT key, data FROM keydoc_glob1');
     await db.close();
 
     int matched = 0;

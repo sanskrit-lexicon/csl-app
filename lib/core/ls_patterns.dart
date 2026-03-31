@@ -343,10 +343,10 @@ class LsPatterns {
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/nirukta/app0?\$2_lc',
     ),
-    // Nighantuka
+    // Nighantuka (with or without period after NAIGH)
     LsPattern(
       prefixes: ['NAIGH.'],
-      regex: r'^(NAIGH[.]) *([0-9]+), *([0-9]+)',
+      regex: r'^(NAIGH[.]?) *([0-9]+), *([0-9]+)',
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/nirukta/app2?\$2,\$3',
     ),
@@ -506,12 +506,12 @@ class LsPatterns {
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/medini/app1?\$2,\$3',
     ),
-    // Ramayana SCHL prefix
+    // Ramayana SCHL prefix - kanda 1,2 -> schlegel
     LsPattern(
       prefixes: ['R. SCHL.'],
       regex: r'^(R[.] SCHL[.]) *([0-9]+), *([0-9]+), *([0-9]+)',
       urlTemplate:
-          'https://sanskrit-lexicon-scans.github.io/ramayanaschl/?\$2,\$3,\$4',
+          '(\$2 == "1" || \$2 == "2") ? "https://sanskrit-lexicon-scans.github.io/ramayanaschl/?\$2,\$3,\$4" : "https://sanskrit-lexicon-scans.github.io/ramayanagorr/?\$2,\$3,\$4"',
     ),
     // Abhidhana Chintamani Parisishta - standalone ś
     LsPattern(
@@ -606,6 +606,14 @@ class LsPatterns {
       urlTemplate:
           '(\$2 == "10" || \$2 == "11" || \$2 == "12") ? "https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1/?\$2,\$3,\$4" : "https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?\$2,\$3,\$4"',
     ),
+    // Ramayana with 4 params - only use first 3 for URL (kanda 5 uses gorresio, drops 4th param)
+    LsPattern(
+      prefixes: ['R.'],
+      regex: r'^(R[.]) *([0-9]+), *([0-9]+), *([0-9]+), *([0-9]+)',
+      urlTemplate:
+          '(\$2 == "7") ? "https://sanskrit-lexicon-scans.github.io/ramayanabom/app1/?\$2,\$3,\$4,\$5" : (\$2 == "1" || \$2 == "2") ? "https://sanskrit-lexicon-scans.github.io/ramayanaschl/?\$2,\$3,\$4" : "https://sanskrit-lexicon-scans.github.io/ramayanagorr/?\$2,\$3,\$4"',
+      dicts: ['pwg'],
+    ),
     // Ramayana Schlegel (R. N,N,N) - kanda 1,2
     // Ramayana Gorresio (R. N,N,N) - kanda 3,4,5,6
     // Ramayana Bombay (R. N,N,N) - kanda 7
@@ -623,12 +631,26 @@ class LsPatterns {
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/ramayanagorr/?\$2,\$3,\$4',
     ),
+    // Ramayana Gorresio - uppercase GORR with 2 params
+    LsPattern(
+      prefixes: ['R. GORR.'],
+      regex: r'^(R[.] GORR[.]) *([0-9]+), *([0-9]+)',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/ramayanagorr/?\$2,\$3,1',
+    ),
     // Ramayana Gorresio - standalone GORR prefix
     LsPattern(
       prefixes: ['GORR.'],
       regex: r'^(GORR[.]) *([0-9]+), *([0-9]+), *([0-9]+)',
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/ramayanagorr/?\$2,\$3,\$4',
+    ),
+    // Ramayana Gorresio - standalone GORR prefix with 2 params
+    LsPattern(
+      prefixes: ['GORR.'],
+      regex: r'^(GORR[.]) *([0-9]+), *([0-9]+)',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/ramayanagorr/?\$2,\$3,1',
     ),
     // Ramayana with 2 params (add default verse 1) - kanda 1,2 -> schlegel, kanda 7 -> bombay, else -> gorresio
     LsPattern(
