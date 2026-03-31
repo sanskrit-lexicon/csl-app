@@ -103,7 +103,7 @@ class LsPatterns {
     // Kathasaritsagara
     LsPattern(
       prefixes: ['KATHĀS.'],
-      regex: r'^(KATHĀS[.]) *([0-9]+), *([0-9]+)',
+      regex: r'^(KATHĀS[.|,] *|KATHĀS\.?) *([0-9]+), *([0-9]+)',
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/kss/index.html?\$2,\$3',
     ),
@@ -321,6 +321,21 @@ class LsPatterns {
       regex: r'^(COL|COLEBR)[.] *([0-9]+), *([0-9]+), *([0-9]+), *([0-9]+)',
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/amara_col/app1?\$2,\$3,\$4,\$5',
+    ),
+    // Amarakosha Colebrooke - with "ed." prefix - 4 params
+    LsPattern(
+      prefixes: ['AK. ed. COLEBR.'],
+      regex:
+          r'^(AK[.] ed[.] COLEBR[.]?) *([0-9]+), *([0-9]+), *([0-9]+), *([0-9]+)',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/amara_col/app1?\$2,\$3,\$4,\$5',
+    ),
+    // Amarakosha Colebrooke - with "ed." prefix
+    LsPattern(
+      prefixes: ['AK. ed. COLEBR.'],
+      regex: r'^(AK[.] ed[.] COLEBR[.]?) *([0-9]+), *([0-9]+), *([0-9]+)',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/amara_col/app1?\$2,\$3,\$4',
     ),
     // Amarakosha Colebrooke - 3 params
     LsPattern(
@@ -612,13 +627,20 @@ class LsPatterns {
       urlTemplate:
           '(\$2 == "10" || \$2 == "11" || \$2 == "12") ? "https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1/?\$2,\$3,\$4" : "https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?\$2,\$3,\$4"',
     ),
+    // Bhagavata Purana Bombay edition
+    LsPattern(
+      prefixes: ['BHĀG. P. ed. Bomb.'],
+      regex:
+          r'^(BHĀG[.] P[.] ed[.] Bomb[.]) *([0-9]+)[ ,]+([0-9]+)[ ,]+([0-9]+)',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1/?\$2,\$3,\$4',
+    ),
     // Ramayana with 4 params - only use first 3 for URL (kanda 5 uses gorresio, drops 4th param)
     LsPattern(
       prefixes: ['R.'],
       regex: r'^(R[.]) *([0-9]+), *([0-9]+), *([0-9]+), *([0-9]+)',
       urlTemplate:
           '(\$2 == "7") ? "https://sanskrit-lexicon-scans.github.io/ramayanabom/app1/?\$2,\$3,\$4,\$5" : (\$2 == "1" || \$2 == "2") ? "https://sanskrit-lexicon-scans.github.io/ramayanaschl/?\$2,\$3,\$4" : "https://sanskrit-lexicon-scans.github.io/ramayanagorr/?\$2,\$3,\$4"',
-      dicts: ['pwg'],
     ),
     // Ramayana Schlegel (R. N,N,N) - kanda 1,2
     // Ramayana Gorresio (R. N,N,N) - kanda 3,4,5,6
@@ -628,7 +650,6 @@ class LsPatterns {
       regex: r'^(R[.]) *([0-9]+), *([0-9]+), *([0-9]+)',
       urlTemplate:
           '(\$2 == "1" || \$2 == "2") ? "https://sanskrit-lexicon-scans.github.io/ramayanaschl/?\$2,\$3,\$4" : (\$2 == "7") ? "https://sanskrit-lexicon-scans.github.io/ramayanabom/app1/?\$2,\$3,\$4" : "https://sanskrit-lexicon-scans.github.io/ramayanagorr/?\$2,\$3,\$4"',
-      dicts: ['pwg'],
     ),
     // Ramayana Gorresio - uppercase GORR
     LsPattern(
@@ -643,6 +664,13 @@ class LsPatterns {
       regex: r'^(R[.] GORR[.]) *([0-9]+), *([0-9]+)',
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/ramayanagorr/?\$2,\$3,1',
+    ),
+    // Ramayana ed. Gorresio - explicit "ed." prefix
+    LsPattern(
+      prefixes: ['R. ed. GORR.'],
+      regex: r'^(R[.] ed[.] GORR[.]) *([0-9]+), *([0-9]+), *([0-9]+)',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/ramayanagorr/?\$2,\$3,\$4',
     ),
     // Ramayana Gorresio - standalone GORR prefix
     LsPattern(
@@ -671,6 +699,14 @@ class LsPatterns {
       urlTemplate:
           '(\$2 == "1" || \$2 == "2") ? "https://sanskrit-lexicon-scans.github.io/ramayanaschl/?\$2,\$3,1" : (\$2 == "7") ? "https://sanskrit-lexicon-scans.github.io/ramayanabom/app1/?\$2,\$3,1" : "https://sanskrit-lexicon-scans.github.io/ramayanagorr/?\$2,\$3,1"',
       dicts: ['pwg'],
+    ),
+    // Ramayana with 2 params for PW - kanda 1,2 -> schlegel, else -> gorresio
+    LsPattern(
+      prefixes: ['R.'],
+      regex: r'^(R[.]) *([0-9]+), *([0-9]+)',
+      urlTemplate:
+          '(\$2 == "1" || \$2 == "2") ? "https://sanskrit-lexicon-scans.github.io/ramayanaschl/?\$2,\$3,1" : "https://sanskrit-lexicon-scans.github.io/ramayanagorr/?\$2,\$3,1"',
+      dicts: ['pw'],
     ),
     // Panini - Ashtadhyayi (P. N,N,N)
     LsPattern(

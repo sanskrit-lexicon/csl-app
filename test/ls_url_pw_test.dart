@@ -2,25 +2,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:cologne_sanskrit_lexicon/core/ls_service.dart';
 
-String? parseLsTag(String lsTag) {
-  final match = RegExp(r'<ls(?:\s+n="([^"]*)")?>(.*?)</ls>').firstMatch(lsTag);
-  if (match == null) return null;
-  final nAttr = match.group(1);
-  final content = match.group(2);
-  if (nAttr != null && nAttr.isNotEmpty) {
-    return '$nAttr$content';
-  }
-  return content;
-}
-
 void main() {
   setUpAll(() {
     sqfliteFfiInit();
   });
 
-  test('LS URL generation - test against SQLite database', () async {
+  test('LS URL generation - PW dictionary full test', () async {
     final db = await databaseFactoryFfi
-        .openDatabase('/tmp/pwg_lslinks_db/sqlite/pwg_lslinks.sqlite');
+        .openDatabase('/tmp/pw_lslinks_db/sqlite/pw_lslinks.sqlite');
 
     final result = await db.rawQuery('SELECT key, data FROM keydoc_glob1');
     await db.close();
@@ -50,7 +39,7 @@ void main() {
 
       final key = LsService.extractFirstKey(content);
       final generatedUrl =
-          LsService.generateHref('pwg', key ?? '', nAttr, lsContent);
+          LsService.generateHref('pw', key ?? '', nAttr, lsContent);
 
       if (generatedUrl == null) {
         noPattern++;
@@ -76,7 +65,7 @@ void main() {
       }
     }
 
-    print('\n========== STATISTICS (PWG Dictionary) ==========');
+    print('\n========== STATISTICS (PW Dictionary) ==========');
     print('Total tested: $total');
     print(
         'Matched: $matched (${total > 0 ? (matched / total * 100).toStringAsFixed(2) : "0.00"}%)');
@@ -102,6 +91,7 @@ void main() {
       print('');
     }
 
+    expect(matched + noPattern, total);
     expect(matched + noPattern, total);
     expect(mismatched, 0);
     expect(noPattern <= 1, true);
