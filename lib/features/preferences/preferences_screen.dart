@@ -128,8 +128,26 @@ class PreferencesScreen extends ConsumerWidget {
               ),
             ),
           ),
+          // 9. Font Size
+          ListTile(
+            title: const Text('Font Size'),
+            subtitle: Slider(
+              value: settings.fontSize.toDouble(),
+              min: 12,
+              max: 24,
+              divisions: 12,
+              label: '${settings.fontSize}px',
+              onChanged: (v) {
+                notifier.update(settings.copyWith(fontSize: v.round()));
+              },
+            ),
+            trailing: Text(
+              '${settings.fontSize}px',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
           const Divider(),
-          // 9. Theme Mode
+          // 10. Theme Mode
           ListTile(
             title: const Text('App Theme'),
             trailing: DropdownButton<AppThemeMode>(
@@ -142,7 +160,7 @@ class PreferencesScreen extends ConsumerWidget {
                   .toList(),
             ),
           ),
-          // 10. Custom Theme Colors (only show when Custom theme is selected)
+          // 11. Custom Theme Colors (only show when Custom theme is selected)
           if (settings.themeMode == AppThemeMode.custom) ...[
             const Divider(),
             Padding(

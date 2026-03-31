@@ -19,6 +19,7 @@ class SettingsService {
   static const _customHeadwordColor = 'custom_headword_color';
   static const _customSanskritTextColor = 'custom_sanskrit_text_color';
   static const _listMode = 'list_mode';
+  static const _fontSize = 'font_size';
 
   static Future<AppSettings> load() async {
     final prefs = await SharedPreferences.getInstance();
@@ -44,6 +45,7 @@ class SettingsService {
       customSanskritTextColor:
           prefs.getInt(_customSanskritTextColor) ?? 0xFF339933,
       listMode: prefs.getBool(_listMode) ?? false,
+      fontSize: prefs.getInt(_fontSize) ?? 16,
     );
   }
 
@@ -64,6 +66,7 @@ class SettingsService {
     await prefs.setInt(_customHeadwordColor, s.customHeadwordColor);
     await prefs.setInt(_customSanskritTextColor, s.customSanskritTextColor);
     await prefs.setBool(_listMode, s.listMode);
+    await prefs.setInt(_fontSize, s.fontSize);
   }
 
   static List<String> _decodeList(String? raw) {

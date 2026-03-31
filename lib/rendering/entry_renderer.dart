@@ -121,6 +121,7 @@ class EntryRenderer {
       useCologneTheme: useCologneTheme,
       customAccentColor: customAccentColor,
       customHeadwordColor: customHeadwordColor,
+      fontSize: settings.fontSize,
     );
   }
 
@@ -169,7 +170,7 @@ class EntryRenderer {
         highlightSlp1, rawHighlightTerm, dictCode);
 
     // Wrap in a div for styling
-    return '<div style="font-size:15px; line-height:1.6;">$html</div>';
+    return '<div style="font-size:${settings.fontSize}px; line-height:1.6;">$html</div>';
   }
 
   /// Transliterate content while preserving <mark> tags for highlighting.
@@ -362,6 +363,7 @@ class _EntryCard extends StatelessWidget {
   final bool useCologneTheme;
   final Color? customAccentColor;
   final Color? customHeadwordColor;
+  final int fontSize;
 
   const _EntryCard({
     required this.displayKey,
@@ -380,6 +382,7 @@ class _EntryCard extends StatelessWidget {
     this.useCologneTheme = false,
     this.customAccentColor,
     this.customHeadwordColor,
+    required this.fontSize,
   });
 
   Color _getHeadwordColor(ThemeData theme) {
@@ -413,7 +416,9 @@ class _EntryCard extends StatelessWidget {
                       text: displayKey,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: isDevanagari ? 18 : 16,
+                        fontSize: isDevanagari
+                            ? (fontSize + 2).toDouble()
+                            : fontSize.toDouble(),
                         color: _getHeadwordColor(theme),
                         fontFamily: 'Siddhanta',
                       ),
@@ -442,7 +447,9 @@ class _EntryCard extends StatelessWidget {
             child: HtmlWidget(
               processedHtml,
               textStyle: TextStyle(
-                fontSize: isDevanagari ? 16 : 14,
+                fontSize: isDevanagari
+                    ? fontSize.toDouble()
+                    : (fontSize - 2).toDouble(),
                 height: 1.6,
                 color: theme.colorScheme.onSurface,
                 fontFamily: 'Siddhanta',

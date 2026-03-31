@@ -377,8 +377,8 @@ class _DictionaryView extends ConsumerWidget {
                   Expanded(
                     child: Text(
                       titleText,
-                      style: const TextStyle(
-                        fontSize: 13,
+                      style: TextStyle(
+                        fontSize: (settings.fontSize - 3).toDouble(),
                         fontWeight: FontWeight.w400,
                         fontFamily: 'Siddhanta',
                       ),

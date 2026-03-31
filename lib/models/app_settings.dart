@@ -135,6 +135,7 @@ class AppSettings {
   final bool enableBasicAdjust; // Feature 5: XML pre-processing
   final bool enableBasicDisplay; // Feature 4: XML to HTML rendering
   final bool listMode; // List Mode: accordion view for search results
+  final int fontSize; // Font size for dictionary entries
 
   const AppSettings({
     this.headwordSearchMode = SearchMode.prefix,
@@ -154,6 +155,7 @@ class AppSettings {
     this.enableBasicAdjust = true,
     this.enableBasicDisplay = true,
     this.listMode = false,
+    this.fontSize = 16,
   });
 
   AppSettings copyWith({
@@ -174,6 +176,7 @@ class AppSettings {
     bool? enableBasicAdjust,
     bool? enableBasicDisplay,
     bool? listMode,
+    int? fontSize,
   }) {
     return AppSettings(
       headwordSearchMode: headwordSearchMode ?? this.headwordSearchMode,
@@ -195,6 +198,7 @@ class AppSettings {
       enableBasicAdjust: enableBasicAdjust ?? this.enableBasicAdjust,
       enableBasicDisplay: enableBasicDisplay ?? this.enableBasicDisplay,
       listMode: listMode ?? this.listMode,
+      fontSize: fontSize ?? this.fontSize,
     );
   }
 
