@@ -181,29 +181,30 @@ class LsService {
 
   // Public methods for testing
   static int romanInt(String roman) {
-    final romanNums = {
-      'i': 1,
-      'ii': 2,
-      'iii': 3,
-      'iv': 4,
-      'v': 5,
-      'vi': 6,
-      'vii': 7,
-      'viii': 8,
-      'ix': 9,
-      'x': 10,
-      'xi': 11,
-      'xii': 12,
-      'xiii': 13,
-      'xiv': 14,
-      'xv': 15,
-      'xvi': 16,
-      'xvii': 17,
-      'xviii': 18,
-      'xix': 19,
-      'xx': 20,
+    if (roman.isEmpty) return 0;
+    
+    final map = {
+      'i': 1, 'v': 5, 'x': 10, 'l': 50,
+      'c': 100, 'd': 500, 'm': 1000
     };
-    return romanNums[roman.toLowerCase()] ?? 0;
+    
+    final s = roman.toLowerCase();
+    int result = 0;
+    
+    for (int i = 0; i < s.length; i++) {
+      if (!map.containsKey(s[i])) return 0;
+      
+      int current = map[s[i]]!;
+      int next = (i + 1 < s.length && map.containsKey(s[i+1])) ? map[s[i+1]]! : 0;
+      
+      if (current < next) {
+        result -= current;
+      } else {
+        result += current;
+      }
+    }
+    
+    return result;
   }
 
   static String? extractFirstKey(String data) {

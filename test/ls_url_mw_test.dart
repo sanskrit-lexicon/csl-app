@@ -43,11 +43,12 @@ void main() {
 
       if (generatedUrl == null) {
         noPattern++;
-        if (noPatternSamples.length < 20) {
+        if (noPatternSamples.length < 30) {
           noPatternSamples.add({
             'ls_tag': lsTag,
             'content': content,
             'expected': expectedUrl,
+            'generated': generatedUrl ?? 'NULL',
           });
         }
       } else if (generatedUrl == expectedUrl) {
@@ -99,5 +100,7 @@ void main() {
     print('This is expected as MW uses different conventions.');
 
     expect(matched + noPattern + mismatched, total);
+    expect(mismatched <= 1, true);
+    expect(noPattern = 0, true);
   });
 }
