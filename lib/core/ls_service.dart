@@ -533,11 +533,13 @@ class LsService {
     if (match == null) return null;
 
     final mandala = match.group(2)!;
-    var imandala = romanInt(mandala);
-    if (imandala == 0) {
+    var imandala = romanInt20(mandala);
+    // For MW/PWG, digits like '1' in mandala should convert to 0 via roman_int
+    // Existing code fallback to int.tryParse was too permissive for MW
+    if (imandala == 0 && (dict != 'mw' && dict != 'pw' && dict != 'pwg')) {
       imandala = int.tryParse(mandala) ?? 0;
     }
-    if (imandala == 0) return null;
+    if (imandala == 0 && (dict != 'mw' && dict != 'pw' && dict != 'pwg')) return null;
 
     final ihymn = int.parse(match.group(3)!);
     final iverse = 1;
@@ -588,8 +590,8 @@ class LsService {
     match = regex.firstMatch(data1);
     if (match != null) {
       final mandala = match.group(2)!;
-      var imandala = romanInt(mandala);
-      if (imandala == 0) {
+      var imandala = romanInt20(mandala);
+      if (imandala == 0 && (dict != 'mw' && dict != 'pw' && dict != 'pwg')) {
         imandala = int.tryParse(mandala) ?? 0;
       }
       final ihymn = int.parse(match.group(3)!);
@@ -609,8 +611,8 @@ class LsService {
     match = regex2.firstMatch(data1);
     if (match != null) {
       final mandala = match.group(2)!;
-      var imandala = romanInt(mandala);
-      if (imandala == 0) {
+      var imandala = romanInt20(mandala);
+      if (imandala == 0 && (dict != 'mw' && dict != 'pw' && dict != 'pwg')) {
         imandala = int.tryParse(mandala) ?? 0;
       }
       final ihymn = int.parse(match.group(3)!);
