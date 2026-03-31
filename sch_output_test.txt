@@ -4,85 +4,85 @@
 
 ========== STATISTICS (SCH Dictionary) ==========
 Total tested: 3386
-Matched: 2445 (72.21%)
-Mismatched: 691 (20.41%)
-No pattern found: 250 (7.38%)
+Matched: 3129 (92.41%)
+Mismatched: 22 (0.65%)
+No pattern found: 235 (6.94%)
 
 ========== SAMPLE MISMATCHES ==========
-LS Tag: <ls>R. ed. Bomb. 4,43,7.</ls>
-  Content: R. ed. Bomb. 4,43,7.
-  Expected: https://sanskrit-lexicon-scans.github.io/ramayanabom/app1?4,43,7
-  Generated: https://sanskrit-lexicon-scans.github.io/ramayanabom/app1/?4,43,7
-
-LS Tag: <ls>R. ed. Bomb. 4,1,115.</ls>
-  Content: R. ed. Bomb. 4,1,115.
-  Expected: https://sanskrit-lexicon-scans.github.io/ramayanabom/app1?4,1,115
-  Generated: https://sanskrit-lexicon-scans.github.io/ramayanabom/app1/?4,1,115
-
-LS Tag: <ls>R. 2,109,27.</ls>
-  Content: R. 2,109,27.
-  Expected: https://sanskrit-lexicon-scans.github.io/ramayanaschl/?2,109,27
-  Generated: ramayanaSchUrl
-
-LS Tag: <ls>M. 5,67.</ls>
-  Content: M. 5,67.
-  Expected: https://sanskrit-lexicon-scans.github.io/manu/index.html?5,67
-  Generated: https://sanskrit-lexicon-scans.github.io/manusmriti/app1?5,67
-
-LS Tag: <ls>R. 1,7,13.</ls>
-  Content: R. 1,7,13.
-  Expected: https://sanskrit-lexicon-scans.github.io/ramayanaschl/?1,7,13
-  Generated: ramayanaSchUrl
-
-LS Tag: <ls>R. ed. Bomb. 3,73,15.</ls>
-  Content: R. ed. Bomb. 3,73,15.
-  Expected: https://sanskrit-lexicon-scans.github.io/ramayanabom/app1?3,73,15
-  Generated: https://sanskrit-lexicon-scans.github.io/ramayanabom/app1/?3,73,15
-
-LS Tag: <ls>R. ed. Bomb. 2,25,37</ls>
-  Content: R. ed. Bomb. 2,25,37
-  Expected: https://sanskrit-lexicon-scans.github.io/ramayanabom/app1?2,25,37
-  Generated: https://sanskrit-lexicon-scans.github.io/ramayanabom/app1/?2,25,37
-
-LS Tag: <ls>Sāh. D. 34,6.</ls>
-  Content: Sāh. D. 34,6.
-  Expected: https://sanskrit-lexicon-scans.github.io/sahityadarpana/app1?34,6
-  Generated: https://sanskrit-lexicon-scans.github.io/sahityadarpana_mw/app1?34,6
-
-LS Tag: <ls>R. 4,10,4.</ls>
-  Content: R. 4,10,4.
-  Expected: https://sanskrit-lexicon-scans.github.io/ramayanagorr/?4,10,4
-  Generated: ramayanaSchUrl
-
-LS Tag: <ls>M. 6,17.</ls>
-  Content: M. 6,17.
-  Expected: https://sanskrit-lexicon-scans.github.io/manu/index.html?6,17
-  Generated: https://sanskrit-lexicon-scans.github.io/manusmriti/app1?6,17
-
-LS Tag: <ls>R. ed. Bomb. 4,42,14.</ls>
-  Content: R. ed. Bomb. 4,42,14.
-  Expected: https://sanskrit-lexicon-scans.github.io/ramayanabom/app1?4,42,14
-  Generated: https://sanskrit-lexicon-scans.github.io/ramayanabom/app1/?4,42,14
-
-LS Tag: <ls>R. ed. Bomb. 4,41,26.</ls>
-  Content: R. ed. Bomb. 4,41,26.
-  Expected: https://sanskrit-lexicon-scans.github.io/ramayanabom/app1?4,41,26
-  Generated: https://sanskrit-lexicon-scans.github.io/ramayanabom/app1/?4,41,26
-
-LS Tag: <ls>R. 6,44,20.</ls>
-  Content: R. 6,44,20.
-  Expected: https://sanskrit-lexicon-scans.github.io/ramayanagorr/?6,44,20
-  Generated: ramayanaSchUrl
-
 LS Tag: <ls>Halāy. 4,83.</ls>
   Content: Halāy. 4,83.
   Expected: https://sanskrit-lexicon-scans.github.io/armh2/app1?4,83
   Generated: https://sanskrit-lexicon-scans.github.io/halayudha/app1?4,83
 
-LS Tag: <ls>R. ed. Bomb. 4,50,18.</ls>
-  Content: R. ed. Bomb. 4,50,18.
-  Expected: https://sanskrit-lexicon-scans.github.io/ramayanabom/app1?4,50,18
-  Generated: https://sanskrit-lexicon-scans.github.io/ramayanabom/app1/?4,50,18
+LS Tag: <ls>AK. 1,1,7,29.</ls>
+  Content: AK. 1,1,7,29.
+  Expected: https://sanskrit-lexicon-scans.github.io/amara_dlc/app1?1,1,7,29
+  Generated: https://sanskrit-lexicon-scans.github.io/amarakosha/app1?1,1,7
+
+LS Tag: <ls>Halāy. 2,329.</ls>
+  Content: Halāy. 2,329.
+  Expected: https://sanskrit-lexicon-scans.github.io/armh2/app1?2,329
+  Generated: https://sanskrit-lexicon-scans.github.io/halayudha/app1?2,329
+
+LS Tag: <ls>AK. 2,7,55</ls>
+  Content: AK. 2,7,55
+  Expected: https://sanskrit-lexicon-scans.github.io/amara_dlc/app1?2,7,55
+  Generated: https://sanskrit-lexicon-scans.github.io/amarakosha/app1?2,7,55
+
+LS Tag: <ls>Vikr. 55,10.</ls>
+  Content: Vikr. 55,10.
+  Expected: https://sanskrit-lexicon-scans.github.io/vikramor/app2?55,10
+  Generated: https://sanskrit-lexicon-scans.github.io/vikramor_mw/app1?55,10
+
+LS Tag: <ls>AK. 2,4,1,9.</ls>
+  Content: AK. 2,4,1,9.
+  Expected: https://sanskrit-lexicon-scans.github.io/amara_dlc/app1?2,4,1,9
+  Generated: https://sanskrit-lexicon-scans.github.io/amarakosha/app1?2,4,1
+
+LS Tag: <ls>Vikr. 64,3.</ls>
+  Content: Vikr. 64,3.
+  Expected: https://sanskrit-lexicon-scans.github.io/vikramor/app2?64,3
+  Generated: https://sanskrit-lexicon-scans.github.io/vikramor_mw/app1?64,3
+
+LS Tag: <ls>Vikr. 86,11.</ls>
+  Content: Vikr. 86,11.
+  Expected: https://sanskrit-lexicon-scans.github.io/vikramor/app2?86,11
+  Generated: https://sanskrit-lexicon-scans.github.io/vikramor_mw/app1?86,11
+
+LS Tag: <ls>Vikr. 49,11.</ls>
+  Content: Vikr. 49,11.
+  Expected: https://sanskrit-lexicon-scans.github.io/vikramor/app2?49,11
+  Generated: https://sanskrit-lexicon-scans.github.io/vikramor_mw/app1?49,11
+
+LS Tag: <ls>Vikr. 81,11</ls>
+  Content: Vikr. 81,11
+  Expected: https://sanskrit-lexicon-scans.github.io/vikramor/app2?81,11
+  Generated: https://sanskrit-lexicon-scans.github.io/vikramor_mw/app1?81,11
+
+LS Tag: <ls>AK. 3,4,14,68.</ls>
+  Content: AK. 3,4,14,68.
+  Expected: https://sanskrit-lexicon-scans.github.io/amara_dlc/app1?3,4,14,68
+  Generated: https://sanskrit-lexicon-scans.github.io/amarakosha/app1?3,4,14
+
+LS Tag: <ls>AK. 2,8,1,29.</ls>
+  Content: AK. 2,8,1,29.
+  Expected: https://sanskrit-lexicon-scans.github.io/amara_dlc/app1?2,8,1,29
+  Generated: https://sanskrit-lexicon-scans.github.io/amarakosha/app1?2,8,1
+
+LS Tag: <ls>Mālav. 22,19.</ls>
+  Content: Mālav. 22,19.
+  Expected: https://sanskrit-lexicon-scans.github.io/malavikagni/app2?22,19
+  Generated: https://sanskrit-lexicon-scans.github.io/malavikagni/app1?22,19
+
+LS Tag: <ls>Mālav. 71,22.</ls>
+  Content: Mālav. 71,22.
+  Expected: https://sanskrit-lexicon-scans.github.io/malavikagni/app2?71,22
+  Generated: https://sanskrit-lexicon-scans.github.io/malavikagni/app1?71,22
+
+LS Tag: <ls>Vop. 6,53,</ls>
+  Content: Vop. 6,53,
+  Expected: https://sanskrit-lexicon-scans.github.io/mugdhabodha/app1?6,53
+  Generated: https://sanskrit-lexicon-scans.github.io/vopadeva/app1?6,53
 
 
 ========== SAMPLES WITH NO PATTERN ==========
@@ -114,10 +114,6 @@ LS Tag: <ls>Bhāg. P. 2,7,15.</ls>
   Content: Bhāg. P. 2,7,15.
   Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?2,7,15
 
-LS Tag: <ls>Sāh. D. 289.</ls>
-  Content: Sāh. D. 289.
-  Expected: https://sanskrit-lexicon-scans.github.io/sahityadarpana/app1?289
-
 LS Tag: <ls>Bhāg. P. 5,26,19.</ls>
   Content: Bhāg. P. 5,26,19.
   Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?5,26,19
@@ -146,12 +142,16 @@ LS Tag: <ls>Bhāg. P. 10,83,12.</ls>
   Content: Bhāg. P. 10,83,12.
   Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1/?10,83,12
 
+LS Tag: <ls>Bhāg. P. 5,3,3.</ls>
+  Content: Bhāg. P. 5,3,3.
+  Expected: https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?5,3,3
+
 Matched + No Pattern + Mismatched: 3386 (3386)
 
 This is expected as SCH uses different conventions.
 00:00 +0 -1: LS URL generation - SCH dictionary full test [E]
   Expected: <0>
-    Actual: <691>
+    Actual: <22>
   
   package:matcher                                     expect
   package:flutter_test/src/widget_tester.dart 473:18  expect
