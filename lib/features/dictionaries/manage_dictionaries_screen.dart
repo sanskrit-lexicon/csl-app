@@ -33,8 +33,9 @@ class ManageDictionariesScreen extends ConsumerWidget {
               }
 
               // Check if downloadAll is specifically running
-              final isDownloadAllRunning = ref.watch(downloadNotifierProvider
-                  .select((value) => value.isDownloadAllRunning));
+              final downloadNotifier = ref.watch(downloadNotifierProvider);
+              final isDownloadAllRunning =
+                  downloadNotifier.isDownloadAllRunning;
 
               if (isDownloadAllRunning) {
                 return IconButton(
