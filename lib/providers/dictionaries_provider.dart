@@ -118,9 +118,8 @@ class DownloadNotifier {
 
         // If localDate is null (e.g., manually copied dict), still check for update
         // If remoteMeta.lastModified is after localDate, update is available
-        final needsUpdate = localDate == null ||
-            (remoteMeta.lastModified != null &&
-                remoteMeta.lastModified!.isAfter(localDate));
+        final needsUpdate = remoteMeta.lastModified != null &&
+            (localDate == null || remoteMeta.lastModified!.isAfter(localDate));
         if (needsUpdate) {
           toUpdate.add(info.codeLo);
         }

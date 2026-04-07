@@ -161,17 +161,24 @@ class DownloadService {
   static Future<({int? size, DateTime? lastModified})> fetchRemoteMetadata(
       DictionaryInfo info) async {
     try {
+      debugPrint('fetchRemoteMetadata: fetching ${info.downloadUrl}');
       final response = await http.head(Uri.parse(info.downloadUrl));
+      debugPrint(
+          'fetchRemoteMetadata: ${info.codeLo} statusCode=${response.statusCode}');
       if (response.statusCode == 200) {
         final len = response.headers['content-length'];
         final modified = response.headers['last-modified'];
+        debugPrint(
+            'fetchRemoteMetadata: ${info.codeLo} len=$len, modified=$modified');
 
         return (
           size: len != null ? int.tryParse(len) : null,
           lastModified: modified != null ? _parseHttpDate(modified) : null,
         );
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('fetchRemoteMetadata: ${info.codeLo} error=$e');
+    }
     return (size: null, lastModified: null);
   }
 

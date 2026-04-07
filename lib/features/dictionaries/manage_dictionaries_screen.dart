@@ -20,51 +20,6 @@ class ManageDictionariesScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Manage Dictionaries'),
-        actions: [
-          Consumer(
-            builder: (context, ref, child) {
-              // Check if any dictionary is currently downloading
-              bool isAnyDownloading = false;
-              for (final info in DictionaryRegistry.all) {
-                if (ref.read(downloadProgressProvider(info.codeLo)) != null) {
-                  isAnyDownloading = true;
-                  break;
-                }
-              }
-
-              // Check if downloadAll is specifically running
-              final downloadNotifier = ref.watch(downloadNotifierProvider);
-              final isDownloadAllRunning =
-                  downloadNotifier.isDownloadAllRunning;
-
-              if (isDownloadAllRunning) {
-                return IconButton(
-                  tooltip: 'Cancel Download All',
-                  icon: const Icon(Icons.cancel),
-                  onPressed: () {
-                    ref.read(downloadNotifierProvider).cancelDownloadAll();
-                  },
-                );
-              } else if (isAnyDownloading) {
-                return IconButton(
-                  tooltip: 'Download All',
-                  icon: const Icon(Icons.download_for_offline),
-                  onPressed: () {
-                    ref.read(downloadNotifierProvider).downloadAll();
-                  },
-                );
-              } else {
-                return IconButton(
-                  tooltip: 'Download All',
-                  icon: const Icon(Icons.download_for_offline),
-                  onPressed: () {
-                    ref.read(downloadNotifierProvider).downloadAll();
-                  },
-                );
-              }
-            },
-          ),
-        ],
       ),
       body: SafeArea(
         child: availableAsync.when(
@@ -87,166 +42,319 @@ class ManageDictionariesScreen extends ConsumerWidget {
                 return idxA.compareTo(idxB);
               });
 
-            return ReorderableListView.builder(
-              buildDefaultDragHandles: false,
-              itemCount: sortedDicts.length,
-              onReorder: (oldIndex, newIndex) {
-                if (newIndex > oldIndex) newIndex -= 1;
-                final list = List<DictionaryInfo>.from(sortedDicts);
-                final item = list.removeAt(oldIndex);
-                list.insert(newIndex, item);
-                settingsNotifier
-                    .reorderDicts(list.map((d) => d.codeLo).toList());
-              },
-              itemBuilder: (context, index) {
-                final info = sortedDicts[index];
-                final isAvailable = availableCodes.contains(info.codeLo);
-                final isActive = settings.activeDictCodes.contains(info.codeLo);
-                final progress =
-                    ref.watch(downloadProgressProvider(info.codeLo));
-                final status = ref.watch(downloadStatusProvider(info.codeLo));
-                final isDownloading = progress != null;
+            return Column(
+              children: [
+                Expanded(
+                  child: ReorderableListView.builder(
+                    buildDefaultDragHandles: false,
+                    itemCount: sortedDicts.length,
+                    onReorder: (oldIndex, newIndex) {
+                      if (newIndex > oldIndex) newIndex -= 1;
+                      final list = List<DictionaryInfo>.from(sortedDicts);
+                      final item = list.removeAt(oldIndex);
+                      list.insert(newIndex, item);
+                      settingsNotifier
+                          .reorderDicts(list.map((d) => d.codeLo).toList());
+                    },
+                    itemBuilder: (context, index) {
+                      final info = sortedDicts[index];
+                      final isAvailable = availableCodes.contains(info.codeLo);
+                      final isActive =
+                          settings.activeDictCodes.contains(info.codeLo);
+                      final progress =
+                          ref.watch(downloadProgressProvider(info.codeLo));
+                      final status =
+                          ref.watch(downloadStatusProvider(info.codeLo));
+                      final isDownloading = progress != null;
 
-                return ListTile(
-                  key: ValueKey(info.codeLo),
-                  leading: ReorderableDragStartListener(
-                    index: index,
-                    child: const Icon(Icons.drag_handle),
-                  ),
-                  title: Text(info.name,
-                      style: const TextStyle(fontWeight: FontWeight.bold)),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Text(info.codeUp),
-                          const Spacer(),
-                          if (!isDownloading)
+                      return ListTile(
+                        key: ValueKey(info.codeLo),
+                        leading: ReorderableDragStartListener(
+                          index: index,
+                          child: const Icon(Icons.drag_handle),
+                        ),
+                        title: Text(info.name,
+                            style:
+                                const TextStyle(fontWeight: FontWeight.bold)),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Text(info.codeUp),
+                                const Spacer(),
+                                if (!isDownloading)
+                                  Consumer(
+                                    builder: (context, ref, child) {
+                                      final remoteMetaAsync = ref.watch(
+                                          remoteMetadataProvider(info.codeLo));
+                                      return remoteMetaAsync.maybeWhen(
+                                        data: (meta) => meta.size != null
+                                            ? Text(
+                                                DownloadService.formatBytes(
+                                                    meta.size!),
+                                                style: const TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.grey))
+                                            : const SizedBox.shrink(),
+                                        orElse: () => const SizedBox.shrink(),
+                                      );
+                                    },
+                                  ),
+                              ],
+                            ),
                             Consumer(
                               builder: (context, ref, child) {
+                                final localDateAsync = ref
+                                    .watch(localMetadataProvider(info.codeLo));
                                 final remoteMetaAsync = ref
                                     .watch(remoteMetadataProvider(info.codeLo));
-                                return remoteMetaAsync.maybeWhen(
-                                  data: (meta) => meta.size != null
-                                      ? Text(
-                                          DownloadService.formatBytes(
-                                              meta.size!),
-                                          style: const TextStyle(
-                                              fontSize: 12, color: Colors.grey))
-                                      : const SizedBox.shrink(),
-                                  orElse: () => const SizedBox.shrink(),
+
+                                return localDateAsync.when(
+                                  loading: () => const SizedBox.shrink(),
+                                  error: (_, __) => const SizedBox.shrink(),
+                                  data: (localDate) {
+                                    if (!isAvailable || localDate == null) {
+                                      return const SizedBox.shrink();
+                                    }
+
+                                    final fmt = DateFormat('yyyy-MM-dd HH:mm');
+                                    final dateStr = fmt.format(localDate);
+
+                                    final remoteDate =
+                                        remoteMetaAsync.value?.lastModified;
+                                    final hasUpdate = remoteDate != null &&
+                                        remoteDate.isAfter(localDate);
+
+                                    return Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text('Downloaded on $dateStr',
+                                            style: const TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.grey)),
+                                        if (hasUpdate)
+                                          const Text('Update Available!',
+                                              style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.green,
+                                                  fontWeight: FontWeight.bold)),
+                                      ],
+                                    );
+                                  },
                                 );
                               },
                             ),
-                        ],
-                      ),
-                      Consumer(
-                        builder: (context, ref, child) {
-                          final localDateAsync =
-                              ref.watch(localMetadataProvider(info.codeLo));
-                          final remoteMetaAsync =
-                              ref.watch(remoteMetadataProvider(info.codeLo));
+                            if (isDownloading) ...[
+                              const SizedBox(height: 4),
+                              LinearProgressIndicator(value: progress),
+                              Text(status,
+                                  style: const TextStyle(fontSize: 12)),
+                            ],
+                          ],
+                        ),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Consumer(
+                              builder: (context, ref, child) {
+                                final localDateAsync = ref
+                                    .watch(localMetadataProvider(info.codeLo));
+                                final remoteMetaAsync = ref
+                                    .watch(remoteMetadataProvider(info.codeLo));
 
-                          return localDateAsync.when(
-                            loading: () => const SizedBox.shrink(),
-                            error: (_, __) => const SizedBox.shrink(),
-                            data: (localDate) {
-                              if (!isAvailable || localDate == null) {
+                                final localDate = localDateAsync.value;
+                                final remoteDate =
+                                    remoteMetaAsync.value?.lastModified;
+                                // hasUpdate if: remoteDate exists and is newer than local,
+                                // OR if remoteDate is null (couldn't fetch - assume update needed)
+                                final hasUpdate = isAvailable &&
+                                    (remoteDate == null ||
+                                        (localDate != null &&
+                                            remoteDate.isAfter(localDate)));
+
+                                if (!isDownloading &&
+                                    (!isAvailable || hasUpdate)) {
+                                  return IconButton(
+                                    icon: Icon(hasUpdate
+                                        ? Icons.system_update
+                                        : Icons.download),
+                                    tooltip: hasUpdate
+                                        ? 'Update Dictionary'
+                                        : 'Download Dictionary',
+                                    onPressed: () {
+                                      ref
+                                          .read(downloadNotifierProvider)
+                                          .download(info.codeLo);
+                                    },
+                                  );
+                                }
                                 return const SizedBox.shrink();
-                              }
-
-                              final fmt = DateFormat('yyyy-MM-dd HH:mm');
-                              final dateStr = fmt.format(localDate);
-
-                              final remoteDate =
-                                  remoteMetaAsync.value?.lastModified;
-                              final hasUpdate = remoteDate != null &&
-                                  remoteDate.isAfter(localDate);
-
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Downloaded on $dateStr',
-                                      style: const TextStyle(
-                                          fontSize: 12, color: Colors.grey)),
-                                  if (hasUpdate)
-                                    const Text('Update Available!',
-                                        style: TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.green,
-                                            fontWeight: FontWeight.bold)),
-                                ],
-                              );
-                            },
-                          );
-                        },
-                      ),
-                      if (isDownloading) ...[
-                        const SizedBox(height: 4),
-                        LinearProgressIndicator(value: progress),
-                        Text(status, style: const TextStyle(fontSize: 12)),
-                      ],
-                    ],
-                  ),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Consumer(
-                        builder: (context, ref, child) {
-                          final localDateAsync =
-                              ref.watch(localMetadataProvider(info.codeLo));
-                          final remoteMetaAsync =
-                              ref.watch(remoteMetadataProvider(info.codeLo));
-
-                          final localDate = localDateAsync.value;
-                          final remoteDate =
-                              remoteMetaAsync.value?.lastModified;
-                          final hasUpdate = isAvailable &&
-                              localDate != null &&
-                              remoteDate != null &&
-                              remoteDate.isAfter(localDate);
-
-                          if (!isDownloading && (!isAvailable || hasUpdate)) {
-                            return IconButton(
-                              icon: Icon(hasUpdate
-                                  ? Icons.system_update
-                                  : Icons.download),
-                              tooltip: hasUpdate
-                                  ? 'Update Dictionary'
-                                  : 'Download Dictionary',
-                              onPressed: () {
-                                ref
-                                    .read(downloadNotifierProvider)
-                                    .download(info.codeLo);
                               },
-                            );
-                          }
-                          return const SizedBox.shrink();
-                        },
-                      ),
-                      if (isAvailable) ...[
-                        // Toggle Active status (shows in HomeScreen tabs)
-                        Switch(
-                          value: isActive,
-                          onChanged: (v) {
-                            if (v) {
-                              settingsNotifier.addActiveDict(info.codeLo);
-                            } else {
-                              settingsNotifier.removeActiveDict(info.codeLo);
-                            }
-                          },
+                            ),
+                            if (isAvailable) ...[
+                              // Toggle Active status (shows in HomeScreen tabs)
+                              Switch(
+                                value: isActive,
+                                onChanged: (v) {
+                                  if (v) {
+                                    settingsNotifier.addActiveDict(info.codeLo);
+                                  } else {
+                                    settingsNotifier
+                                        .removeActiveDict(info.codeLo);
+                                  }
+                                },
+                              ),
+                              IconButton(
+                                icon:
+                                    const Icon(Icons.delete, color: Colors.red),
+                                onPressed: () =>
+                                    _confirmDelete(context, ref, info.codeLo),
+                              ),
+                            ]
+                          ],
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.red),
-                          onPressed: () =>
-                              _confirmDelete(context, ref, info.codeLo),
-                        ),
-                      ]
-                    ],
+                      );
+                    },
                   ),
-                );
-              },
+                ),
+                // Download All CTA Button at the bottom
+                Consumer(
+                  builder: (context, ref, child) {
+                    final downloadNotifier =
+                        ref.watch(downloadNotifierProvider);
+                    final isDownloadAllRunning =
+                        downloadNotifier.isDownloadAllRunning;
+
+                    bool isAnyDownloading = false;
+                    for (final info in DictionaryRegistry.all) {
+                      if (ref.read(downloadProgressProvider(info.codeLo)) !=
+                          null) {
+                        isAnyDownloading = true;
+                        break;
+                      }
+                    }
+
+                    // Determine if there's anything to download/update
+                    final hasDictionariesToDownload = DictionaryRegistry.all
+                        .any((d) => !availableCodes.contains(d.codeLo));
+
+                    // Debug: Print local and remote dates for each dictionary
+                    debugPrint('=== Dictionary Date Analysis ===');
+                    int fetchFailedCount = 0;
+                    int fetchSuccessCount = 0;
+                    for (final info in DictionaryRegistry.all) {
+                      final localDateAsync =
+                          ref.watch(localMetadataProvider(info.codeLo));
+                      final remoteMetaAsync =
+                          ref.watch(remoteMetadataProvider(info.codeLo));
+                      final localDate = localDateAsync.value;
+                      final remoteDate = remoteMetaAsync.value?.lastModified;
+                      final isAvail = availableCodes.contains(info.codeLo);
+
+                      if (remoteDate == null && isAvail) {
+                        fetchFailedCount++;
+                      } else if (remoteDate != null) {
+                        fetchSuccessCount++;
+                      }
+
+                      debugPrint(
+                          '${info.codeLo}: available=$isAvail, localDate=$localDate, remoteDate=$remoteDate, '
+                          '${remoteDate != null && (localDate == null || remoteDate.isAfter(localDate)) ? "HAS UPDATE" : "up-to-date"}');
+                    }
+
+                    // Check if any downloaded dict has update
+                    final hasUpdates = <String>[];
+                    for (final info in DictionaryRegistry.all) {
+                      if (availableCodes.contains(info.codeLo)) {
+                        final localDateAsync =
+                            ref.watch(localMetadataProvider(info.codeLo));
+                        final remoteMetaAsync =
+                            ref.watch(remoteMetadataProvider(info.codeLo));
+                        final localDate = localDateAsync.value;
+                        final remoteDate = remoteMetaAsync.value?.lastModified;
+
+                        // Only count as update if we actually got a remote date and it's newer
+                        if (remoteDate != null &&
+                            localDate != null &&
+                            remoteDate.isAfter(localDate)) {
+                          hasUpdates.add(info.codeLo);
+                        }
+                      }
+                    }
+
+                    // If remote fetch failed, show appropriate message
+                    final bool networkFailed =
+                        fetchFailedCount > 0 && fetchSuccessCount == 0;
+
+                    final hasAnythingToDo =
+                        hasDictionariesToDownload || hasUpdates.isNotEmpty;
+
+                    return Container(
+                      padding: const EdgeInsets.all(16),
+                      child: SizedBox(
+                        width: double.infinity,
+                        height: 56,
+                        child: ElevatedButton.icon(
+                          onPressed: (isAnyDownloading || isDownloadAllRunning)
+                              ? null
+                              : hasAnythingToDo
+                                  ? () {
+                                      final messenger =
+                                          ScaffoldMessenger.of(context);
+                                      ref
+                                          .read(downloadNotifierProvider)
+                                          .downloadAll()
+                                          .catchError((e) {
+                                        messenger.showSnackBar(
+                                          SnackBar(
+                                            content: Text('Download error: $e'),
+                                            backgroundColor: Colors.red,
+                                          ),
+                                        );
+                                      });
+                                    }
+                                  : null,
+                          icon: Icon(
+                            isDownloadAllRunning || isAnyDownloading
+                                ? Icons.cancel
+                                : Icons.download_for_offline,
+                          ),
+                          label: Text(
+                            isDownloadAllRunning || isAnyDownloading
+                                ? 'Cancel'
+                                : networkFailed
+                                    ? 'Cannot reach Cologne server'
+                                    : hasDictionariesToDownload &&
+                                            hasUpdates.isNotEmpty
+                                        ? 'Download & Update All (${hasDictionariesToDownload ? DictionaryRegistry.all.where((d) => !availableCodes.contains(d.codeLo)).length : 0} new, ${hasUpdates.length} updates)'
+                                        : hasDictionariesToDownload
+                                            ? 'Download All (${DictionaryRegistry.all.where((d) => !availableCodes.contains(d.codeLo)).length} new)'
+                                            : hasUpdates.isNotEmpty
+                                                ? 'Update All (${hasUpdates.length} updates)'
+                                                : 'All Up to Date',
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                (isAnyDownloading || isDownloadAllRunning)
+                                    ? Colors.red
+                                    : networkFailed
+                                        ? Colors.orange
+                                        : hasAnythingToDo
+                                            ? Theme.of(context).primaryColor
+                                            : Colors.grey,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
             );
           },
         ),
