@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:cologne_sanskrit_lexicon/core/ls_service.dart';
+import 'test_helpers.dart';
 
 void main() {
   setUpAll(() {
@@ -8,8 +9,8 @@ void main() {
   });
 
   test('LS URL generation - MW dictionary full test', () async {
-    final db = await databaseFactoryFfi
-        .openDatabase('/tmp/mw_lslinks_db/sqlite/mw_lslinks.sqlite');
+    final db =
+        await openDbFromZip('mw_lslinks.sqlite', 'mw_lslinks.sqlite.zip');
 
     final result = await db.rawQuery('SELECT key, data FROM keydoc_glob1');
     await db.close();
@@ -100,7 +101,7 @@ void main() {
     print('This is expected as MW uses different conventions.');
 
     expect(matched + noPattern + mismatched, total);
-    expect(mismatched <= 2, true);
+    expect(mismatched, 0);
     expect(noPattern, 0);
   });
 }

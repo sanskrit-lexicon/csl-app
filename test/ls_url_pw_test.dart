@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:cologne_sanskrit_lexicon/core/ls_service.dart';
+import 'test_helpers.dart';
 
 void main() {
   setUpAll(() {
@@ -8,8 +9,8 @@ void main() {
   });
 
   test('LS URL generation - PW dictionary full test', () async {
-    final db = await databaseFactoryFfi
-        .openDatabase('/tmp/pw_lslinks_db/sqlite/pw_lslinks.sqlite');
+    final db =
+        await openDbFromZip('pw_lslinks.sqlite', 'pw_lslinks.sqlite.zip');
 
     final result = await db.rawQuery('SELECT key, data FROM keydoc_glob1');
     await db.close();
@@ -92,8 +93,7 @@ void main() {
     }
 
     expect(matched + noPattern, total);
-    expect(matched + noPattern, total);
     expect(mismatched, 0);
-    expect(noPattern <= 1, true);
+    expect(noPattern, 0);
   });
 }

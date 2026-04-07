@@ -1,7 +1,7 @@
-import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:cologne_sanskrit_lexicon/core/ls_service.dart';
+import 'test_helpers.dart';
 
 void main() {
   setUpAll(() {
@@ -9,11 +9,8 @@ void main() {
   });
 
   test('LS URL generation - GRA dictionary full test', () async {
-    final dbPath = '/tmp/gra_lslinks_db/sqlite/sqlite/gra_lslinks.sqlite';
-    if (!File(dbPath).existsSync()) {
-        fail('Database not found at $dbPath');
-    }
-    final db = await databaseFactoryFfi.openDatabase(dbPath);
+    final db =
+        await openDbFromZip('gra_lslinks.sqlite', 'gra_lslinks.sqlite.zip');
 
     final result = await db.rawQuery('SELECT key, data FROM keydoc_glob1');
     await db.close();
@@ -34,7 +31,8 @@ void main() {
       String? content;
       String? key;
 
-      final lsMatch = RegExp(r'<ls(?:\s+n="([^"]*)")?>(.*?)</ls>').firstMatch(lsTag);
+      final lsMatch =
+          RegExp(r'<ls(?:\s+n="([^"]*)")?>(.*?)</ls>').firstMatch(lsTag);
       if (lsMatch != null) {
         nAttr = lsMatch.group(1);
         content = lsMatch.group(2)!;
@@ -47,7 +45,8 @@ void main() {
       if (key == null || content == null) {
         noPattern++;
         if (noPatternSamples.length < 50) {
-          noPatternSamples.add({'tag': lsTag, 'content': lsTag, 'expected': expectedUrl});
+          noPatternSamples
+              .add({'tag': lsTag, 'content': lsTag, 'expected': expectedUrl});
         }
         continue;
       }
@@ -57,7 +56,8 @@ void main() {
       if (generatedUrl == null) {
         noPattern++;
         if (noPatternSamples.length < 50) {
-          noPatternSamples.add({'tag': lsTag, 'content': content, 'expected': expectedUrl});
+          noPatternSamples
+              .add({'tag': lsTag, 'content': content, 'expected': expectedUrl});
         }
       } else if (generatedUrl != expectedUrl) {
         mismatched++;
@@ -77,8 +77,10 @@ void main() {
     print('\n========== STATISTICS (GRA Dictionary) ==========');
     print('Total tested: $total');
     print('Matched: $matched (${(matched / total * 100).toStringAsFixed(2)}%)');
-    print('Mismatched: $mismatched (${(mismatched / total * 100).toStringAsFixed(2)}%)');
-    print('No pattern found: $noPattern (${(noPattern / total * 100).toStringAsFixed(2)}%)');
+    print(
+        'Mismatched: $mismatched (${(mismatched / total * 100).toStringAsFixed(2)}%)');
+    print(
+        'No pattern found: $noPattern (${(noPattern / total * 100).toStringAsFixed(2)}%)');
 
     if (mismatches.isNotEmpty) {
       print('\n========== SAMPLE MISMATCHES ==========');
@@ -101,6 +103,7 @@ void main() {
       }
     }
 
-    expect(mismatched + noPattern, 0, reason: 'Some URLs were not generated correctly');
+    expect(mismatched + noPattern, 0,
+        reason: 'Some URLs were not generated correctly');
   });
 }

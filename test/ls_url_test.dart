@@ -1,6 +1,37 @@
+import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:cologne_sanskrit_lexicon/core/ls_service.dart';
+import 'package:archive/archive.dart';
+import 'package:path/path.dart' as path;
+
+const _zipBasePath = '../csl-lslink/zip';
+
+Future<Database> _openDbFromZip(String dbName, String zipFileName) async {
+  final zipPath = path.join(_zipBasePath, zipFileName);
+  final zipFile = File(zipPath);
+
+  if (!zipFile.existsSync()) {
+    fail('Zip file not found: $zipPath');
+  }
+
+  final bytes = zipFile.readAsBytesSync();
+  final archive = ZipDecoder().decodeBytes(bytes);
+
+  final dbFileName = dbName;
+  final archiveFile = archive.files.firstWhere(
+    (f) => f.name.endsWith('.sqlite'),
+    orElse: () => throw Exception('No sqlite file found in $zipFileName'),
+  );
+
+  final tempDir = Directory.systemTemp.createTempSync('csl_test_');
+  final dbPath = path.join(tempDir.path, dbFileName);
+
+  final outputFile = File(dbPath);
+  outputFile.writeAsBytesSync(archiveFile.content as List<int>);
+
+  return databaseFactoryFfi.openDatabase(dbPath);
+}
 
 String? parseLsTag(String lsTag) {
   final match = RegExp(r'<ls(?:\s+n="([^"]*)")?>(.*?)</ls>').firstMatch(lsTag);
@@ -19,8 +50,8 @@ void main() {
   });
 
   test('LS URL generation - test against SQLite database', () async {
-    final db = await databaseFactoryFfi
-        .openDatabase('/tmp/pwg_lslinks_db/sqlite/pwg_lslinks.sqlite');
+    final db =
+        await _openDbFromZip('pwg_lslinks.sqlite', 'pwg_lslinks.sqlite.zip');
 
     final result = await db.rawQuery('SELECT key, data FROM keydoc_glob1');
     await db.close();
@@ -104,6 +135,6 @@ void main() {
 
     expect(matched + noPattern, total);
     expect(mismatched, 0);
-    expect(noPattern <= 1, true);
+    expect(noPattern, 0);
   });
 }

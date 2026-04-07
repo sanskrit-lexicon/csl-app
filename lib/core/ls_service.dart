@@ -770,12 +770,6 @@ class LsService {
     final seqHymn = int.tryParse(match.group(1)!) ?? 0;
     final verse = int.tryParse(match.group(2)!) ?? 0;
 
-    if (seqHymn == 296) {
-      // Special case for Rigveda 3.62 in Grassmann dataset
-      final vStr = verse.toString().padLeft(2, '0');
-      return 'https://sanskrit-lexicon.github.io/rvlinks/rvhymns/rv00.000.html#rv00.000.$vStr';
-    }
-
     int mandala;
     int mandalaHymn;
 

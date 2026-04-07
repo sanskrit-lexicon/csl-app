@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:cologne_sanskrit_lexicon/core/ls_service.dart';
+import 'test_helpers.dart';
 
 void main() {
   setUpAll(() {
@@ -8,8 +9,8 @@ void main() {
   });
 
   test('LS URL generation - SCH dictionary full test', () async {
-    final db = await databaseFactoryFfi
-        .openDatabase('/tmp/sch_lslinks_db/sqlite/sqlite/sch_lslinks.sqlite');
+    final db =
+        await openDbFromZip('sch_lslinks.sqlite', 'sch_lslinks.sqlite.zip');
 
     final result = await db.rawQuery('SELECT key, data FROM keydoc_glob1');
     await db.close();
@@ -91,7 +92,8 @@ void main() {
       print('');
     }
 
-    print('Matched + No Pattern + Mismatched: ${matched + noPattern + mismatched} ($total)');
+    print(
+        'Matched + No Pattern + Mismatched: ${matched + noPattern + mismatched} ($total)');
     print('');
     print('This is expected as SCH uses different conventions.');
 
