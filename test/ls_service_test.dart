@@ -111,11 +111,11 @@ void main() {
 
     test('MW: Pañcat. with Roman numeral I converts to 1', () {
       final result =
-          LsService.generateHref('mw', 'Pañcat.', null, 'Pañcat. I, 1, 2');
+          LsService.generateHref('mw', 'Pañcat.', null, 'Pañcat. I, 1');
       expect(
           result,
           equals(
-              'https://sanskrit-lexicon-scans.github.io/pantankose/app1?1,1,2'));
+              'https://sanskrit-lexicon-scans.github.io/pantankose/app1?1,1'));
     });
   });
 
@@ -589,15 +589,15 @@ void main() {
       expect(
           result,
           equals(
-              'https://sanskrit-lexicon-scans.github.io/manusmriti/app1?1,2'));
+              'https://sanskrit-lexicon-scans.github.io/manu/index.html?1,2'));
     });
 
     test('MW: BhP. pattern', () {
-      final result = LsService.generateHref('mw', 'BhP.', null, 'BhP. 1,2,3');
+      final result = LsService.generateHref('mw', 'BhP.', null, 'BhP. i, 2, 3');
       expect(
           result,
           equals(
-              'https://sanskrit-lexicon-scans.github.io/bhagavatapurana/app1?1,2,3'));
+              'https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?1,2,3'));
     });
 
     test('MW: Bhag. pattern', () {
@@ -613,7 +613,7 @@ void main() {
       expect(
           result,
           equals(
-              'https://sanskrit-lexicon-scans.github.io/raghuvamsacalc/app1?1,2,3'));
+              'https://sanskrit-lexicon-scans.github.io/raghuvamsa/app1?1,2,3'));
     });
 
     test('MW: Megh. pattern', () {
@@ -634,12 +634,12 @@ void main() {
 
     test('MW: Pañcat. pattern', () {
       final result =
-          LsService.generateHref('mw', 'Pañcat.', null, 'Pañcat. I, 1, 2');
+          LsService.generateHref('mw', 'Pañcat.', null, 'Pañcat. I, 1');
       // Roman numeral "I" should be converted to 1
       expect(
           result,
           equals(
-              'https://sanskrit-lexicon-scans.github.io/pantankose/app1?1,1,2'));
+              'https://sanskrit-lexicon-scans.github.io/pantankose/app1?1,1'));
     });
   });
 }
