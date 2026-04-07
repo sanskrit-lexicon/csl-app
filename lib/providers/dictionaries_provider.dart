@@ -125,11 +125,7 @@ class DownloadNotifier {
     }
 
     // Combine lists and remove duplicates
-    final allToProcess = (<String>[]
-          ..addAll(toDownload)
-          ..addAll(toUpdate))
-        .toSet()
-        .toList();
+    final allToProcess = (<String>{...toDownload, ...toUpdate}).toList();
 
     for (final code in allToProcess) {
       // Check if user wants to cancel the entire operation

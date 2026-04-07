@@ -21,7 +21,7 @@ dependencies:
   archive: ^4.0.0
 
   # Transliteration
-  indic_transliteration_dart: ^2.3.80
+  indic_transliteration_dart: ^2.3.82
 
   # State management
   flutter_riverpod: ^2.5.1

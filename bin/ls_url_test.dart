@@ -1,6 +1,5 @@
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-import '../lib/core/ls_patterns.dart';
-import '../lib/core/ls_service.dart';
+import 'package:cologne_sanskrit_lexicon/core/ls_service.dart';
 
 String? parseLsTag(String lsTag) {
   final match = RegExp(r'<ls(?:\s+n="([^"]*)")?>(.*?)</ls>').firstMatch(lsTag);

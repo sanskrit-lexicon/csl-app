@@ -155,8 +155,9 @@ class PreferencesScreen extends ConsumerWidget {
               trailing: DropdownButton<AppThemeMode>(
                 value: settings.themeMode,
                 onChanged: (v) {
-                  if (v != null)
+                  if (v != null) {
                     notifier.update(settings.copyWith(themeMode: v));
+                  }
                 },
                 items: AppThemeMode.values
                     .map(

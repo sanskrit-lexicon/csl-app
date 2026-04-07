@@ -96,7 +96,7 @@ void main() {
         'Matched + No Pattern: ${matched + noPattern} (${total - mismatched})');
     print('');
     print(
-        'NOTE: MW dictionary has ${mismatched} mismatches and ${noPattern} no-pattern cases.');
+        'NOTE: MW dictionary has $mismatched mismatches and $noPattern no-pattern cases.');
     print('This is expected as MW uses different conventions.');
 
     expect(matched + noPattern + mismatched, total);

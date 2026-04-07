@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'database_helper.dart';
 import 'ls_patterns.dart';
 
@@ -182,38 +181,60 @@ class LsService {
   // Public methods for testing
   static int romanInt(String roman) {
     if (roman.isEmpty) return 0;
-    
+
     final map = {
-      'i': 1, 'v': 5, 'x': 10, 'l': 50,
-      'c': 100, 'd': 500, 'm': 1000
+      'i': 1,
+      'v': 5,
+      'x': 10,
+      'l': 50,
+      'c': 100,
+      'd': 500,
+      'm': 1000
     };
-    
+
     final s = roman.toLowerCase();
     int result = 0;
-    
+
     for (int i = 0; i < s.length; i++) {
       if (!map.containsKey(s[i])) return 0;
-      
+
       int current = map[s[i]]!;
-      int next = (i + 1 < s.length && map.containsKey(s[i+1])) ? map[s[i+1]]! : 0;
-      
+      int next =
+          (i + 1 < s.length && map.containsKey(s[i + 1])) ? map[s[i + 1]]! : 0;
+
       if (current < next) {
         result -= current;
       } else {
         result += current;
       }
     }
-    
+
     return result;
   }
 
   static int romanInt20(String roman) {
     final s = roman.toLowerCase();
     const romanNums = {
-      'i': 1, 'ii': 2, 'iii': 3, 'iv': 4, 'v': 5,
-      'vi': 6, 'vii': 7, 'viii': 8, 'ix': 9, 'x': 10,
-      'xi': 11, 'xii': 12, 'xiii': 13, 'xiv': 14, 'xv': 15,
-      'xvi': 16, 'xvii': 17, 'xviii': 18, 'xix': 19, 'xx': 20,
+      'i': 1,
+      'ii': 2,
+      'iii': 3,
+      'iv': 4,
+      'v': 5,
+      'vi': 6,
+      'vii': 7,
+      'viii': 8,
+      'ix': 9,
+      'x': 10,
+      'xi': 11,
+      'xii': 12,
+      'xiii': 13,
+      'xiv': 14,
+      'xv': 15,
+      'xvi': 16,
+      'xvii': 17,
+      'xviii': 18,
+      'xix': 19,
+      'xx': 20,
     };
     return romanNums[s] ?? 0;
   }
@@ -267,7 +288,9 @@ class LsService {
       data1 = data;
     }
 
-    if (dict == 'gra' && data1.trim().startsWith('{') && data1.trim().endsWith('}')) {
+    if (dict == 'gra' &&
+        data1.trim().startsWith('{') &&
+        data1.trim().endsWith('}')) {
       return hrefGraBraces(data1);
     }
 
@@ -423,8 +446,8 @@ class LsService {
               // Check for _lc suffix (lowercase)
               var lowercase = false;
               final placeholder = r'$' + i.toString();
-              final lcPlaceholder = r'$' + i.toString() + '_lc';
-              final r20Placeholder = r'$' + i.toString() + '_r20';
+              final lcPlaceholder = '${placeholder}_lc';
+              final r20Placeholder = '${placeholder}_r20';
               var r20 = false;
               if (url.contains(lcPlaceholder)) {
                 lowercase = true;
@@ -495,7 +518,8 @@ class LsService {
                   if (romanVal > 0) {
                     replacement = romanVal.toString();
                   }
-                  resultUrl = resultUrl.replaceAll(r'$' + i.toString(), replacement);
+                  resultUrl =
+                      resultUrl.replaceAll(r'$' + i.toString(), replacement);
                 }
                 return resultUrl;
               }
@@ -573,7 +597,7 @@ class LsService {
         }
         return resultUrl;
       }
-    } catch (e) {}
+    } catch (_) {}
     return '';
   }
 
@@ -604,8 +628,7 @@ class LsService {
   }
 
   static String? hrefDhatu(String data1) {
-    final regex = RegExp(
-        r'^(.*?[.]) *([0-9ivxlcmIVXLCM]+)([ ,]+([0-9]+))?.*',
+    final regex = RegExp(r'^(.*?[.]) *([0-9ivxlcmIVXLCM]+)([ ,]+([0-9]+))?.*',
         caseSensitive: false);
     final match = regex.firstMatch(data1);
     if (match == null) return null;

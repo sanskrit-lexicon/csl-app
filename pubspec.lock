@@ -252,10 +252,10 @@ packages:
     dependency: "direct main"
     description:
       name: indic_transliteration_dart
-      sha256: "52643a2277d03f62dc5c7a20dcbff7c608a7a6ba2b2bd4a9f05940c515f642b4"
+      sha256: "8f44bda0bb2bbb4897c8480b729a14e11592ec919de8761b46c82013f496b220"
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.80"
+    version: "2.3.82"
   intl:
     dependency: "direct main"
     description:

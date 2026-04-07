@@ -151,8 +151,9 @@ class ManageDictionariesScreen extends ConsumerWidget {
                             loading: () => const SizedBox.shrink(),
                             error: (_, __) => const SizedBox.shrink(),
                             data: (localDate) {
-                              if (!isAvailable || localDate == null)
+                              if (!isAvailable || localDate == null) {
                                 return const SizedBox.shrink();
+                              }
 
                               final fmt = DateFormat('yyyy-MM-dd HH:mm');
                               final dateStr = fmt.format(localDate);
