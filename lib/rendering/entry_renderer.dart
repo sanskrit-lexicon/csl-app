@@ -432,7 +432,7 @@ class _EntryCard extends StatelessWidget {
                             ? (fontSize + 2).toDouble()
                             : fontSize.toDouble(),
                         color: _getHeadwordColor(theme),
-                        fontFamily: 'Siddhanta',
+                        fontFamily: 'Siddhanta1',
                       ),
                     ),
                     if (homonym != null)
@@ -469,7 +469,7 @@ class _EntryCard extends StatelessWidget {
                     : (fontSize - 2).toDouble(),
                 height: 1.6,
                 color: theme.colorScheme.onSurface,
-                fontFamily: 'Siddhanta',
+                fontFamily: 'Siddhanta1',
               ),
               onTapUrl: (url) async {
                 if (url.startsWith('sanslex://lookup/')) {

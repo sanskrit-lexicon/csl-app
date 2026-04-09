@@ -390,7 +390,7 @@ class _DictionaryView extends ConsumerWidget {
                       style: TextStyle(
                         fontSize: (settings.fontSize - 3).toDouble(),
                         fontWeight: FontWeight.w400,
-                        fontFamily: 'Siddhanta',
+                        fontFamily: 'Siddhanta1',
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),

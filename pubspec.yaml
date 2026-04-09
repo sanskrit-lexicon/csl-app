@@ -59,9 +59,9 @@ flutter:
   assets:
     - assets/
   fonts:
-    - family: Siddhanta
+    - family: Siddhanta1
       fonts:
-        - asset: assets/siddhanta.ttf
+        - asset: assets/siddhanta1.ttf
 
 flutter_launcher_icons:
   android: true
