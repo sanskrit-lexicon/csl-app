@@ -1375,6 +1375,66 @@ class LsService {
     return null;
   }
 
+  /// Batch fetch all LS links for an entry in a single DB query.
+  /// Returns a map of cacheKey -> URL for all found LS links.
+  /// This uses IN clause to fetch multiple keys at once.
+  static Future<Map<String, String>> batchFetchLsLinks({
+    required String dictCode,
+    required List<String> searchKeys,
+  }) async {
+    final results = <String, String>{};
+    final dict = dictCode.toLowerCase();
+
+    if (!DatabaseHelper.lsLinkDicts.contains(dict)) {
+      return results;
+    }
+
+    if (searchKeys.isEmpty) {
+      return results;
+    }
+
+    try {
+      final db = await DatabaseHelper.openLsLinkDb(dict);
+      if (db == null) {
+        return results;
+      }
+
+      // Use IN clause for batch query - much faster than individual queries
+      // Escape keys for SQL safety
+      final placeholders = searchKeys.map((_) => '?').join(',');
+      final rows = await db.rawQuery(
+        'SELECT key, data FROM keydoc_glob1 WHERE key IN ($placeholders)',
+        searchKeys,
+      );
+
+      for (final row in rows) {
+        final key = row['key'] as String?;
+        final url = row['data'] as String?;
+        if (key != null && url != null && url.isNotEmpty) {
+          results[key] = url;
+        }
+      }
+    } catch (e) {
+      // Return empty results on error
+    }
+
+    return results;
+  }
+
+  /// Resolve LS link on-demand when user clicks.
+  /// This is called lazily when user taps an LS link.
+  static Future<LsResult?> resolveLsOnClick({
+    required String dictCode,
+    required String lsContent,
+    String? nAttribute,
+  }) async {
+    return processLs(
+      dictCode: dictCode,
+      lsContent: lsContent,
+      nAttribute: nAttribute,
+    );
+  }
+
   static Future<String?> _queryAuthtooltips(
       String dict, String keyPrefix, String data) async {
     try {

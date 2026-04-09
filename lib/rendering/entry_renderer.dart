@@ -49,39 +49,49 @@ class EntryRenderer {
       if (exp != null) abbrCache[abbr] = exp;
     }
 
-    // 2. Pre-fetch LS (literary source) expansions using LsService
+    // 2. Pre-fetch LS (literary source) expansions using batch query
     final lsRefs = EntryParser.extractLsRefsWithDetails(entry.bodyHtml);
-    debugPrint(
-        '=== LS DEBUG: Dict=$dictCode, Extracted refs: ${lsRefs.length}');
     final lsCache = <String, String>{};
     final lsHrefs = <String, String>{};
 
+    // Build list of search keys for batch query
+    final lsSearchKeys = <String>[];
+    final lsRefMap = <String, LsRef>{}; // searchKey -> original ref
+
     for (final ref in lsRefs) {
-      debugPrint(
-          '=== LS DEBUG: Processing n="${ref.nAttribute}", text="${ref.text}"');
-      final result = await LsService.processLs(
+      final key = LsService.extractFirstKey(ref.text);
+      if (key == null) continue;
+
+      // Build search keys similar to ls_service logic
+      if (ref.nAttribute != null && ref.nAttribute!.isNotEmpty) {
+        final searchKey = '<ls n="${ref.nAttribute}">$key</ls>';
+        lsSearchKeys.add(searchKey);
+        lsRefMap[searchKey] = ref;
+      }
+      final plainKey = '<ls>$key</ls>';
+      lsSearchKeys.add(plainKey);
+      lsRefMap[plainKey] = ref;
+    }
+
+    // Batch query all LS links in single DB call
+    if (lsSearchKeys.isNotEmpty) {
+      final batchResults = await LsService.batchFetchLsLinks(
         dictCode: dictCode,
-        lsContent: ref.text,
-        nAttribute: ref.nAttribute,
+        searchKeys: lsSearchKeys,
       );
 
-      if (result != null) {
-        final cacheKey = ref.nAttribute ?? ref.text;
-        if (result.expansion != null) {
-          lsCache[cacheKey] = result.expansion!;
-          debugPrint('=== LS DEBUG: Stored in lsCache: key="$cacheKey"');
-        }
-        if (result.href != null) {
-          lsHrefs[cacheKey] = result.href!;
-          debugPrint(
-              '=== LS DEBUG: Stored in lsHrefs: key="$cacheKey" => href="${result.href}"');
-        } else {
-          debugPrint('=== LS DEBUG: No href for key="$cacheKey"');
+      // Build cache maps from batch results
+      for (final entry in batchResults.entries) {
+        final ref = lsRefMap[entry.key];
+        if (ref != null) {
+          final cacheKey = ref.nAttribute ?? ref.text;
+          lsHrefs[cacheKey] = entry.value;
         }
       }
     }
-    debugPrint('=== LS DEBUG: Final lsCache: $lsCache');
-    debugPrint('=== LS DEBUG: Final lsHrefs: $lsHrefs');
+
+    // For LS links without pre-loaded hrefs, use lazy resolution on click
+    // (handled via sanslex:// URLs in the HTML)
 
     // DEBUG: Log raw entry HTML structure
     AppLogger.entry(dictCode, lnum, entry.key1Slp1, entry.bodyHtml);
@@ -118,6 +128,7 @@ class EntryRenderer {
       pageCol: entry.pageCol,
       lnum: lnum,
       dictCodeUp: dictCodeUp,
+      dictCode: dictCode,
       lsCache: lsCache,
       abbrCache: abbrCache,
       onWordTap: onWordTap,
@@ -360,6 +371,7 @@ class _EntryCard extends StatelessWidget {
   final String? pageCol;
   final double lnum;
   final String dictCodeUp;
+  final String dictCode;
   final Map<String, String> lsCache;
   final Map<String, String> abbrCache;
   final void Function(String slp1Word) onWordTap;
@@ -379,6 +391,7 @@ class _EntryCard extends StatelessWidget {
     this.pageCol,
     required this.lnum,
     required this.dictCodeUp,
+    required this.dictCode,
     required this.lsCache,
     required this.abbrCache,
     required this.onWordTap,
@@ -484,9 +497,47 @@ class _EntryCard extends StatelessWidget {
                   final parts = url.split('/');
                   debugPrint('=== TOOLTIP DEBUG: URL parts: $parts');
                   if (parts.length >= 5) {
+                    final type = parts[2]; // 'ab' or 'ls'
                     final encoded = parts[4];
                     final message = Uri.decodeComponent(encoded);
-                    // Clean HTML-encoded characters from tooltip text
+
+                    // For LS links without pre-loaded hrefs, resolve on click
+                    if (type == 'ls') {
+                      // Try to resolve LS link from database on click
+                      final lsResult = await LsService.resolveLsOnClick(
+                        dictCode: dictCode,
+                        lsContent: message,
+                      );
+                      if (lsResult?.href != null) {
+                        // Open external URL
+                        final uri = Uri.parse(lsResult!.href!);
+                        if (await canLaunchUrl(uri)) {
+                          await launchUrl(uri,
+                              mode: LaunchMode.externalApplication);
+                          return true;
+                        }
+                      }
+                      // If no external URL found, show tooltip as fallback
+                      final cleanedMessage = message
+                          .replaceAll('&#13;', '')
+                          .replaceAll('&#10;', '\n')
+                          .replaceAll('&amp;', '&')
+                          .replaceAll('&lt;', '<')
+                          .replaceAll('&gt;', '>')
+                          .replaceAll('&quot;', '"');
+                      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(cleanedMessage),
+                          duration: const Duration(seconds: 2),
+                          behavior: SnackBarBehavior.floating,
+                          margin: const EdgeInsets.all(16),
+                        ),
+                      );
+                      return true;
+                    }
+
+                    // For abbreviations, show tooltip as before
                     final cleanedMessage = message
                         .replaceAll('&#13;', '')
                         .replaceAll('&#10;', '\n')
@@ -496,7 +547,6 @@ class _EntryCard extends StatelessWidget {
                         .replaceAll('&quot;', '"');
                     debugPrint(
                         '=== TOOLTIP DEBUG: Showing message: "$cleanedMessage"');
-                    // Remove any existing SnackBar immediately and show new one
                     ScaffoldMessenger.of(context).removeCurrentSnackBar();
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
