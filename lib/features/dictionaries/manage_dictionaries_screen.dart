@@ -85,7 +85,7 @@ class ManageDictionariesScreen extends ConsumerWidget {
                               children: [
                                 Text(info.codeUp),
                                 const Spacer(),
-                                if (!kIsWeb && !isDownloading)
+                                if (!isDownloading)
                                   Consumer(
                                     builder: (context, ref, child) {
                                       final remoteMetaAsync = ref.watch(
@@ -223,10 +223,8 @@ class ManageDictionariesScreen extends ConsumerWidget {
                     },
                   ),
                 ),
-                // Download All CTA Button at the bottom — hidden on web.
-                // On web, all dictionaries come pre-bundled as assets.
-                if (!kIsWeb)
-                  Consumer(
+                // Download All CTA Button at the bottom
+                Consumer(
                   builder: (context, ref, child) {
                     final downloadNotifier =
                         ref.watch(downloadNotifierProvider);

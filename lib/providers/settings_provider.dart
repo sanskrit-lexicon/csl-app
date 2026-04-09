@@ -45,6 +45,7 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
     state = loaded.copyWith(
       dictOrder: newDictOrder,
       activeDictCodes: newActiveCodes,
+      isLoaded: true,
     );
   }
 

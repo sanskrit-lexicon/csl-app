@@ -136,6 +136,7 @@ class AppSettings {
   final bool enableBasicDisplay; // Feature 4: XML to HTML rendering
   final bool listMode; // List Mode: accordion view for search results
   final int fontSize; // Font size for dictionary entries
+  final bool isLoaded; // Whether settings & active dictionaries have finished loading
 
   const AppSettings({
     this.headwordSearchMode = SearchMode.prefix,
@@ -156,6 +157,7 @@ class AppSettings {
     this.enableBasicDisplay = true,
     this.listMode = false,
     this.fontSize = 16,
+    this.isLoaded = false,
   });
 
   AppSettings copyWith({
@@ -177,6 +179,7 @@ class AppSettings {
     bool? enableBasicDisplay,
     bool? listMode,
     int? fontSize,
+    bool? isLoaded,
   }) {
     return AppSettings(
       headwordSearchMode: headwordSearchMode ?? this.headwordSearchMode,
@@ -199,6 +202,7 @@ class AppSettings {
       enableBasicDisplay: enableBasicDisplay ?? this.enableBasicDisplay,
       listMode: listMode ?? this.listMode,
       fontSize: fontSize ?? this.fontSize,
+      isLoaded: isLoaded ?? this.isLoaded,
     );
   }
 

@@ -5,6 +5,7 @@
 import 'package:archive/archive.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 // Conditional import so sqflite_common_ffi_web (web-only) is only imported on web.
 // sqflite_web_writer.dart uses sqflite_common_ffi_web; its stub does not.
 import 'sqflite_web_writer_stub.dart'
@@ -105,10 +106,46 @@ Future<void> deleteDictionaryNative(String dictCode) async {
 /// On web, on-disk size is not applicable; always returns null.
 Future<int?> downloadedSizeNative(String dictCode) async => null;
 
-/// On web, we don't fetch remote metadata from the Cologne server.
+/// On web, we fetch remote metadata directly using an HTTP HEAD request
+/// to the GitHub Pages URL. Because it's same-origin (sanskrit-lexicon.github.io),
+/// this works seamlessly without CORS issues.
+Future<DateTime?>? _globalLastModifiedFuture;
+
+Future<DateTime?> _fetchGlobalLastModified() async {
+  try {
+    // mw.zip is a large dictionary guaranteed to exist.
+    // We make exactly one HEAD request to fetch the global generation date.
+    final url = '$_sqliteReleaseBase/mw.zip';
+    final response = await http.head(Uri.parse(url));
+    if (response.statusCode == 200) {
+      final lastModified = response.headers['last-modified'];
+      return lastModified != null ? _parseHttpDate(lastModified) : null;
+    }
+  } catch (e) {
+    debugPrint('WebMetadata: global date fetch failed: $e');
+  }
+  return null;
+}
+
 Future<({int? size, DateTime? lastModified})> fetchRemoteMetadataNative(
-    DictionaryInfo info) async =>
-    (size: null, lastModified: null);
+    DictionaryInfo info) async {
+  // All concurrent dictionary queries will await the exact same Future
+  _globalLastModifiedFuture ??= _fetchGlobalLastModified();
+  final lastModified = await _globalLastModifiedFuture;
+  
+  return (size: null, lastModified: lastModified);
+}
+
+DateTime? _parseHttpDate(String dateStr) {
+  try {
+    // Standard RFC-1123 HTTP-date: "Wed, 21 Oct 2015 07:28:00 GMT"
+    final format = DateFormat("EEE, dd MMM yyyy HH:mm:ss 'GMT'", "en_US");
+    return format.parseUtc(dateStr);
+  } catch (e) {
+    debugPrint('WebMetadata: Failed to parse last-modified date: $dateStr');
+    return null;
+  }
+}
 
 String _fmtBytes(int bytes) {
   if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';

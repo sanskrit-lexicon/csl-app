@@ -200,6 +200,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
   Widget _buildBody(
       AppSettings settings, SearchMode hwMode, SearchMode defMode) {
+    if (!settings.isLoaded) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
     if (settings.activeDictCodes.isEmpty) {
       return Center(
         child: Column(
