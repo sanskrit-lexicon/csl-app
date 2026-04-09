@@ -27,7 +27,7 @@ permissions:
 # To add/remove a dictionary: edit the DICTIONARIES list below and push to main.
 # ─────────────────────────────────────────────────────────────────────────────
 env:
-  DICTIONARIES: "lan mw ap"  # Space-separated list of dict codes to bundle
+  DICTIONARIES: "acc ae ap90 ap ben bhs bop bor bur cae ccs gra gst ieg inm krm mci md mw mw72 mwe pe pgn pui pw pwg sch shs skd snp stc vcp vei wil yat lan armh pwkvn lrv abch acph acsj fri"  # Space-separated list of dict codes to bundle
 
 jobs:
   build-and-deploy:
