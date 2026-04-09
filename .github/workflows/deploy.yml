@@ -1,0 +1,66 @@
+name: Build & Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main  # Triggers on every push to main
+
+  # Allow manual triggering from the Actions tab
+  workflow_dispatch:
+
+permissions:
+  contents: write  # Required for peaceiris/actions-gh-pages to push to gh-pages branch
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── Step 1: Checkout repository ─────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── Step 2: Set up Flutter (stable channel) ──────────────────────────────
+      # WASM requires Flutter 3.24+. Pin to a known-good stable version.
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          flutter-version: '3.29.2'
+
+      # ── Step 3: Install Dart/Flutter dependencies ────────────────────────────
+      - name: Install dependencies
+        run: flutter pub get
+
+      # ── Step 4: Set up SQLite web assets ────────────────────────────────────
+      # This command generates/copies two files into web/:
+      #   web/sqlite3.wasm   — the SQLite WebAssembly binary
+      #   web/sqflite_sw.js  — the shared worker script
+      # These are REQUIRED for sqflite_common_ffi_web to function.
+      - name: Set up SQLite web assets
+        run: dart run sqflite_common_ffi_web:setup
+
+      # ── Step 5: Build Flutter Web with WASM ─────────────────────────────────
+      # --base-href must match the GitHub Pages URL path.
+      # If this repo is at: https://sanskrit-lexicon.github.io/csl-app/
+      # then base-href is:  /csl-app/
+      #
+      # If this is an org/user root repo (e.g. sanskrit-lexicon.github.io),
+      # change --base-href to /
+      - name: Build Flutter Web (WASM)
+        run: flutter build web --wasm --release --base-href /csl-app/
+
+      # ── Step 6: Deploy build/web to gh-pages branch ─────────────────────────
+      # peaceiris/actions-gh-pages pushes ./build/web to the gh-pages branch.
+      # The gh-pages branch is then served by GitHub Pages.
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/web
+          # Set force_orphan: true to always deploy a clean build.
+          # Set to false if you want to keep previous deployments alongside.
+          force_orphan: true
+          # Fallback: GitHub Pages will serve index.html for unknown paths.
+          # This is needed for Flutter's client-side routing.
+          enable_jekyll: false

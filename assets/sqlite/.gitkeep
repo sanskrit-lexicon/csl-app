@@ -1,0 +1,15 @@
+# SQLite assets for web (WASM) deployment
+#
+# Place your dictionary SQLite files here before building for web.
+# Example layout (replace CODE with actual dict code):
+#
+#   CODE.sqlite            — main dictionary database (required)
+#   CODEab.sqlite          — abbreviations database (optional)
+#   CODEauthtooltips.sqlite — author/source tooltips (optional)
+#   CODEbib.sqlite         — bibliography database (optional)
+#
+# The app auto-detects which files are present — no code changes needed
+# when adding or removing dictionaries.
+#
+# This .gitkeep file keeps the folder tracked by git when it's empty.
+# Delete it once you add your first .sqlite file.

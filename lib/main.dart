@@ -1,20 +1,23 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cologne_sanskrit_lexicon/features/home/home_screen.dart';
 import 'package:cologne_sanskrit_lexicon/core/transliteration_service.dart';
 import 'package:cologne_sanskrit_lexicon/models/app_settings.dart';
 import 'package:cologne_sanskrit_lexicon/providers/settings_provider.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+// Conditional import: selects the right database factory for each platform.
+// db_init_io.dart   → Android / iOS / macOS / Windows / Linux (uses sqflite / sqflite_common_ffi)
+// db_init_web.dart  → Web / WASM (uses sqflite_common_ffi_web → IndexedDB)
+import 'db_init_stub.dart'
+    if (dart.library.io) 'db_init_io.dart'
+    if (dart.library.js_interop) 'db_init_web.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize FFI for desktop platforms
-  if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-    sqfliteFfiInit();
-    databaseFactory = databaseFactoryFfi;
-  }
+  // Initialize the correct SQLite database factory for the current platform.
+  // On native: sqflite default (mobile) or sqflite_common_ffi (desktop).
+  // On web:    sqflite_common_ffi_web (IndexedDB / WASM).
+  await initDatabaseFactory();
 
   // Initialize transliteration schemes
   TransliterationService.init();

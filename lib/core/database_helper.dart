@@ -1,52 +1,101 @@
-import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
+import 'package:flutter/foundation.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+// Conditional import: platform-specific data directory resolution.
+// On native: uses path_provider + dart:io to find the Documents folder.
+// On web:    returns a virtual namespace string ('sanslex') for IndexedDB keys.
+import '../path_helper_stub.dart'
+    if (dart.library.io) '../path_helper_io.dart'
+    if (dart.library.js_interop) '../path_helper_web.dart';
+// Conditional import: web-only asset → IndexedDB seeder.
+// On native: stub that throws if called (should never happen).
+// On web:    real implementation that reads from rootBundle into IndexedDB.
+import 'web_db_loader_stub.dart'
+    if (dart.library.js_interop) 'web_db_loader.dart';
 
 /// Manages SQLite database connections for each dictionary.
+///
+/// On native (Android / iOS / macOS / Windows / Linux):
+///   - Databases live as .sqlite files in the app documents directory.
+///   - Paths are resolved by path_helper_io.dart via path_provider.
+///
+/// On web (WASM via IndexedDB):
+///   - Databases are stored in the browser's IndexedDB.
+///   - The "path" is a virtual key: 'sanslex/{dictCode}.sqlite'.
+///   - On first access, the .sqlite file is seeded from Flutter assets
+///     (assets/sqlite/{dictCode}.sqlite) into IndexedDB.
+///   - Subsequent accesses skip the seed step (already in IndexedDB).
 class DatabaseHelper {
-  static const String _subdir = 'sanslex';
+  static const String _prefix = 'sanslex';
   static final Map<String, Database> _openDbs = {};
 
-  /// Returns the app documents subdirectory path for sanslex data.
+  // ---------------------------------------------------------------------------
+  // Path helpers
+  // ---------------------------------------------------------------------------
+
+  /// Returns the data directory path (native) or virtual prefix (web).
   static Future<String> get dataDir async {
-    final docs = await getApplicationDocumentsDirectory();
-    final dir = p.join(docs.path, _subdir);
-    return dir;
+    if (kIsWeb) return _prefix;
+    return getNativeDataDir(); // platform-specific via conditional import
   }
 
-  /// Full path to {dictCode}.sqlite in app documents directory.
+  /// Full virtual/real path to the main dictionary database.
   static Future<String> dbPath(String dictCode) async {
-    return p.join(await dataDir, '${dictCode.toLowerCase()}.sqlite');
+    final base = await dataDir;
+    return '$base/${dictCode.toLowerCase()}.sqlite';
   }
 
-  /// Full path to {dictCode}ab.sqlite in app documents directory.
+  /// Full virtual/real path to the abbreviations database.
   static Future<String> abDbPath(String dictCode) async {
-    return p.join(await dataDir, '${dictCode.toLowerCase()}ab.sqlite');
+    final base = await dataDir;
+    return '$base/${dictCode.toLowerCase()}ab.sqlite';
   }
 
-  /// Full path to {dictCode}authtooltips.sqlite in app documents directory.
+  /// Full virtual/real path to the authtooltips database.
   static Future<String> authTooltipsDbPath(String dictCode) async {
-    return p.join(
-        await dataDir, '${dictCode.toLowerCase()}authtooltips.sqlite');
+    final base = await dataDir;
+    return '$base/${dictCode.toLowerCase()}authtooltips.sqlite';
   }
 
-  /// Full path to {dictCode}bib.sqlite in app documents directory.
+  /// Full virtual/real path to the bibliography database.
   static Future<String> bibDbPath(String dictCode) async {
-    return p.join(await dataDir, '${dictCode.toLowerCase()}bib.sqlite');
+    final base = await dataDir;
+    return '$base/${dictCode.toLowerCase()}bib.sqlite';
   }
 
-  /// Returns true if the main .sqlite file exists for this dictionary.
+  // ---------------------------------------------------------------------------
+  // Availability check
+  // ---------------------------------------------------------------------------
+
+  /// Returns true if the main .sqlite is available (on disk for native, or
+  /// in IndexedDB / loadable from assets on web).
   static Future<bool> isAvailable(String dictCode) async {
-    final main = await dbPath(dictCode);
-    final mainExists = await databaseExists(main);
-    return mainExists;
+    final path = await dbPath(dictCode);
+    if (kIsWeb) {
+      // First check IndexedDB (fast, covers repeat visits).
+      if (await databaseFactory.databaseExists(path)) return true;
+      // Then try seeding from the asset bundle (first visit).
+      return loadDbFromAssetIfNeeded(
+          path, 'assets/sqlite/${dictCode.toLowerCase()}.sqlite');
+    }
+    // Native: check whether the file exists on disk.
+    return databaseFactory.databaseExists(path);
   }
+
+  // ---------------------------------------------------------------------------
+  // Open helpers
+  // ---------------------------------------------------------------------------
 
   /// Opens (or returns cached) main dictionary database.
   static Future<Database> openDict(String dictCode) async {
     final code = dictCode.toLowerCase();
     if (_openDbs.containsKey(code)) return _openDbs[code]!;
+
     final path = await dbPath(code);
+    if (kIsWeb) {
+      // Seed from assets if not already in IndexedDB.
+      await loadDbFromAssetIfNeeded(path, 'assets/sqlite/$code.sqlite');
+    }
+
     final db = await databaseFactory.openDatabase(
       path,
       options: OpenDatabaseOptions(
@@ -64,7 +113,12 @@ class DatabaseHelper {
   static Future<Database> openAbDict(String dictCode) async {
     final code = '${dictCode.toLowerCase()}ab';
     if (_openDbs.containsKey(code)) return _openDbs[code]!;
+
     final path = await abDbPath(dictCode);
+    if (kIsWeb) {
+      await loadDbFromAssetIfNeeded(path, 'assets/sqlite/$code.sqlite');
+    }
+
     final db = await databaseFactory.openDatabase(
       path,
       options: OpenDatabaseOptions(
@@ -79,12 +133,22 @@ class DatabaseHelper {
   }
 
   /// Opens (or returns cached) authtooltips database.
+  /// Returns null if the database does not exist (optional file).
   static Future<Database?> openAuthTooltips(String dictCode) async {
     final code = '${dictCode.toLowerCase()}authtooltips';
     if (_openDbs.containsKey(code)) return _openDbs[code]!;
+
     final path = await authTooltipsDbPath(dictCode);
-    final exists = await databaseExists(path);
-    if (!exists) return null;
+
+    if (kIsWeb) {
+      // Try to seed from assets; returns false if asset doesn't exist.
+      final loaded = await loadDbFromAssetIfNeeded(path, 'assets/sqlite/$code.sqlite');
+      if (!loaded) return null;
+    } else {
+      // Native: check if the file exists on disk.
+      if (!await databaseFactory.databaseExists(path)) return null;
+    }
+
     final db = await databaseFactory.openDatabase(
       path,
       options: OpenDatabaseOptions(
@@ -98,13 +162,21 @@ class DatabaseHelper {
     return db;
   }
 
-  /// Opens (or returns cached) bib database (e.g., pwgbib.sqlite).
+  /// Opens (or returns cached) bibliography database.
+  /// Returns null if the database does not exist (optional file).
   static Future<Database?> openBib(String dictCode) async {
     final code = '${dictCode.toLowerCase()}bib';
     if (_openDbs.containsKey(code)) return _openDbs[code]!;
+
     final path = await bibDbPath(dictCode);
-    final exists = await databaseExists(path);
-    if (!exists) return null;
+
+    if (kIsWeb) {
+      final loaded = await loadDbFromAssetIfNeeded(path, 'assets/sqlite/$code.sqlite');
+      if (!loaded) return null;
+    } else {
+      if (!await databaseFactory.databaseExists(path)) return null;
+    }
+
     final db = await databaseFactory.openDatabase(
       path,
       options: OpenDatabaseOptions(
@@ -118,7 +190,11 @@ class DatabaseHelper {
     return db;
   }
 
-  /// Closes and removes a dictionary from cache (call after deletion).
+  // ---------------------------------------------------------------------------
+  // Close helpers
+  // ---------------------------------------------------------------------------
+
+  /// Closes and removes a dictionary from cache (call after deletion on native).
   static Future<void> closeDict(String dictCode) async {
     final code = dictCode.toLowerCase();
     final abCode = '${code}ab';

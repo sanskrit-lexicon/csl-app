@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../core/dictionary_registry.dart';
 import '../../core/download_service.dart';
 import '../../models/dictionary_info.dart';
@@ -83,7 +85,7 @@ class ManageDictionariesScreen extends ConsumerWidget {
                               children: [
                                 Text(info.codeUp),
                                 const Spacer(),
-                                if (!isDownloading)
+                                if (!kIsWeb && !isDownloading)
                                   Consumer(
                                     builder: (context, ref, child) {
                                       final remoteMetaAsync = ref.watch(
@@ -146,7 +148,7 @@ class ManageDictionariesScreen extends ConsumerWidget {
                                 );
                               },
                             ),
-                            if (isDownloading) ...[
+                            if (!kIsWeb && isDownloading) ...[
                               const SizedBox(height: 4),
                               LinearProgressIndicator(value: progress),
                               Text(status,
@@ -174,7 +176,8 @@ class ManageDictionariesScreen extends ConsumerWidget {
                                         (localDate != null &&
                                             remoteDate.isAfter(localDate)));
 
-                                if (!isDownloading &&
+                                if (!kIsWeb &&
+                                    !isDownloading &&
                                     (!isAvailable || hasUpdate)) {
                                   return IconButton(
                                     icon: Icon(hasUpdate
@@ -193,7 +196,7 @@ class ManageDictionariesScreen extends ConsumerWidget {
                                 return const SizedBox.shrink();
                               },
                             ),
-                            if (isAvailable) ...[
+                            if (!kIsWeb && isAvailable) ...[
                               // Toggle Active status (shows in HomeScreen tabs)
                               Switch(
                                 value: isActive,
@@ -219,8 +222,10 @@ class ManageDictionariesScreen extends ConsumerWidget {
                     },
                   ),
                 ),
-                // Download All CTA Button at the bottom
-                Consumer(
+                // Download All CTA Button at the bottom — hidden on web.
+                // On web, all dictionaries come pre-bundled as assets.
+                if (!kIsWeb)
+                  Consumer(
                   builder: (context, ref, child) {
                     final downloadNotifier =
                         ref.watch(downloadNotifierProvider);
