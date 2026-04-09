@@ -36,14 +36,17 @@ jobs:
       # ── Step 4: Set up SQLite web assets ────────────────────────────────────
       # Generates web/sqlite3.wasm and web/sqflite_sw.js required by
       # sqflite_common_ffi_web for IndexedDB-backed SQLite in the browser.
+      # Note: WASM build disabled (using JS fallback) due to WASM/IndexedDB
+      # compatibility issues with pre-built SQLite databases in Chrome.
       - name: Set up SQLite web assets
         run: dart run sqflite_common_ffi_web:setup
 
-      # ── Step 5: Build Flutter Web with WASM ─────────────────────────────────
+      # ── Step 5: Build Flutter Web (JavaScript) ────────────────────────────────
+      # Using JS fallback instead of WASM due to SQLite WASM issues in Chrome.
       # --base-href must match your GitHub Pages URL sub-path.
       # This repo is served at: https://sanskrit-lexicon.github.io/csl-app/
-      - name: Build Flutter Web (WASM)
-        run: flutter build web --wasm --release --base-href /csl-app/
+      - name: Build Flutter Web (JS)
+        run: flutter build web --release --base-href /csl-app/
 
       # ── Step 6: Deploy build/web to gh-pages branch ─────────────────────────
       - name: Deploy to GitHub Pages
