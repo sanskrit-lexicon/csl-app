@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.7] - 2026-04-09
+
+### Added
+- **Web App on Github Pages**: Launched Cologne Sanskrit Lexicon Web App on Github Pages with full pipeline based on Github.
+- **Literary Souces of PWG**: Added literary source links to websites for PWG as per website.
+- **Siddhanta1 Font**: Started to use Siddhanta1 font as per suggestion at #22.
+- **Font Size Preference**: Added font size -/+ slider in settings.
+
+### Fixed
+- **Engish Dictionaries Headwords**: Fixed wrong transliteration of English dictionary headwords to Devanagari and other schemes. See #20.
+- **UI updates**: Mainly visual changes. See #18, #21.
+
+
+
 ## [0.1.6] - 2026-03-25
 
 ### Added
