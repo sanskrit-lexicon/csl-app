@@ -58,7 +58,6 @@ flutter:
   uses-material-design: true
   assets:
     - assets/
-    - assets/sqlite/  # Pre-bundled dictionary SQLite files for web (WASM) deployment
   fonts:
     - family: Siddhanta
       fonts:
