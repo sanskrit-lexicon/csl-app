@@ -87,17 +87,28 @@ class DatabaseHelper {
     // On web: assumes the DB is already in IndexedDB (user downloaded it).
     // On native: opens the file from disk.
 
-    final db = await databaseFactory.openDatabase(
-      path,
-      options: OpenDatabaseOptions(
-        readOnly: true,
-        onOpen: (db) async {
-          await db.execute('PRAGMA case_sensitive_like = ON;');
-        },
-      ),
-    );
-    _openDbs[code] = db;
-    return db;
+    print('DB_OPEN: Opening dictionary database at $path');
+    try {
+      final exists = await databaseFactory.databaseExists(path);
+      print('DB_OPEN: Path exists in IndexedDB: $exists');
+
+      final db = await databaseFactory.openDatabase(
+        path,
+        options: OpenDatabaseOptions(
+          readOnly: true,
+          onOpen: (db) async {
+            await db.execute('PRAGMA case_sensitive_like = ON;');
+            final countRes = await db.rawQuery('SELECT count(*) as cnt FROM sqlite_master WHERE type="table" AND name=?', [code]);
+            print('DB_OPEN: Table "$code" found: ${countRes.isNotEmpty && countRes.first["cnt"] != 0}');
+          },
+        ),
+      );
+      _openDbs[code] = db;
+      return db;
+    } catch (e, stack) {
+      print('DB_OPEN_ERROR: Failed to open dictionary $code: $e\n$stack');
+      rethrow;
+    }
   }
 
   /// Opens (or returns cached) abbreviations database.

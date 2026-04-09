@@ -47,10 +47,8 @@ class SearchService {
     final pattern = _likePattern(slpWord, mode);
 
     final List<Map<String, dynamic>> rows;
-    if (kDebugMode) {
-      debugPrint(
-          'SQL Query [$dictCode]: SELECT key, lnum, data FROM $table WHERE key ${mode == SearchMode.exact ? "=" : "LIKE"} "$pattern"');
-    }
+    print(
+        'SQL Query [$dictCode]: SELECT key, lnum, data FROM $table WHERE key ${mode == SearchMode.exact ? "=" : "LIKE"} "$pattern"');
 
     try {
       if (mode == SearchMode.exact) {
@@ -69,9 +67,7 @@ class SearchService {
       return [];
     }
 
-    if (kDebugMode) {
-      debugPrint('SQL Result [$dictCode]: ${rows.length} rows');
-    }
+    print('SQL Result [$dictCode]: ${rows.length} rows returned for pattern "$pattern"');
 
     return rows.map(SearchResult.fromMap).toList();
   }
@@ -106,10 +102,8 @@ class SearchService {
     // Definition search always uses substring / LIKE for content search
     final pattern = '%$searchWord%';
 
-    if (kDebugMode) {
-      debugPrint(
-          'SQL Query [$dictCode]: SELECT key, lnum, data FROM $table WHERE LOWER(data) LIKE LOWER("$pattern")');
-    }
+    print(
+        'SQL Query [$dictCode]: SELECT key, lnum, data FROM $table WHERE LOWER(data) LIKE LOWER("$pattern")');
 
     final List<Map<String, dynamic>> rows;
     try {
@@ -122,9 +116,7 @@ class SearchService {
       return [];
     }
 
-    if (kDebugMode) {
-      debugPrint('SQL Result [$dictCode]: ${rows.length} rows');
-    }
+    print('SQL Result [$dictCode]: ${rows.length} rows');
 
     return rows.map(SearchResult.fromMap).toList();
   }
@@ -157,10 +149,8 @@ class SearchService {
     final hwPattern = _likePattern(hwSlp, hwMode);
     final defPattern = '%$defSlp%';
 
-    if (kDebugMode) {
-      debugPrint(
-          'SQL Query [$dictCode]: SELECT ... FROM $table WHERE key LIKE "$hwPattern" AND LOWER(data) LIKE LOWER("$defPattern")');
-    }
+    print(
+        'SQL Query [$dictCode]: SELECT ... FROM $table WHERE key LIKE "$hwPattern" AND LOWER(data) LIKE LOWER("$defPattern")');
 
     final List<Map<String, dynamic>> rows;
     if (hwMode == SearchMode.exact) {
