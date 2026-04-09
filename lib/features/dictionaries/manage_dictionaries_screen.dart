@@ -237,6 +237,7 @@ class ManageDictionariesScreen extends ConsumerWidget {
                     int fetchFailedCount = 0;
                     int fetchSuccessCount = 0;
                     bool hasMissingDictionaries = false;
+                    int missingCount = 0;
 
                     for (final info in DictionaryRegistry.all) {
                       // Check downloading status
@@ -252,6 +253,7 @@ class ManageDictionariesScreen extends ConsumerWidget {
 
                       if (!isAvail) {
                         hasMissingDictionaries = true;
+                        missingCount++;
                       }
 
                       if (remoteDate == null && isAvail) {
@@ -306,11 +308,11 @@ class ManageDictionariesScreen extends ConsumerWidget {
                                 ? 'Cancel'
                                 : networkFailed
                                     ? 'Cannot reach Database Server'
-                                    : hasDictionariesToDownload &&
+                                    : hasMissingDictionaries &&
                                             hasUpdates.isNotEmpty
-                                        ? 'Download & Update All (${hasDictionariesToDownload ? DictionaryRegistry.all.where((d) => !availableCodes.contains(d.codeLo)).length : 0} new, ${hasUpdates.length} updates)'
-                                        : hasDictionariesToDownload
-                                            ? 'Download All (${DictionaryRegistry.all.where((d) => !availableCodes.contains(d.codeLo)).length} new)'
+                                        ? 'Download & Update All ($missingCount new, ${hasUpdates.length} updates)'
+                                        : hasMissingDictionaries
+                                            ? 'Download All ($missingCount new)'
                                             : hasUpdates.isNotEmpty
                                                 ? 'Update All (${hasUpdates.length} updates)'
                                                 : 'All Up to Date',
