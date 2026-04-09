@@ -52,16 +52,21 @@ class SearchService {
           'SQL Query [$dictCode]: SELECT key, lnum, data FROM $table WHERE key ${mode == SearchMode.exact ? "=" : "LIKE"} "$pattern"');
     }
 
-    if (mode == SearchMode.exact) {
-      rows = await db.rawQuery(
-        'SELECT key, lnum, data FROM $table WHERE key = ? LIMIT ?',
-        [pattern, maxResults],
-      );
-    } else {
-      rows = await db.rawQuery(
-        'SELECT key, lnum, data FROM $table WHERE key LIKE ? LIMIT ?',
-        [pattern, maxResults],
-      );
+    try {
+      if (mode == SearchMode.exact) {
+        rows = await db.rawQuery(
+          'SELECT key, lnum, data FROM $table WHERE key = ? LIMIT ?',
+          [pattern, maxResults],
+        );
+      } else {
+        rows = await db.rawQuery(
+          'SELECT key, lnum, data FROM $table WHERE key LIKE ? LIMIT ?',
+          [pattern, maxResults],
+        );
+      }
+    } catch (e, stack) {
+      debugPrint('SEARCH_ERROR: Exception in searchHeadword [$dictCode]: $e\n$stack');
+      return [];
     }
 
     if (kDebugMode) {
@@ -106,10 +111,16 @@ class SearchService {
           'SQL Query [$dictCode]: SELECT key, lnum, data FROM $table WHERE LOWER(data) LIKE LOWER("$pattern")');
     }
 
-    final rows = await db.rawQuery(
-      'SELECT key, lnum, data FROM $table WHERE LOWER(data) LIKE LOWER(?) LIMIT ?',
-      [pattern, maxResults],
-    );
+    final List<Map<String, dynamic>> rows;
+    try {
+      rows = await db.rawQuery(
+        'SELECT key, lnum, data FROM $table WHERE LOWER(data) LIKE LOWER(?) LIMIT ?',
+        [pattern, maxResults],
+      );
+    } catch (e, stack) {
+      debugPrint('SEARCH_ERROR: Exception in searchDefinition [$dictCode]: $e\n$stack');
+      return [];
+    }
 
     if (kDebugMode) {
       debugPrint('SQL Result [$dictCode]: ${rows.length} rows');
