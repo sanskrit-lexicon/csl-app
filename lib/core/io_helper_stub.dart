@@ -5,7 +5,6 @@
 import 'package:archive/archive.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
 // Conditional import so sqflite_common_ffi_web (web-only) is only imported on web.
 // sqflite_web_writer.dart uses sqflite_common_ffi_web; its stub does not.
 import 'sqflite_web_writer_stub.dart'
@@ -110,12 +109,12 @@ Future<int?> downloadedSizeNative(String dictCode) async => null;
 /// to the GitHub Pages URL. Because it's same-origin (sanskrit-lexicon.github.io),
 /// this works seamlessly without CORS issues.
 Future<DateTime?>? _globalLastModifiedFuture;
+String? _primaryDictReference;
 
-Future<DateTime?> _fetchGlobalLastModified() async {
+Future<DateTime?> _fetchGlobalLastModified(String codeLo) async {
   try {
-    // mw.zip is a large dictionary guaranteed to exist.
     // We make exactly one HEAD request to fetch the global generation date.
-    final url = '$_sqliteReleaseBase/mw.zip';
+    final url = '$_sqliteReleaseBase/$codeLo.zip';
     final response = await http.head(Uri.parse(url));
     if (response.statusCode == 200) {
       final lastModified = response.headers['last-modified'];
@@ -130,21 +129,46 @@ Future<DateTime?> _fetchGlobalLastModified() async {
 Future<({int? size, DateTime? lastModified})> fetchRemoteMetadataNative(
     DictionaryInfo info) async {
   // All concurrent dictionary queries will await the exact same Future
-  _globalLastModifiedFuture ??= _fetchGlobalLastModified();
-  final lastModified = await _globalLastModifiedFuture;
+  if (_globalLastModifiedFuture == null) {
+    _primaryDictReference = info.codeLo;
+    _globalLastModifiedFuture = _fetchGlobalLastModified(info.codeLo);
+  }
+  
+  var lastModified = await _globalLastModifiedFuture;
+  
+  // Resiliency: If the first arbitrary dictionary failed to return a date (e.g. 404),
+  // other concurrent dictionaries will individually retry to get the global date.
+  if (lastModified == null && _primaryDictReference != info.codeLo) {
+     lastModified = await _fetchGlobalLastModified(info.codeLo);
+     // If this retry succeeded, upgrade the global cached timestamp
+     if (lastModified != null) {
+         _globalLastModifiedFuture = Future.value(lastModified);
+     }
+  }
   
   return (size: null, lastModified: lastModified);
 }
 
 DateTime? _parseHttpDate(String dateStr) {
   try {
-    // Standard RFC-1123 HTTP-date: "Wed, 21 Oct 2015 07:28:00 GMT"
-    final format = DateFormat("EEE, dd MMM yyyy HH:mm:ss 'GMT'", "en_US");
-    return format.parseUtc(dateStr);
+    // Parse RFC-1123 HTTP-date: "Wed, 21 Oct 2015 07:28:00 GMT" manually to avoid intl locale initialization bugs
+    final months = {
+      'Jan': '01', 'Feb': '02', 'Mar': '03', 'Apr': '04', 'May': '05', 'Jun': '06',
+      'Jul': '07', 'Aug': '08', 'Sep': '09', 'Oct': '10', 'Nov': '11', 'Dec': '12'
+    };
+    final parts = dateStr.split(' ');
+    if (parts.length >= 5) {
+      final day = parts[1].padLeft(2, '0');
+      final monthStr = parts[2];
+      final month = months[monthStr] ?? '01';
+      final year = parts[3];
+      final time = parts[4];
+      return DateTime.parse('$year-$month-${day}T${time}Z');
+    }
   } catch (e) {
     debugPrint('WebMetadata: Failed to parse last-modified date: $dateStr');
-    return null;
   }
+  return null;
 }
 
 String _fmtBytes(int bytes) {

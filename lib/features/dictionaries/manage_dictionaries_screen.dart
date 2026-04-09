@@ -258,7 +258,7 @@ class ManageDictionariesScreen extends ConsumerWidget {
                       final isAvail = availableCodes.contains(info.codeLo);
 
                       if (remoteDate == null && isAvail) {
-                        fetchFailedCount++;
+                        if (!kIsWeb) fetchFailedCount++;
                       } else if (remoteDate != null) {
                         fetchSuccessCount++;
                       }
@@ -329,7 +329,7 @@ class ManageDictionariesScreen extends ConsumerWidget {
                             isDownloadAllRunning || isAnyDownloading
                                 ? 'Cancel'
                                 : networkFailed
-                                    ? 'Cannot reach Cologne server'
+                                    ? 'Cannot reach Database Server'
                                     : hasDictionariesToDownload &&
                                             hasUpdates.isNotEmpty
                                         ? 'Download & Update All (${hasDictionariesToDownload ? DictionaryRegistry.all.where((d) => !availableCodes.contains(d.codeLo)).length : 0} new, ${hasUpdates.length} updates)'
