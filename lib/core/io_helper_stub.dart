@@ -12,10 +12,16 @@ import 'sqflite_web_writer_stub.dart'
 
 import '../models/dictionary_info.dart';
 
-/// Base URL for csl-sqlite GitHub Release assets.
+/// Base URL for csl-sqlite dictionary ZIPs served via GitHub Pages.
 /// Each dictionary has a zip named {code}.zip at this URL.
+///
+/// Using gh-pages (not Releases) because both csl-app and csl-sqlite are
+/// hosted under sanskrit-lexicon.github.io — the same origin — so no CORS
+/// preflight is needed. GitHub Releases redirects through
+/// objects.githubusercontent.com which lacks CORS headers and blocks
+/// browser fetch() calls.
 const _sqliteReleaseBase =
-    'https://github.com/sanskrit-lexicon/csl-sqlite/releases/latest/download';
+    'https://sanskrit-lexicon.github.io/csl-sqlite';
 
 /// Downloads {info.codeLo}.zip from csl-sqlite GitHub Releases,
 /// extracts all .sqlite files from the zip, and writes them to IndexedDB.
