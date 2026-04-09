@@ -1,5 +1,6 @@
 import 'database_helper.dart';
 import 'ls_patterns.dart';
+import '../rendering/entry_parser.dart';
 
 class LsResult {
   final String? expansion;
@@ -1376,46 +1377,178 @@ class LsService {
   }
 
   /// Batch fetch all LS links for an entry in a single DB query.
-  /// Returns a map of cacheKey -> URL for all found LS links.
+  /// Returns a map of cacheKey -> {href, expansion} for all found LS links.
   /// This uses IN clause to fetch multiple keys at once.
-  static Future<Map<String, String>> batchFetchLsLinks({
+  /// Priority: lslinks DB (href) > authtooltips (expansion) > bib (expansion)
+  static Future<Map<String, LsResult>> batchFetchLsLinksFull({
     required String dictCode,
-    required List<String> searchKeys,
+    required List<LsRef> lsRefs,
   }) async {
-    final results = <String, String>{};
+    final results = <String, LsResult>{};
     final dict = dictCode.toLowerCase();
 
-    if (!DatabaseHelper.lsLinkDicts.contains(dict)) {
+    if (lsRefs.isEmpty) {
       return results;
+    }
+
+    // Build search keys and ref map
+    final searchKeys = <String>[];
+    final refMap = <String, LsRef>{}; // searchKey -> LsRef
+
+    for (final ref in lsRefs) {
+      final key = extractFirstKey(ref.text);
+      if (key == null) continue;
+
+      if (ref.nAttribute != null && ref.nAttribute!.isNotEmpty) {
+        final searchKey = '<ls n="${ref.nAttribute}">$key</ls>';
+        searchKeys.add(searchKey);
+        refMap[searchKey] = ref;
+      }
+      final plainKey = '<ls>$key</ls>';
+      searchKeys.add(plainKey);
+      refMap[plainKey] = ref;
     }
 
     if (searchKeys.isEmpty) {
       return results;
     }
 
-    try {
-      final db = await DatabaseHelper.openLsLinkDb(dict);
-      if (db == null) {
-        return results;
-      }
+    // 1. Try lslinks database for hrefs
+    if (DatabaseHelper.lsLinkDicts.contains(dict)) {
+      try {
+        final db = await DatabaseHelper.openLsLinkDb(dict);
+        if (db != null) {
+          final placeholders = searchKeys.map((_) => '?').join(',');
+          final rows = await db.rawQuery(
+            'SELECT key, data FROM keydoc_glob1 WHERE key IN ($placeholders)',
+            searchKeys,
+          );
 
-      // Use IN clause for batch query - much faster than individual queries
-      // Escape keys for SQL safety
-      final placeholders = searchKeys.map((_) => '?').join(',');
-      final rows = await db.rawQuery(
-        'SELECT key, data FROM keydoc_glob1 WHERE key IN ($placeholders)',
-        searchKeys,
-      );
-
-      for (final row in rows) {
-        final key = row['key'] as String?;
-        final url = row['data'] as String?;
-        if (key != null && url != null && url.isNotEmpty) {
-          results[key] = url;
+          for (final row in rows) {
+            final key = row['key'] as String?;
+            final href = row['data'] as String?;
+            if (key != null && href != null && href.isNotEmpty) {
+              final ref = refMap[key];
+              if (ref != null) {
+                final cacheKey = ref.nAttribute ?? ref.text;
+                results[cacheKey] = LsResult(href: href, expansion: href);
+              }
+            }
+          }
         }
+      } catch (e) {
+        // Continue to fallback
       }
-    } catch (e) {
-      // Return empty results on error
+    }
+
+    // 2. Try authtooltips for expansions (for dicts that have it)
+    if (_authtooltipsDicts.contains(dict)) {
+      try {
+        final db = await DatabaseHelper.openAuthTooltips(dict);
+        if (db != null) {
+          final table = '${dict}authtooltips';
+          // Build key prefixes for LIKE queries
+          final prefixes = <String>[];
+          for (final ref in lsRefs) {
+            final key = extractFirstKey(ref.text);
+            if (key != null) {
+              prefixes.add('$key%');
+            }
+          }
+
+          if (prefixes.isNotEmpty) {
+            final rows = await db.rawQuery(
+              'SELECT key, data, type FROM $table WHERE key LIKE ?',
+              [prefixes.first], // Start with one prefix, refine below
+            );
+
+            // For each LS ref, find best match
+            for (final ref in lsRefs) {
+              final cacheKey = ref.nAttribute ?? ref.text;
+              if (results.containsKey(cacheKey)) continue; // Already have href
+
+              final key = extractFirstKey(ref.text);
+              if (key == null) continue;
+
+              String? bestMatch;
+              int maxLen = -1;
+
+              for (final row in rows) {
+                final code = row['key'] as String?;
+                if (code != null && ref.text.startsWith(code)) {
+                  if (code.length > maxLen) {
+                    maxLen = code.length;
+                    final dataCol = row['data'] as String?;
+                    final typeCol = row['type'] as String?;
+                    if (dataCol != null && typeCol != null) {
+                      bestMatch = '$dataCol ($typeCol)';
+                    } else if (dataCol != null) {
+                      bestMatch = dataCol;
+                    }
+                  }
+                }
+              }
+
+              if (bestMatch != null) {
+                results[cacheKey] =
+                    LsResult(expansion: bestMatch, tooltip: bestMatch);
+              }
+            }
+          }
+        }
+      } catch (e) {
+        // Continue to next fallback
+      }
+    }
+
+    // 3. Try bib database for expansions (for dicts that have it)
+    if (_bibDicts.contains(dict)) {
+      try {
+        final db = await DatabaseHelper.openBib(dict);
+        if (db != null) {
+          final table = '${dict}bib';
+
+          for (final ref in lsRefs) {
+            final cacheKey = ref.nAttribute ?? ref.text;
+            if (results.containsKey(cacheKey)) continue; // Already have result
+
+            final key = extractFirstKey(ref.text);
+            if (key == null) continue;
+
+            final keyPrefix = '$key%';
+            final rows = await db.rawQuery(
+              'SELECT code, data, codecap FROM $table WHERE code LIKE ?',
+              [keyPrefix],
+            );
+
+            String? bestMatch;
+            int maxLen = -1;
+
+            for (final row in rows) {
+              final code = row['code'] as String?;
+              if (code != null && ref.text.startsWith(code)) {
+                if (code.length > maxLen) {
+                  maxLen = code.length;
+                  final dataCol = row['data'] as String?;
+                  final codecapCol = row['codecap'] as String?;
+                  if (dataCol != null && codecapCol != null) {
+                    bestMatch = '$dataCol ($codecapCol)';
+                  } else if (dataCol != null) {
+                    bestMatch = dataCol;
+                  }
+                }
+              }
+            }
+
+            if (bestMatch != null) {
+              results[cacheKey] =
+                  LsResult(expansion: bestMatch, tooltip: bestMatch);
+            }
+          }
+        }
+      } catch (e) {
+        // No more fallbacks
+      }
     }
 
     return results;

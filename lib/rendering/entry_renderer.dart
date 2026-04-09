@@ -54,38 +54,20 @@ class EntryRenderer {
     final lsCache = <String, String>{};
     final lsHrefs = <String, String>{};
 
-    // Build list of search keys for batch query
-    final lsSearchKeys = <String>[];
-    final lsRefMap = <String, LsRef>{}; // searchKey -> original ref
-
-    for (final ref in lsRefs) {
-      final key = LsService.extractFirstKey(ref.text);
-      if (key == null) continue;
-
-      // Build search keys similar to ls_service logic
-      if (ref.nAttribute != null && ref.nAttribute!.isNotEmpty) {
-        final searchKey = '<ls n="${ref.nAttribute}">$key</ls>';
-        lsSearchKeys.add(searchKey);
-        lsRefMap[searchKey] = ref;
-      }
-      final plainKey = '<ls>$key</ls>';
-      lsSearchKeys.add(plainKey);
-      lsRefMap[plainKey] = ref;
-    }
-
-    // Batch query all LS links in single DB call
-    if (lsSearchKeys.isNotEmpty) {
-      final batchResults = await LsService.batchFetchLsLinks(
+    // Batch query all LS links (lslinks first, then fallback to authtooltips/bib)
+    if (lsRefs.isNotEmpty) {
+      final batchResults = await LsService.batchFetchLsLinksFull(
         dictCode: dictCode,
-        searchKeys: lsSearchKeys,
+        lsRefs: lsRefs,
       );
 
       // Build cache maps from batch results
       for (final entry in batchResults.entries) {
-        final ref = lsRefMap[entry.key];
-        if (ref != null) {
-          final cacheKey = ref.nAttribute ?? ref.text;
-          lsHrefs[cacheKey] = entry.value;
+        if (entry.value.href != null) {
+          lsHrefs[entry.key] = entry.value.href!;
+        }
+        if (entry.value.expansion != null) {
+          lsCache[entry.key] = entry.value.expansion!;
         }
       }
     }
@@ -491,25 +473,19 @@ class _EntryCard extends StatelessWidget {
                   return true;
                 }
                 if (url.startsWith('sanslex://tooltip/')) {
-                  // Parse tooltip URL: sanslex://tooltip/ab/{encoded} or sanslex://tooltip/ls/{encoded}
-                  // URL structure: sanslex://tooltip/ab/encodedMessage
-                  // Split gives: ['sanslex:', '', 'tooltip', 'ab', 'encodedMessage']
                   final parts = url.split('/');
-                  debugPrint('=== TOOLTIP DEBUG: URL parts: $parts');
                   if (parts.length >= 5) {
-                    final type = parts[2]; // 'ab' or 'ls'
+                    final type = parts[2];
                     final encoded = parts[4];
                     final message = Uri.decodeComponent(encoded);
 
-                    // For LS links without pre-loaded hrefs, resolve on click
                     if (type == 'ls') {
-                      // Try to resolve LS link from database on click
+                      final scaffoldMessenger = ScaffoldMessenger.of(context);
                       final lsResult = await LsService.resolveLsOnClick(
                         dictCode: dictCode,
                         lsContent: message,
                       );
                       if (lsResult?.href != null) {
-                        // Open external URL
                         final uri = Uri.parse(lsResult!.href!);
                         if (await canLaunchUrl(uri)) {
                           await launchUrl(uri,
@@ -517,7 +493,6 @@ class _EntryCard extends StatelessWidget {
                           return true;
                         }
                       }
-                      // If no external URL found, show tooltip as fallback
                       final cleanedMessage = message
                           .replaceAll('&#13;', '')
                           .replaceAll('&#10;', '\n')
@@ -525,8 +500,8 @@ class _EntryCard extends StatelessWidget {
                           .replaceAll('&lt;', '<')
                           .replaceAll('&gt;', '>')
                           .replaceAll('&quot;', '"');
-                      ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                      ScaffoldMessenger.of(context).showSnackBar(
+                      scaffoldMessenger.removeCurrentSnackBar();
+                      scaffoldMessenger.showSnackBar(
                         SnackBar(
                           content: Text(cleanedMessage),
                           duration: const Duration(seconds: 2),
@@ -537,7 +512,6 @@ class _EntryCard extends StatelessWidget {
                       return true;
                     }
 
-                    // For abbreviations, show tooltip as before
                     final cleanedMessage = message
                         .replaceAll('&#13;', '')
                         .replaceAll('&#10;', '\n')
@@ -545,8 +519,6 @@ class _EntryCard extends StatelessWidget {
                         .replaceAll('&lt;', '<')
                         .replaceAll('&gt;', '>')
                         .replaceAll('&quot;', '"');
-                    debugPrint(
-                        '=== TOOLTIP DEBUG: Showing message: "$cleanedMessage"');
                     ScaffoldMessenger.of(context).removeCurrentSnackBar();
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
