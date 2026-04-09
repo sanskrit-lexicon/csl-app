@@ -2,7 +2,8 @@ import 'package:flutter/foundation.dart';
 // Conditional import: native I/O operations (download, delete, size check).
 // io_helper.dart      → compiled on Android / iOS / macOS / Windows / Linux
 // io_helper_stub.dart → compiled on web (stubs that throw if called)
-import 'io_helper_stub.dart' if (dart.library.io) 'io_helper.dart';
+import 'io_helper_stub.dart'
+    if (dart.library.io) 'io_helper.dart';
 import '../models/dictionary_info.dart';
 import 'database_helper.dart';
 
@@ -45,25 +46,6 @@ class DownloadService {
       DictionaryInfo info) async {
     if (kIsWeb) return (size: null, lastModified: null);
     return fetchRemoteMetadataNative(info);
-  }
-
-  /// Downloads LS links database for a dictionary if available.
-  /// Called automatically after dictionary download.
-  /// Returns true if LS links were downloaded, false if not available.
-  static Future<bool> downloadLsLinks({
-    required String dictCode,
-    required void Function(double progress, String status) onProgress,
-  }) async {
-    // Check if LS links database exists for this dictionary
-    if (!DatabaseHelper.lsLinkDicts.contains(dictCode.toLowerCase())) {
-      return false;
-    }
-    // On web, use the native download function
-    if (kIsWeb) {
-      return downloadLsLinksNative(dictCode: dictCode, onProgress: onProgress);
-    }
-    // On native, LS links are not needed (handled differently)
-    return false;
   }
 
   static String _fmtBytes(int bytes) {

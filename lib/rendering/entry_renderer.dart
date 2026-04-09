@@ -49,31 +49,39 @@ class EntryRenderer {
       if (exp != null) abbrCache[abbr] = exp;
     }
 
-    // 2. Pre-fetch LS (literary source) expansions using batch query
+    // 2. Pre-fetch LS (literary source) expansions using LsService
     final lsRefs = EntryParser.extractLsRefsWithDetails(entry.bodyHtml);
+    debugPrint(
+        '=== LS DEBUG: Dict=$dictCode, Extracted refs: ${lsRefs.length}');
     final lsCache = <String, String>{};
     final lsHrefs = <String, String>{};
 
-    // Batch query all LS links (lslinks first, then fallback to authtooltips/bib)
-    if (lsRefs.isNotEmpty) {
-      final batchResults = await LsService.batchFetchLsLinksFull(
+    for (final ref in lsRefs) {
+      debugPrint(
+          '=== LS DEBUG: Processing n="${ref.nAttribute}", text="${ref.text}"');
+      final result = await LsService.processLs(
         dictCode: dictCode,
-        lsRefs: lsRefs,
+        lsContent: ref.text,
+        nAttribute: ref.nAttribute,
       );
 
-      // Build cache maps from batch results
-      for (final entry in batchResults.entries) {
-        if (entry.value.href != null) {
-          lsHrefs[entry.key] = entry.value.href!;
+      if (result != null) {
+        final cacheKey = ref.nAttribute ?? ref.text;
+        if (result.expansion != null) {
+          lsCache[cacheKey] = result.expansion!;
+          debugPrint('=== LS DEBUG: Stored in lsCache: key="$cacheKey"');
         }
-        if (entry.value.expansion != null) {
-          lsCache[entry.key] = entry.value.expansion!;
+        if (result.href != null) {
+          lsHrefs[cacheKey] = result.href!;
+          debugPrint(
+              '=== LS DEBUG: Stored in lsHrefs: key="$cacheKey" => href="${result.href}"');
+        } else {
+          debugPrint('=== LS DEBUG: No href for key="$cacheKey"');
         }
       }
     }
-
-    // For LS links without pre-loaded hrefs, use lazy resolution on click
-    // (handled via sanslex:// URLs in the HTML)
+    debugPrint('=== LS DEBUG: Final lsCache: $lsCache');
+    debugPrint('=== LS DEBUG: Final lsHrefs: $lsHrefs');
 
     // DEBUG: Log raw entry HTML structure
     AppLogger.entry(dictCode, lnum, entry.key1Slp1, entry.bodyHtml);
@@ -110,7 +118,6 @@ class EntryRenderer {
       pageCol: entry.pageCol,
       lnum: lnum,
       dictCodeUp: dictCodeUp,
-      dictCode: dictCode,
       lsCache: lsCache,
       abbrCache: abbrCache,
       onWordTap: onWordTap,
@@ -353,7 +360,6 @@ class _EntryCard extends StatelessWidget {
   final String? pageCol;
   final double lnum;
   final String dictCodeUp;
-  final String dictCode;
   final Map<String, String> lsCache;
   final Map<String, String> abbrCache;
   final void Function(String slp1Word) onWordTap;
@@ -373,7 +379,6 @@ class _EntryCard extends StatelessWidget {
     this.pageCol,
     required this.lnum,
     required this.dictCodeUp,
-    required this.dictCode,
     required this.lsCache,
     required this.abbrCache,
     required this.onWordTap,
@@ -473,45 +478,15 @@ class _EntryCard extends StatelessWidget {
                   return true;
                 }
                 if (url.startsWith('sanslex://tooltip/')) {
+                  // Parse tooltip URL: sanslex://tooltip/ab/{encoded} or sanslex://tooltip/ls/{encoded}
+                  // URL structure: sanslex://tooltip/ab/encodedMessage
+                  // Split gives: ['sanslex:', '', 'tooltip', 'ab', 'encodedMessage']
                   final parts = url.split('/');
+                  debugPrint('=== TOOLTIP DEBUG: URL parts: $parts');
                   if (parts.length >= 5) {
-                    final type = parts[2];
                     final encoded = parts[4];
                     final message = Uri.decodeComponent(encoded);
-
-                    if (type == 'ls') {
-                      final scaffoldMessenger = ScaffoldMessenger.of(context);
-                      final lsResult = await LsService.resolveLsOnClick(
-                        dictCode: dictCode,
-                        lsContent: message,
-                      );
-                      if (lsResult?.href != null) {
-                        final uri = Uri.parse(lsResult!.href!);
-                        if (await canLaunchUrl(uri)) {
-                          await launchUrl(uri,
-                              mode: LaunchMode.externalApplication);
-                          return true;
-                        }
-                      }
-                      final cleanedMessage = message
-                          .replaceAll('&#13;', '')
-                          .replaceAll('&#10;', '\n')
-                          .replaceAll('&amp;', '&')
-                          .replaceAll('&lt;', '<')
-                          .replaceAll('&gt;', '>')
-                          .replaceAll('&quot;', '"');
-                      scaffoldMessenger.removeCurrentSnackBar();
-                      scaffoldMessenger.showSnackBar(
-                        SnackBar(
-                          content: Text(cleanedMessage),
-                          duration: const Duration(seconds: 2),
-                          behavior: SnackBarBehavior.floating,
-                          margin: const EdgeInsets.all(16),
-                        ),
-                      );
-                      return true;
-                    }
-
+                    // Clean HTML-encoded characters from tooltip text
                     final cleanedMessage = message
                         .replaceAll('&#13;', '')
                         .replaceAll('&#10;', '\n')
@@ -519,6 +494,9 @@ class _EntryCard extends StatelessWidget {
                         .replaceAll('&lt;', '<')
                         .replaceAll('&gt;', '>')
                         .replaceAll('&quot;', '"');
+                    debugPrint(
+                        '=== TOOLTIP DEBUG: Showing message: "$cleanedMessage"');
+                    // Remove any existing SnackBar immediately and show new one
                     ScaffoldMessenger.of(context).removeCurrentSnackBar();
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(

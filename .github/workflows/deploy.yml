@@ -29,25 +29,26 @@ jobs:
         with:
           channel: 'stable'
 
-      # ── Step 3: Set up SQLite web assets ─────────────────────────────────────
+      # ── Step 3: Install Dart/Flutter dependencies ────────────────────────────
+      - name: Install dependencies
+        run: flutter pub get
+
+      # ── Step 4: Set up SQLite web assets ────────────────────────────────────
       # Generates web/sqlite3.wasm and web/sqflite_sw.js required by
       # sqflite_common_ffi_web for IndexedDB-backed SQLite in the browser.
       # Note: WASM build disabled (using JS fallback) due to WASM/IndexedDB
       # compatibility issues with pre-built SQLite databases in Chrome.
-      # Note: flutter build web automatically runs flutter pub get if needed,
-      # so no separate 'flutter pub get' step is required.
       - name: Set up SQLite web assets
         run: dart run sqflite_common_ffi_web:setup
 
-      # ── Step 4: Build Flutter Web (JavaScript) ────────────────────────────────
+      # ── Step 5: Build Flutter Web (JavaScript) ────────────────────────────────
       # Using JS fallback instead of WASM due to SQLite WASM issues in Chrome.
-      # --no-source-maps avoids 404 errors for .map files in release builds.
       # --base-href must match your GitHub Pages URL sub-path.
       # This repo is served at: https://sanskrit-lexicon.github.io/csl-app/
       - name: Build Flutter Web (JS)
-        run: flutter build web --release --no-source-maps --base-href /csl-app/
+        run: flutter build web --release --base-href /csl-app/
 
-      # ── Step 5: Deploy build/web to gh-pages branch ─────────────────────────
+      # ── Step 6: Deploy build/web to gh-pages branch ─────────────────────────
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:

@@ -165,11 +165,3 @@ String _fmtBytes(int bytes) {
   if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
   return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
 }
-
-/// Stub for native platforms - LS links not needed on native.
-Future<bool> downloadLsLinksNative({
-  required String dictCode,
-  required void Function(double progress, String status) onProgress,
-}) async {
-  return false;
-}

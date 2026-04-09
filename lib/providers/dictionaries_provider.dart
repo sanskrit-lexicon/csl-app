@@ -56,6 +56,7 @@ class DownloadNotifier {
       _ref.read(DownloadNotifier._isDownloadAllRunning);
 
   Future<void> download(String dictCode) async {
+
     final info = DictionaryRegistry.byCode(dictCode);
     if (info == null) return;
 
@@ -74,14 +75,6 @@ class DownloadNotifier {
           _ref.read(downloadStatusProvider(dictCode).notifier).state = status;
         },
         cancelToken: cancelToken,
-      );
-
-      // Auto-download LS links database after dictionary download
-      await DownloadService.downloadLsLinks(
-        dictCode: dictCode,
-        onProgress: (progress, status) {
-          _ref.read(downloadStatusProvider(dictCode).notifier).state = status;
-        },
       );
     } finally {
       // Save download date upon success

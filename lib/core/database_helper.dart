@@ -64,23 +64,6 @@ class DatabaseHelper {
     return '$base/${dictCode.toLowerCase()}bib.sqlite';
   }
 
-  /// Full virtual/real path to the LS links database.
-  static Future<String> lsLinksDbPath(String dictCode) async {
-    final base = await dataDir;
-    if (kIsWeb) return '$base${dictCode.toLowerCase()}lslinks';
-    return '$base/${dictCode.toLowerCase()}lslinks.sqlite';
-  }
-
-  /// Dictionaries that have LS links databases available.
-  static const Set<String> lsLinkDicts = {
-    'pwg',
-    'pw',
-    'mw',
-    'gra',
-    'sch',
-    'pwkvn'
-  };
-
   // ---------------------------------------------------------------------------
   // Availability check
   // ---------------------------------------------------------------------------
@@ -200,28 +183,6 @@ class DatabaseHelper {
     return db;
   }
 
-  /// Opens (or returns cached) LS links database.
-  /// Returns null if the database does not exist.
-  static Future<Database?> openLsLinkDb(String dictCode) async {
-    final code = '${dictCode.toLowerCase()}lslinks';
-    if (_openDbs.containsKey(code)) return _openDbs[code]!;
-
-    final path = await lsLinksDbPath(dictCode);
-    if (!await databaseFactory.databaseExists(path)) return null;
-
-    final db = await databaseFactory.openDatabase(
-      path,
-      options: OpenDatabaseOptions(
-        readOnly: !kIsWeb,
-        onOpen: (db) async {
-          await db.execute('PRAGMA case_sensitive_like = ON;');
-        },
-      ),
-    );
-    _openDbs[code] = db;
-    return db;
-  }
-
   // ---------------------------------------------------------------------------
   // Close helpers
   // ---------------------------------------------------------------------------
@@ -232,17 +193,14 @@ class DatabaseHelper {
     final abCode = '${code}ab';
     final authCode = '${code}authtooltips';
     final bibCode = '${code}bib';
-    final lsLinksCode = '${code}lslinks';
     await _openDbs[code]?.close();
     await _openDbs[abCode]?.close();
     await _openDbs[authCode]?.close();
     await _openDbs[bibCode]?.close();
-    await _openDbs[lsLinksCode]?.close();
     _openDbs.remove(code);
     _openDbs.remove(abCode);
     _openDbs.remove(authCode);
     _openDbs.remove(bibCode);
-    _openDbs.remove(lsLinksCode);
   }
 
   /// Closes all open databases.
