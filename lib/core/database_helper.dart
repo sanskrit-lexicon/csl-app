@@ -6,11 +6,9 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import '../path_helper_stub.dart'
     if (dart.library.io) '../path_helper_io.dart'
     if (dart.library.js_interop) '../path_helper_web.dart';
-// Conditional import: web-only asset → IndexedDB seeder.
-// On native: stub that throws if called (should never happen).
-// On web:    real implementation that reads from rootBundle into IndexedDB.
-import 'web_db_loader_stub.dart'
-    if (dart.library.js_interop) 'web_db_loader.dart';
+// NOTE: web_db_loader is no longer used here.
+// Databases on web are populated by the user via on-demand download
+// (download_service.dart / io_helper_stub.dart), not by asset seeding.
 
 /// Manages SQLite database connections for each dictionary.
 ///
@@ -66,18 +64,13 @@ class DatabaseHelper {
   // Availability check
   // ---------------------------------------------------------------------------
 
-  /// Returns true if the main .sqlite is available (on disk for native, or
-  /// in IndexedDB / loadable from assets on web).
+  /// Returns true if the main .sqlite is available.
+  /// On web: checks IndexedDB only (fast — no HTTP requests).
+  /// On native: checks file existence on disk.
   static Future<bool> isAvailable(String dictCode) async {
     final path = await dbPath(dictCode);
-    if (kIsWeb) {
-      // First check IndexedDB (fast, covers repeat visits).
-      if (await databaseFactory.databaseExists(path)) return true;
-      // Then try seeding from the asset bundle (first visit).
-      return loadDbFromAssetIfNeeded(
-          path, 'assets/sqlite/${dictCode.toLowerCase()}.sqlite');
-    }
-    // Native: check whether the file exists on disk.
+    // On both web and native, databaseFactory.databaseExists checks the
+    // appropriate storage (IndexedDB on web, filesystem on native).
     return databaseFactory.databaseExists(path);
   }
 
@@ -91,10 +84,8 @@ class DatabaseHelper {
     if (_openDbs.containsKey(code)) return _openDbs[code]!;
 
     final path = await dbPath(code);
-    if (kIsWeb) {
-      // Seed from assets if not already in IndexedDB.
-      await loadDbFromAssetIfNeeded(path, 'assets/sqlite/$code.sqlite');
-    }
+    // On web: assumes the DB is already in IndexedDB (user downloaded it).
+    // On native: opens the file from disk.
 
     final db = await databaseFactory.openDatabase(
       path,
@@ -115,9 +106,7 @@ class DatabaseHelper {
     if (_openDbs.containsKey(code)) return _openDbs[code]!;
 
     final path = await abDbPath(dictCode);
-    if (kIsWeb) {
-      await loadDbFromAssetIfNeeded(path, 'assets/sqlite/$code.sqlite');
-    }
+    // On web: assumes the DB is already in IndexedDB.
 
     final db = await databaseFactory.openDatabase(
       path,
@@ -139,13 +128,10 @@ class DatabaseHelper {
     if (_openDbs.containsKey(code)) return _openDbs[code]!;
 
     final path = await authTooltipsDbPath(dictCode);
-
     if (kIsWeb) {
-      // Try to seed from assets; returns false if asset doesn't exist.
-      final loaded = await loadDbFromAssetIfNeeded(path, 'assets/sqlite/$code.sqlite');
-      if (!loaded) return null;
+      // On web: check IndexedDB — it won't be there unless the zip contained this file.
+      if (!await databaseFactory.databaseExists(path)) return null;
     } else {
-      // Native: check if the file exists on disk.
       if (!await databaseFactory.databaseExists(path)) return null;
     }
 
@@ -169,13 +155,7 @@ class DatabaseHelper {
     if (_openDbs.containsKey(code)) return _openDbs[code]!;
 
     final path = await bibDbPath(dictCode);
-
-    if (kIsWeb) {
-      final loaded = await loadDbFromAssetIfNeeded(path, 'assets/sqlite/$code.sqlite');
-      if (!loaded) return null;
-    } else {
-      if (!await databaseFactory.databaseExists(path)) return null;
-    }
+    if (!await databaseFactory.databaseExists(path)) return null;
 
     final db = await databaseFactory.openDatabase(
       path,

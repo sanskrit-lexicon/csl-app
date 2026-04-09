@@ -56,7 +56,7 @@ class DownloadNotifier {
       _ref.read(DownloadNotifier._isDownloadAllRunning);
 
   Future<void> download(String dictCode) async {
-    if (kIsWeb) return; // Should never be called on web — download button is hidden.
+
     final info = DictionaryRegistry.byCode(dictCode);
     if (info == null) return;
 

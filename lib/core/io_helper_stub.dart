@@ -1,21 +1,110 @@
-// Stub for web platform — these functions should never be called on web
-// because DownloadService guards all call-sites with `if (kIsWeb) return`.
-// If somehow called, they throw immediately rather than silently fail.
+// Web implementation of dictionary download/delete operations.
+// This file is compiled on web (dart.library.io is absent).
+// It downloads from the csl-sqlite GitHub Releases and writes bytes
+// into the browser's IndexedDB via sqflite_common_ffi_web.
+import 'package:archive/archive.dart';
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
+// Conditional import so sqflite_common_ffi_web (web-only) is only imported on web.
+// sqflite_web_writer.dart uses sqflite_common_ffi_web; its stub does not.
+import 'sqflite_web_writer_stub.dart'
+    if (dart.library.js_interop) 'sqflite_web_writer.dart';
+
 import '../models/dictionary_info.dart';
 
+/// Base URL for csl-sqlite GitHub Release assets.
+/// Each dictionary has a zip named {code}.zip at this URL.
+const _sqliteReleaseBase =
+    'https://github.com/sanskrit-lexicon/csl-sqlite/releases/latest/download';
+
+/// Downloads {info.codeLo}.zip from csl-sqlite GitHub Releases,
+/// extracts all .sqlite files from the zip, and writes them to IndexedDB.
 Future<void> downloadDictionaryNative({
   required DictionaryInfo info,
-  required void Function(double, String) onProgress,
+  required void Function(double progress, String status) onProgress,
   required ValueNotifier<bool> cancelToken,
-}) async =>
-    throw UnsupportedError('downloadDictionaryNative is not available on web');
+}) async {
+  final code = info.codeLo;
+  final url = '$_sqliteReleaseBase/$code.zip';
 
-Future<void> deleteDictionaryNative(String dictCode) async =>
-    throw UnsupportedError('deleteDictionaryNative is not available on web');
+  onProgress(0.0, 'Connecting…');
+  debugPrint('WebDownload: fetching $url');
 
+  final request = http.Request('GET', Uri.parse(url));
+  final response = await request.send();
+
+  if (response.statusCode != 200) {
+    throw Exception('Download failed: HTTP ${response.statusCode} for $code.zip');
+  }
+
+  final total = response.contentLength ?? 0;
+  int received = 0;
+  final chunks = <List<int>>[];
+
+  await for (final chunk in response.stream) {
+    if (cancelToken.value) throw Exception('Download cancelled');
+    chunks.add(chunk);
+    received += chunk.length;
+    if (total > 0) {
+      onProgress(
+        received / total * 0.85,
+        'Downloading… ${_fmtBytes(received)} / ${_fmtBytes(total)}',
+      );
+    } else {
+      onProgress(0.4, 'Downloading… ${_fmtBytes(received)}');
+    }
+  }
+
+  onProgress(0.85, 'Extracting…');
+
+  // Assemble chunks into a single Uint8List
+  final bytes = Uint8List(received);
+  int offset = 0;
+  for (final chunk in chunks) {
+    bytes.setRange(offset, offset + chunk.length, chunk);
+    offset += chunk.length;
+  }
+
+  // Decode the zip using the archive package (pure Dart — works on web)
+  final archive = ZipDecoder().decodeBytes(bytes);
+
+  int written = 0;
+  for (final file in archive) {
+    if (!file.isFile || !file.name.endsWith('.sqlite')) continue;
+
+    // Handle nested paths inside the zip (e.g. web/sqlite/mw.sqlite → mw.sqlite)
+    final fileName = file.name.split('/').last;
+    final dbName = 'sanslex/$fileName';
+    final content = Uint8List.fromList(file.content as List<int>);
+
+    // Write to IndexedDB via sqflite_web_writer.dart (web-only extension method)
+    await writeDbBytesToIndexedDb(dbName, content);
+    debugPrint('WebDownload: wrote $fileName → IndexedDB[$dbName] (${_fmtBytes(content.length)})');
+    written++;
+  }
+
+  if (written == 0) {
+    throw Exception('No .sqlite files found inside $code.zip — check csl-sqlite release format');
+  }
+
+  onProgress(1.0, 'Done ($written file${written == 1 ? '' : 's'} saved)');
+}
+
+/// On web, deleting from IndexedDB is not supported via our current sqflite API.
+/// This is a no-op; users clear browser storage via browser settings.
+Future<void> deleteDictionaryNative(String dictCode) async {
+  debugPrint('WebDelete: delete not supported on web for $dictCode');
+}
+
+/// On web, on-disk size is not applicable; always returns null.
 Future<int?> downloadedSizeNative(String dictCode) async => null;
 
+/// On web, we don't fetch remote metadata from the Cologne server.
 Future<({int? size, DateTime? lastModified})> fetchRemoteMetadataNative(
     DictionaryInfo info) async =>
     (size: null, lastModified: null);
+
+String _fmtBytes(int bytes) {
+  if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
+  return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+}

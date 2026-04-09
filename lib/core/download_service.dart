@@ -9,34 +9,24 @@ import 'database_helper.dart';
 
 /// Manages downloading and deleting dictionary SQLite files.
 ///
-/// On native (Android / iOS / macOS / Windows / Linux):
-///   All methods work exactly as before — downloads from the CSL server,
-///   extracts zip, writes .sqlite files to the app documents directory.
-///
-/// On web (WASM):
-///   - downloadDictionary  → throws (never called; button hidden in UI)
-///   - deleteDictionary    → no-op
-///   - downloadedSize      → returns null
-///   - isDownloaded        → delegates to DatabaseHelper.isAvailable (checks assets)
-///   - fetchRemoteMetadata → returns (null, null)
+/// On web: downloads from csl-sqlite GitHub Releases, writes to IndexedDB.
+/// On native: downloads from Cologne server, extracts to app documents dir.
 class DownloadService {
-  /// Download zip from CSL server, extract sqlite files. Native only.
+  /// Download dictionary SQLite files.
+  /// On web: fetches {code}.zip from csl-sqlite releases, writes .sqlite bytes to IndexedDB.
+  /// On native: downloads zip from Cologne server, extracts .sqlite files to disk.
   static Future<void> downloadDictionary({
     required DictionaryInfo info,
     required void Function(double progress, String status) onProgress,
     required ValueNotifier<bool> cancelToken,
   }) async {
-    if (kIsWeb) {
-      throw UnsupportedError(
-          'Downloads are not supported on web. Dictionaries are pre-bundled as app assets.');
-    }
     return downloadDictionaryNative(
         info: info, onProgress: onProgress, cancelToken: cancelToken);
   }
 
-  /// Delete all sqlite files for a dictionary. No-op on web.
+  /// Delete all sqlite files for a dictionary.
+  /// On native: deletes from disk. On web: no-op (IndexedDB deletion not supported via API).
   static Future<void> deleteDictionary(String dictCode) async {
-    if (kIsWeb) return;
     return deleteDictionaryNative(dictCode);
   }
 

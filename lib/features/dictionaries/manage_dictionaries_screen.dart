@@ -148,7 +148,7 @@ class ManageDictionariesScreen extends ConsumerWidget {
                                 );
                               },
                             ),
-                            if (!kIsWeb && isDownloading) ...[
+                            if (isDownloading) ...[
                               const SizedBox(height: 4),
                               LinearProgressIndicator(value: progress),
                               Text(status,
@@ -176,8 +176,7 @@ class ManageDictionariesScreen extends ConsumerWidget {
                                         (localDate != null &&
                                             remoteDate.isAfter(localDate)));
 
-                                if (!kIsWeb &&
-                                    !isDownloading &&
+                                if (!isDownloading &&
                                     (!isAvailable || hasUpdate)) {
                                   return IconButton(
                                     icon: Icon(hasUpdate
@@ -196,7 +195,7 @@ class ManageDictionariesScreen extends ConsumerWidget {
                                 return const SizedBox.shrink();
                               },
                             ),
-                            if (!kIsWeb && isAvailable) ...[
+                            if (isAvailable) ...[
                               // Toggle Active status (shows in HomeScreen tabs)
                               Switch(
                                 value: isActive,
@@ -209,12 +208,14 @@ class ManageDictionariesScreen extends ConsumerWidget {
                                   }
                                 },
                               ),
-                              IconButton(
-                                icon:
-                                    const Icon(Icons.delete, color: Colors.red),
-                                onPressed: () =>
-                                    _confirmDelete(context, ref, info.codeLo),
-                              ),
+                              // Delete button: hidden on web (IndexedDB not deletable via API)
+                              if (!kIsWeb)
+                                IconButton(
+                                  icon: const Icon(Icons.delete,
+                                      color: Colors.red),
+                                  onPressed: () => _confirmDelete(
+                                      context, ref, info.codeLo),
+                                ),
                             ]
                           ],
                         ),
