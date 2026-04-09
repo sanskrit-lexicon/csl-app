@@ -1379,7 +1379,6 @@ class LsService {
 
   /// Batch fetch all LS links for an entry in a single DB query.
   /// Returns a map of cacheKey -> {href, expansion} for all found LS links.
-  /// This uses IN clause to fetch multiple keys at once.
   /// Priority: lslinks DB (href) > authtooltips (expansion) > bib (expansion)
   static Future<Map<String, LsResult>> batchFetchLsLinksFull({
     required String dictCode,
@@ -1394,36 +1393,26 @@ class LsService {
       return results;
     }
 
-    // Build search keys and ref map
+    // Build search keys using fullMatch (the exact key format stored in lslinks DB)
+    // fullMatch is already in format: <ls n="xxx">yyy</ls> or <ls>yyy</ls>
     final searchKeys = <String>[];
-    final refMap = <String, LsRef>{}; // searchKey -> LsRef
+    final keyToRef = <String, LsRef>{};
 
     for (final ref in lsRefs) {
-      final key = extractFirstKey(ref.text);
-      if (key == null) continue;
-
-      if (ref.nAttribute != null && ref.nAttribute!.isNotEmpty) {
-        final searchKey = '<ls n="${ref.nAttribute}">$key</ls>';
-        searchKeys.add(searchKey);
-        refMap[searchKey] = ref;
-      }
-      final plainKey = '<ls>$key</ls>';
-      searchKeys.add(plainKey);
-      refMap[plainKey] = ref;
-    }
-
-    if (searchKeys.isEmpty) {
-      return results;
+      // Use fullMatch as the key - this is the exact format in lslinks DB
+      searchKeys.add(ref.fullMatch);
+      keyToRef[ref.fullMatch] = ref;
     }
 
     debugPrint('=== LS BATCH: searchKeys=$searchKeys');
 
-    // 1. Try lslinks database for hrefs
+    // 1. Try lslinks database for hrefs (exact match)
     if (DatabaseHelper.lsLinkDicts.contains(dict)) {
       debugPrint('=== LS BATCH: Trying lslinks DB...');
       try {
         final db = await DatabaseHelper.openLsLinkDb(dict);
-        if (db != null) {
+        if (db != null && searchKeys.isNotEmpty) {
+          // Use IN clause for batch query
           final placeholders = searchKeys.map((_) => '?').join(',');
           final rows = await db.rawQuery(
             'SELECT key, data FROM keydoc_glob1 WHERE key IN ($placeholders)',
@@ -1436,7 +1425,7 @@ class LsService {
             final key = row['key'] as String?;
             final href = row['data'] as String?;
             if (key != null && href != null && href.isNotEmpty) {
-              final ref = refMap[key];
+              final ref = keyToRef[key];
               if (ref != null) {
                 final cacheKey = ref.nAttribute ?? ref.text;
                 results[cacheKey] = LsResult(href: href, expansion: href);
@@ -1447,7 +1436,64 @@ class LsService {
         }
       } catch (e) {
         debugPrint('=== LS BATCH: lslinks error: $e');
-        // Continue to fallback
+      }
+    } else {
+      debugPrint('=== LS BATCH: $dict not in lsLinkDicts');
+    }
+
+    // Build search keys and ref map
+    // Use prefix matching since lslinks DB has keys like <ls>R.1</ls>
+    final searchPatterns = <String>[];
+    final refMap = <String, LsRef>{}; // pattern -> LsRef
+
+    for (final ref in lsRefs) {
+      final key = extractFirstKey(ref.text);
+      if (key == null) continue;
+
+      if (ref.nAttribute != null && ref.nAttribute!.isNotEmpty) {
+        // Use LIKE pattern with % for prefix matching
+        final pattern = '<ls n="${ref.nAttribute}">$key%</ls>';
+        searchPatterns.add(pattern);
+        refMap[pattern] = ref;
+      }
+      final plainPattern = '<ls>$key%</ls>';
+      searchPatterns.add(plainPattern);
+      refMap[plainPattern] = ref;
+    }
+
+    if (searchPatterns.isEmpty) {
+      return results;
+    }
+
+    debugPrint('=== LS BATCH: searchPatterns=$searchPatterns');
+
+    // 1. Try lslinks database for hrefs (using LIKE for prefix matching)
+    if (DatabaseHelper.lsLinkDicts.contains(dict)) {
+      debugPrint('=== LS BATCH: Trying lslinks DB...');
+      try {
+        final db = await DatabaseHelper.openLsLinkDb(dict);
+        if (db != null) {
+          // Use LIKE queries for each pattern - more reliable than IN
+          for (final pattern in searchPatterns) {
+            final rows = await db.rawQuery(
+              'SELECT key, data FROM keydoc_glob1 WHERE key LIKE ? LIMIT 1',
+              [pattern],
+            );
+            debugPrint(
+                '=== LS BATCH: lslinks LIKE "$pattern" -> ${rows.length} rows');
+            if (rows.isNotEmpty) {
+              final href = rows.first['data'] as String?;
+              final ref = refMap[pattern];
+              if (ref != null && href != null && href.isNotEmpty) {
+                final cacheKey = ref.nAttribute ?? ref.text;
+                results[cacheKey] = LsResult(href: href, expansion: href);
+                debugPrint('=== LS BATCH: Found href for "$cacheKey": $href');
+              }
+            }
+          }
+        }
+      } catch (e) {
+        debugPrint('=== LS BATCH: lslinks error: $e');
       }
     } else {
       debugPrint('=== LS BATCH: $dict not in lsLinkDicts');
@@ -1577,11 +1623,12 @@ class LsService {
     debugPrint(
         '=== LS RESOLVE: dict=$dict, lsContent="$lsContent", nAttribute="$nAttribute"');
 
-    // Try lslinks first
+    // Try lslinks first (exact match using fullMatch format)
     if (DatabaseHelper.lsLinkDicts.contains(dict)) {
       debugPrint('=== LS RESOLVE: Trying lslinks DB...');
       final db = await DatabaseHelper.openLsLinkDb(dict);
       if (db != null) {
+        // Build the exact key format: <ls>xxx</ls> or <ls n="yyy">xxx</ls>
         final key = extractFirstKey(lsContent);
         if (key != null) {
           final searchKeys = <String>[];
@@ -1590,18 +1637,19 @@ class LsService {
           }
           searchKeys.add('<ls>$key</ls>');
 
-          for (final sk in searchKeys) {
-            final rows = await db.rawQuery(
-              'SELECT key, data FROM keydoc_glob1 WHERE key = ?',
-              [sk],
-            );
-            debugPrint(
-                '=== LS RESOLVE: lslinks query for "$sk" -> ${rows.length} rows');
-            if (rows.isNotEmpty) {
-              final href = rows.first['data'] as String?;
-              debugPrint('=== LS RESOLVE: Found in lslinks! href="$href"');
-              return LsResult(href: href, expansion: href);
-            }
+          debugPrint('=== LS RESOLVE: searchKeys=$searchKeys');
+
+          final placeholders = searchKeys.map((_) => '?').join(',');
+          final rows = await db.rawQuery(
+            'SELECT key, data FROM keydoc_glob1 WHERE key IN ($placeholders)',
+            searchKeys,
+          );
+          debugPrint(
+              '=== LS RESOLVE: lslinks query returned ${rows.length} rows');
+          if (rows.isNotEmpty) {
+            final href = rows.first['data'] as String?;
+            debugPrint('=== LS RESOLVE: Found in lslinks! href="$href"');
+            return LsResult(href: href, expansion: href);
           }
         }
       }
