@@ -80,7 +80,7 @@ Future<void> downloadDictionaryNative({
 
     // Handle nested paths inside the zip (e.g. web/sqlite/mw.sqlite → mw.sqlite)
     final fileName = file.name.split('/').last;
-    final dbName = 'sanslex/$fileName';
+    final dbName = 'sanslex_$fileName';
     final content = Uint8List.fromList(file.content as List<int>);
 
     // Write to IndexedDB via sqflite_web_writer.dart (web-only extension method)
