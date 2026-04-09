@@ -50,3 +50,7 @@ app.*.map.json
 # Others
 /tmp/*
 
+# SQLite dictionary files — fetched at build time from csl-sqlite releases.
+# Never commit these to csl-app; they live at:
+# https://github.com/sanskrit-lexicon/csl-sqlite/releases/latest
+assets/sqlite/*.sqlite

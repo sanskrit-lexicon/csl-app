@@ -11,6 +11,24 @@ on:
 permissions:
   contents: write  # Required for peaceiris/actions-gh-pages to push to gh-pages branch
 
+# ─────────────────────────────────────────────────────────────────────────────
+# CONFIGURE DICTIONARIES HERE
+#
+# List the dictionary codes (lowercase) you want bundled in the web build.
+# Each code must have a matching {code}.zip at:
+#   https://github.com/sanskrit-lexicon/csl-sqlite/releases/latest/download/{code}.zip
+#
+# The zip should contain one or more of:
+#   {code}.sqlite              — main dictionary (required)
+#   {code}ab.sqlite            — abbreviations (optional)
+#   {code}authtooltips.sqlite  — source tooltips (optional)
+#   {code}bib.sqlite           — bibliography (optional)
+#
+# To add/remove a dictionary: edit the DICTIONARIES list below and push to main.
+# ─────────────────────────────────────────────────────────────────────────────
+env:
+  DICTIONARIES: "lan mw ap"  # Space-separated list of dict codes to bundle
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -32,35 +50,73 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      # ── Step 4: Set up SQLite web assets ────────────────────────────────────
-      # This command generates/copies two files into web/:
-      #   web/sqlite3.wasm   — the SQLite WebAssembly binary
-      #   web/sqflite_sw.js  — the shared worker script
-      # These are REQUIRED for sqflite_common_ffi_web to function.
+      # ── Step 4: Download SQLite dictionaries from csl-sqlite GitHub Releases ──
+      # Fetches {code}.zip from sanskrit-lexicon/csl-sqlite latest release,
+      # extracts all *.sqlite files into assets/sqlite/.
+      # Files that don't exist (optional ab/authtooltips/bib) are skipped gracefully.
+      - name: Download SQLite dictionaries from csl-sqlite releases
+        run: |
+          mkdir -p assets/sqlite
+
+          BASE_URL="https://github.com/sanskrit-lexicon/csl-sqlite/releases/latest/download"
+
+          for DICT in $DICTIONARIES; do
+            ZIP_URL="${BASE_URL}/${DICT}.zip"
+            TMP_ZIP="/tmp/${DICT}.zip"
+            TMP_DIR="/tmp/${DICT}_extracted"
+
+            echo "──────────────────────────────────────────"
+            echo "Downloading: ${DICT}.zip from ${ZIP_URL}"
+
+            # Download the zip. --fail makes curl return non-zero on HTTP errors.
+            if curl -L --fail --silent --show-error --output "${TMP_ZIP}" "${ZIP_URL}"; then
+              echo "✓ Downloaded ${DICT}.zip ($(du -h ${TMP_ZIP} | cut -f1))"
+
+              # Extract into a temp dir, then copy only *.sqlite to assets/sqlite/
+              mkdir -p "${TMP_DIR}"
+              unzip -q -o "${TMP_ZIP}" -d "${TMP_DIR}"
+
+              # Copy all .sqlite files found anywhere in the zip (handles nested paths)
+              FOUND=0
+              while IFS= read -r -d '' SQLITE_FILE; do
+                BASENAME=$(basename "${SQLITE_FILE}")
+                cp "${SQLITE_FILE}" "assets/sqlite/${BASENAME}"
+                echo "  → assets/sqlite/${BASENAME} ($(du -h assets/sqlite/${BASENAME} | cut -f1))"
+                FOUND=$((FOUND + 1))
+              done < <(find "${TMP_DIR}" -name "*.sqlite" -print0)
+
+              if [ "${FOUND}" -eq 0 ]; then
+                echo "  ⚠ No .sqlite files found in ${DICT}.zip"
+              fi
+
+              # Clean up temp files
+              rm -rf "${TMP_ZIP}" "${TMP_DIR}"
+            else
+              echo "  ⚠ Could not download ${DICT}.zip — skipping (check that the release asset exists)"
+            fi
+          done
+
+          echo "──────────────────────────────────────────"
+          echo "Final assets/sqlite/ contents:"
+          ls -lh assets/sqlite/ || echo "(empty)"
+
+      # ── Step 5: Set up SQLite web assets ────────────────────────────────────
+      # Generates web/sqlite3.wasm and web/sqflite_sw.js required by
+      # sqflite_common_ffi_web for IndexedDB-backed SQLite in the browser.
       - name: Set up SQLite web assets
         run: dart run sqflite_common_ffi_web:setup
 
-      # ── Step 5: Build Flutter Web with WASM ─────────────────────────────────
-      # --base-href must match the GitHub Pages URL path.
-      # If this repo is at: https://sanskrit-lexicon.github.io/csl-app/
-      # then base-href is:  /csl-app/
-      #
-      # If this is an org/user root repo (e.g. sanskrit-lexicon.github.io),
-      # change --base-href to /
+      # ── Step 6: Build Flutter Web with WASM ─────────────────────────────────
+      # --base-href must match your GitHub Pages URL sub-path.
+      # This repo is served at: https://sanskrit-lexicon.github.io/csl-app/
       - name: Build Flutter Web (WASM)
         run: flutter build web --wasm --release --base-href /csl-app/
 
-      # ── Step 6: Deploy build/web to gh-pages branch ─────────────────────────
-      # peaceiris/actions-gh-pages pushes ./build/web to the gh-pages branch.
-      # The gh-pages branch is then served by GitHub Pages.
+      # ── Step 7: Deploy build/web to gh-pages branch ─────────────────────────
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./build/web
-          # Set force_orphan: true to always deploy a clean build.
-          # Set to false if you want to keep previous deployments alongside.
           force_orphan: true
-          # Fallback: GitHub Pages will serve index.html for unknown paths.
-          # This is needed for Flutter's client-side routing.
           enable_jekyll: false
