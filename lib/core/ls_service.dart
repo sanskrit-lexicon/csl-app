@@ -1321,9 +1321,45 @@ class LsService {
   }
 
   static Future<String?> _fetchExpansion(String dict, String data) async {
+    // First, try the LS links database (pre-computed, faster)
     final key = extractFirstKey(data);
     if (key == null) return null;
 
+    // Build the search key for lslinks database
+    final searchKeys = <String>[];
+    if (data.contains('n=')) {
+      final nMatch = RegExp(r'n="([^"]*)"').firstMatch(data);
+      if (nMatch != null) {
+        final nAttr = nMatch.group(1)!;
+        searchKeys.add('<ls n="$nAttr">$key</ls>');
+      }
+    }
+    searchKeys.add('<ls>$key</ls>');
+
+    // Try lslinks database first
+    if (DatabaseHelper.lsLinkDicts.contains(dict)) {
+      try {
+        final db = await DatabaseHelper.openLsLinkDb(dict);
+        if (db != null) {
+          for (final searchKey in searchKeys) {
+            final rows = await db.rawQuery(
+              'SELECT data FROM keydoc_glob1 WHERE key = ?',
+              [searchKey],
+            );
+            if (rows.isNotEmpty) {
+              final url = rows.first['data'] as String?;
+              if (url != null && url.isNotEmpty) {
+                return url;
+              }
+            }
+          }
+        }
+      } catch (e) {
+        // Fall back to old method if lslinks fails
+      }
+    }
+
+    // Fall back to authtooltips/bib databases
     final keyPrefix = '$key%';
 
     if (_authtooltipsDicts.contains(dict)) {

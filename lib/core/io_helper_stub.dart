@@ -20,8 +20,7 @@ import '../models/dictionary_info.dart';
 /// preflight is needed. GitHub Releases redirects through
 /// objects.githubusercontent.com which lacks CORS headers and blocks
 /// browser fetch() calls.
-const _sqliteReleaseBase =
-    'https://sanskrit-lexicon.github.io/csl-sqlite';
+const _sqliteReleaseBase = 'https://sanskrit-lexicon.github.io/csl-sqlite';
 
 /// Downloads {info.codeLo}.zip from csl-sqlite GitHub Releases,
 /// extracts all .sqlite files from the zip, and writes them to IndexedDB.
@@ -40,7 +39,8 @@ Future<void> downloadDictionaryNative({
   final response = await request.send();
 
   if (response.statusCode != 200) {
-    throw Exception('Download failed: HTTP ${response.statusCode} for $code.zip');
+    throw Exception(
+        'Download failed: HTTP ${response.statusCode} for $code.zip');
   }
 
   final total = response.contentLength ?? 0;
@@ -86,15 +86,81 @@ Future<void> downloadDictionaryNative({
 
     // Write to IndexedDB via sqflite_web_writer.dart (web-only extension method)
     await writeDbBytesToIndexedDb(dbName, content);
-    debugPrint('WebDownload: wrote $fileName → IndexedDB[$dbName] (${_fmtBytes(content.length)})');
+    debugPrint(
+        'WebDownload: wrote $fileName → IndexedDB[$dbName] (${_fmtBytes(content.length)})');
     written++;
   }
 
   if (written == 0) {
-    throw Exception('No .sqlite files found inside $code.zip — check csl-sqlite release format');
+    throw Exception(
+        'No .sqlite files found inside $code.zip — check csl-sqlite release format');
   }
 
   onProgress(1.0, 'Done ($written file${written == 1 ? '' : 's'} saved)');
+}
+
+/// Downloads {dictCode}_lslinks.sqlite.zip from csl-sqlite (same origin).
+/// Extracts the .sqlite file and writes to IndexedDB.
+/// Returns true if successful, false if file not found.
+Future<bool> downloadLsLinksNative({
+  required String dictCode,
+  required void Function(double progress, String status) onProgress,
+}) async {
+  final code = dictCode.toLowerCase();
+  final url = '$_sqliteReleaseBase/${code}_lslinks.sqlite.zip';
+
+  onProgress(0.0, 'Connecting…');
+  debugPrint('WebDownload: fetching LS links $url');
+
+  final request = http.Request('GET', Uri.parse(url));
+  final response = await request.send();
+
+  if (response.statusCode != 200) {
+    debugPrint(
+        'WebDownload: LS links not found for $code (HTTP ${response.statusCode})');
+    return false;
+  }
+
+  final total = response.contentLength ?? 0;
+  int received = 0;
+  final chunks = <List<int>>[];
+
+  await for (final chunk in response.stream) {
+    chunks.add(chunk);
+    received += chunk.length;
+    if (total > 0) {
+      onProgress(received / total * 0.8, 'Downloading LS links…');
+    }
+  }
+
+  onProgress(0.8, 'Extracting…');
+
+  final bytes = Uint8List(received);
+  int offset = 0;
+  for (final chunk in chunks) {
+    bytes.setRange(offset, offset + chunk.length, chunk);
+    offset += chunk.length;
+  }
+
+  final archive = ZipDecoder().decodeBytes(bytes);
+
+  for (final file in archive) {
+    if (!file.isFile || !file.name.endsWith('.sqlite')) continue;
+
+    final fileName = file.name.split('/').last;
+    final dbBaseName = fileName.replaceFirst('.sqlite', '');
+    final dbName = 'csl_db_$dbBaseName';
+    final content = Uint8List.fromList(file.content as List<int>);
+
+    await writeDbBytesToIndexedDb(dbName, content);
+    debugPrint(
+        'WebDownload: wrote LS links $fileName → IndexedDB[$dbName] (${_fmtBytes(content.length)})');
+    onProgress(1.0, 'Done (LS links saved)');
+    return true;
+  }
+
+  debugPrint('WebDownload: No .sqlite files found in LS links zip for $code');
+  return false;
 }
 
 /// On web, deleting from IndexedDB is not supported via our current sqflite API.
@@ -134,19 +200,19 @@ Future<({int? size, DateTime? lastModified})> fetchRemoteMetadataNative(
     _primaryDictReference = info.codeLo;
     _globalLastModifiedFuture = _fetchGlobalLastModified(info.codeLo);
   }
-  
+
   var lastModified = await _globalLastModifiedFuture;
-  
+
   // Resiliency: If the first arbitrary dictionary failed to return a date (e.g. 404),
   // other concurrent dictionaries will individually retry to get the global date.
   if (lastModified == null && _primaryDictReference != info.codeLo) {
-     lastModified = await _fetchGlobalLastModified(info.codeLo);
-     // If this retry succeeded, upgrade the global cached timestamp
-     if (lastModified != null) {
-         _globalLastModifiedFuture = Future.value(lastModified);
-     }
+    lastModified = await _fetchGlobalLastModified(info.codeLo);
+    // If this retry succeeded, upgrade the global cached timestamp
+    if (lastModified != null) {
+      _globalLastModifiedFuture = Future.value(lastModified);
+    }
   }
-  
+
   return (size: null, lastModified: lastModified);
 }
 
@@ -154,8 +220,18 @@ DateTime? _parseHttpDate(String dateStr) {
   try {
     // Parse RFC-1123 HTTP-date: "Wed, 21 Oct 2015 07:28:00 GMT" manually to avoid intl locale initialization bugs
     final months = {
-      'Jan': '01', 'Feb': '02', 'Mar': '03', 'Apr': '04', 'May': '05', 'Jun': '06',
-      'Jul': '07', 'Aug': '08', 'Sep': '09', 'Oct': '10', 'Nov': '11', 'Dec': '12'
+      'Jan': '01',
+      'Feb': '02',
+      'Mar': '03',
+      'Apr': '04',
+      'May': '05',
+      'Jun': '06',
+      'Jul': '07',
+      'Aug': '08',
+      'Sep': '09',
+      'Oct': '10',
+      'Nov': '11',
+      'Dec': '12'
     };
     final parts = dateStr.split(' ');
     if (parts.length >= 5) {
