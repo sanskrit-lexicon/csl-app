@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'database_helper.dart';
 import 'ls_patterns.dart';
 import '../rendering/entry_parser.dart';
@@ -1387,6 +1388,8 @@ class LsService {
     final results = <String, LsResult>{};
     final dict = dictCode.toLowerCase();
 
+    debugPrint('=== LS BATCH: dict=$dict, refs=${lsRefs.length}');
+
     if (lsRefs.isEmpty) {
       return results;
     }
@@ -1413,8 +1416,11 @@ class LsService {
       return results;
     }
 
+    debugPrint('=== LS BATCH: searchKeys=$searchKeys');
+
     // 1. Try lslinks database for hrefs
     if (DatabaseHelper.lsLinkDicts.contains(dict)) {
+      debugPrint('=== LS BATCH: Trying lslinks DB...');
       try {
         final db = await DatabaseHelper.openLsLinkDb(dict);
         if (db != null) {
@@ -1424,6 +1430,8 @@ class LsService {
             searchKeys,
           );
 
+          debugPrint(
+              '=== LS BATCH: lslinks query returned ${rows.length} rows');
           for (final row in rows) {
             final key = row['key'] as String?;
             final href = row['data'] as String?;
@@ -1432,13 +1440,17 @@ class LsService {
               if (ref != null) {
                 final cacheKey = ref.nAttribute ?? ref.text;
                 results[cacheKey] = LsResult(href: href, expansion: href);
+                debugPrint('=== LS BATCH: Found href for "$cacheKey": $href');
               }
             }
           }
         }
       } catch (e) {
+        debugPrint('=== LS BATCH: lslinks error: $e');
         // Continue to fallback
       }
+    } else {
+      debugPrint('=== LS BATCH: $dict not in lsLinkDicts');
     }
 
     // 2. Try authtooltips for expansions (for dicts that have it)
@@ -1561,11 +1573,125 @@ class LsService {
     required String lsContent,
     String? nAttribute,
   }) async {
-    return processLs(
-      dictCode: dictCode,
-      lsContent: lsContent,
-      nAttribute: nAttribute,
-    );
+    final dict = dictCode.toLowerCase();
+    debugPrint(
+        '=== LS RESOLVE: dict=$dict, lsContent="$lsContent", nAttribute="$nAttribute"');
+
+    // Try lslinks first
+    if (DatabaseHelper.lsLinkDicts.contains(dict)) {
+      debugPrint('=== LS RESOLVE: Trying lslinks DB...');
+      final db = await DatabaseHelper.openLsLinkDb(dict);
+      if (db != null) {
+        final key = extractFirstKey(lsContent);
+        if (key != null) {
+          final searchKeys = <String>[];
+          if (nAttribute != null && nAttribute.isNotEmpty) {
+            searchKeys.add('<ls n="$nAttribute">$key</ls>');
+          }
+          searchKeys.add('<ls>$key</ls>');
+
+          for (final sk in searchKeys) {
+            final rows = await db.rawQuery(
+              'SELECT key, data FROM keydoc_glob1 WHERE key = ?',
+              [sk],
+            );
+            debugPrint(
+                '=== LS RESOLVE: lslinks query for "$sk" -> ${rows.length} rows');
+            if (rows.isNotEmpty) {
+              final href = rows.first['data'] as String?;
+              debugPrint('=== LS RESOLVE: Found in lslinks! href="$href"');
+              return LsResult(href: href, expansion: href);
+            }
+          }
+        }
+      }
+    }
+
+    // Try authtooltips
+    if (_authtooltipsDicts.contains(dict)) {
+      debugPrint('=== LS RESOLVE: Trying authtooltips DB...');
+      final db = await DatabaseHelper.openAuthTooltips(dict);
+      if (db != null) {
+        final key = extractFirstKey(lsContent);
+        if (key != null) {
+          final keyPrefix = '$key%';
+          final table = '${dict}authtooltips';
+          final rows = await db.rawQuery(
+            'SELECT key, data, type FROM $table WHERE key LIKE ?',
+            [keyPrefix],
+          );
+          debugPrint(
+              '=== LS RESOLVE: authtooltips query for "$keyPrefix" -> ${rows.length} rows');
+
+          String? bestMatch;
+          int maxLen = -1;
+          for (final row in rows) {
+            final code = row['key'] as String?;
+            if (code != null && lsContent.startsWith(code)) {
+              if (code.length > maxLen) {
+                maxLen = code.length;
+                final dataCol = row['data'] as String?;
+                final typeCol = row['type'] as String?;
+                if (dataCol != null && typeCol != null) {
+                  bestMatch = '$dataCol ($typeCol)';
+                } else if (dataCol != null) {
+                  bestMatch = dataCol;
+                }
+              }
+            }
+          }
+          if (bestMatch != null) {
+            debugPrint(
+                '=== LS RESOLVE: Found in authtooltips! expansion="$bestMatch"');
+            return LsResult(expansion: bestMatch, tooltip: bestMatch);
+          }
+        }
+      }
+    }
+
+    // Try bib
+    if (_bibDicts.contains(dict)) {
+      debugPrint('=== LS RESOLVE: Trying bib DB...');
+      final db = await DatabaseHelper.openBib(dict);
+      if (db != null) {
+        final key = extractFirstKey(lsContent);
+        if (key != null) {
+          final keyPrefix = '$key%';
+          final table = '${dict}bib';
+          final rows = await db.rawQuery(
+            'SELECT code, data, codecap FROM $table WHERE code LIKE ?',
+            [keyPrefix],
+          );
+          debugPrint(
+              '=== LS RESOLVE: bib query for "$keyPrefix" -> ${rows.length} rows');
+
+          String? bestMatch;
+          int maxLen = -1;
+          for (final row in rows) {
+            final code = row['code'] as String?;
+            if (code != null && lsContent.startsWith(code)) {
+              if (code.length > maxLen) {
+                maxLen = code.length;
+                final dataCol = row['data'] as String?;
+                final codecapCol = row['codecap'] as String?;
+                if (dataCol != null && codecapCol != null) {
+                  bestMatch = '$dataCol ($codecapCol)';
+                } else if (dataCol != null) {
+                  bestMatch = dataCol;
+                }
+              }
+            }
+          }
+          if (bestMatch != null) {
+            debugPrint('=== LS RESOLVE: Found in bib! expansion="$bestMatch"');
+            return LsResult(expansion: bestMatch, tooltip: bestMatch);
+          }
+        }
+      }
+    }
+
+    debugPrint('=== LS RESOLVE: No match found in any DB');
+    return null;
   }
 
   static Future<String?> _queryAuthtooltips(
