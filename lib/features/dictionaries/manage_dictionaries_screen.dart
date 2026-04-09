@@ -231,58 +231,34 @@ class ManageDictionariesScreen extends ConsumerWidget {
                     final isDownloadAllRunning =
                         downloadNotifier.isDownloadAllRunning;
 
+                    // Consolidate dictionary status checks into a single pass
                     bool isAnyDownloading = false;
-                    for (final info in DictionaryRegistry.all) {
-                      if (ref.read(downloadProgressProvider(info.codeLo)) !=
-                          null) {
-                        isAnyDownloading = true;
-                        break;
-                      }
-                    }
-
-                    // Determine if there's anything to download/update
-                    final hasDictionariesToDownload = DictionaryRegistry.all
-                        .any((d) => !availableCodes.contains(d.codeLo));
-
-                    // Debug: Print local and remote dates for each dictionary
-                    debugPrint('=== Dictionary Date Analysis ===');
+                    final hasUpdates = <String>[];
                     int fetchFailedCount = 0;
                     int fetchSuccessCount = 0;
+                    bool hasMissingDictionaries = false;
+
                     for (final info in DictionaryRegistry.all) {
-                      final localDateAsync =
-                          ref.watch(localMetadataProvider(info.codeLo));
-                      final remoteMetaAsync =
-                          ref.watch(remoteMetadataProvider(info.codeLo));
-                      final localDate = localDateAsync.value;
-                      final remoteDate = remoteMetaAsync.value?.lastModified;
+                      // Check downloading status
+                      if (ref.watch(downloadProgressProvider(info.codeLo)) != null) {
+                        isAnyDownloading = true;
+                      }
+                      
+                      // Check metadata/updates
+                      final localDate = ref.watch(localMetadataProvider(info.codeLo)).value;
+                      final remoteMeta = ref.watch(remoteMetadataProvider(info.codeLo)).value;
+                      final remoteDate = remoteMeta?.lastModified;
                       final isAvail = availableCodes.contains(info.codeLo);
+
+                      if (!isAvail) {
+                        hasMissingDictionaries = true;
+                      }
 
                       if (remoteDate == null && isAvail) {
                         if (!kIsWeb) fetchFailedCount++;
                       } else if (remoteDate != null) {
                         fetchSuccessCount++;
-                      }
-
-                      debugPrint(
-                          '${info.codeLo}: available=$isAvail, localDate=$localDate, remoteDate=$remoteDate, '
-                          '${remoteDate != null && (localDate == null || remoteDate.isAfter(localDate)) ? "HAS UPDATE" : "up-to-date"}');
-                    }
-
-                    // Check if any downloaded dict has update
-                    final hasUpdates = <String>[];
-                    for (final info in DictionaryRegistry.all) {
-                      if (availableCodes.contains(info.codeLo)) {
-                        final localDateAsync =
-                            ref.watch(localMetadataProvider(info.codeLo));
-                        final remoteMetaAsync =
-                            ref.watch(remoteMetadataProvider(info.codeLo));
-                        final localDate = localDateAsync.value;
-                        final remoteDate = remoteMetaAsync.value?.lastModified;
-
-                        // Only count as update if we actually got a remote date and it's newer
-                        if (remoteDate != null &&
-                            localDate != null &&
-                            remoteDate.isAfter(localDate)) {
+                        if (isAvail && localDate != null && remoteDate.isAfter(localDate)) {
                           hasUpdates.add(info.codeLo);
                         }
                       }
@@ -293,7 +269,7 @@ class ManageDictionariesScreen extends ConsumerWidget {
                         fetchFailedCount > 0 && fetchSuccessCount == 0;
 
                     final hasAnythingToDo =
-                        hasDictionariesToDownload || hasUpdates.isNotEmpty;
+                        hasMissingDictionaries || hasUpdates.isNotEmpty;
 
                     return Container(
                       padding: const EdgeInsets.all(16),

@@ -23,7 +23,7 @@ import '../path_helper_stub.dart'
 ///     (assets/sqlite/{dictCode}.sqlite) into IndexedDB.
 ///   - Subsequent accesses skip the seed step (already in IndexedDB).
 class DatabaseHelper {
-  static const String _prefix = 'sanslex_';
+  static const String _prefix = 'csl_db_';
   static final Map<String, Database> _openDbs = {};
 
   // ---------------------------------------------------------------------------
@@ -39,28 +39,28 @@ class DatabaseHelper {
   /// Full virtual/real path to the main dictionary database.
   static Future<String> dbPath(String dictCode) async {
     final base = await dataDir;
-    if (kIsWeb) return './$base${dictCode.toLowerCase()}.sqlite';
+    if (kIsWeb) return '$base${dictCode.toLowerCase()}';
     return '$base/${dictCode.toLowerCase()}.sqlite';
   }
 
   /// Full virtual/real path to the abbreviations database.
   static Future<String> abDbPath(String dictCode) async {
     final base = await dataDir;
-    if (kIsWeb) return './$base${dictCode.toLowerCase()}ab.sqlite';
+    if (kIsWeb) return '$base${dictCode.toLowerCase()}ab';
     return '$base/${dictCode.toLowerCase()}ab.sqlite';
   }
 
   /// Full virtual/real path to the authtooltips database.
   static Future<String> authTooltipsDbPath(String dictCode) async {
     final base = await dataDir;
-    if (kIsWeb) return './$base${dictCode.toLowerCase()}authtooltips.sqlite';
+    if (kIsWeb) return '$base${dictCode.toLowerCase()}authtooltips';
     return '$base/${dictCode.toLowerCase()}authtooltips.sqlite';
   }
 
   /// Full virtual/real path to the bibliography database.
   static Future<String> bibDbPath(String dictCode) async {
     final base = await dataDir;
-    if (kIsWeb) return './$base${dictCode.toLowerCase()}bib.sqlite';
+    if (kIsWeb) return '$base${dictCode.toLowerCase()}bib';
     return '$base/${dictCode.toLowerCase()}bib.sqlite';
   }
 
@@ -99,12 +99,9 @@ class DatabaseHelper {
       final db = await databaseFactory.openDatabase(
         path,
         options: OpenDatabaseOptions(
-          // Removing readOnly: true for web to prevent Code 14 on some browsers
           readOnly: !kIsWeb,
           onOpen: (db) async {
             await db.execute('PRAGMA case_sensitive_like = ON;');
-            final countRes = await db.rawQuery("SELECT count(*) as cnt FROM sqlite_master WHERE type='table' AND name=?", [code]);
-            print('DB_OPEN: Table "$code" found: ${countRes.isNotEmpty && countRes.first["cnt"] != 0}');
           },
         ),
       );
