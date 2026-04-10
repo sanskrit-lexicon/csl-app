@@ -33,16 +33,15 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      # ── Step 4: Set up SQLite web assets (JS worker only, no WASM) ──────────
-      # Generates sqflite_sw.js required by sqflite_common_ffi_web.
-      # Using JS fallback (not WASM) for IndexedDB-backed SQLite in the browser.
+      # ── Step 4: Set up SQLite web assets ───────────────────────────────────────
+      # Generates sqflite_sw.js and sqlite3.wasm required by sqflite_common_ffi_web.
+      # Required for IndexedDB-backed SQLite in the browser.
       - name: Set up SQLite web assets
         run: |
           dart pub get
-          dart run sqflite_common_ffi_web:setup --no-wasm
+          dart run sqflite_common_ffi_web:setup
 
-      # ── Step 5: Build Flutter Web (JavaScript) ────────────────────────────────
-      # Using JS fallback (not WASM) for SQLite in the browser.
+      # ── Step 5: Build Flutter Web ─────────────────────────────────────────────
       # --base-href must match your GitHub Pages URL sub-path.
       # This repo is served at: https://sanskrit-lexicon.github.io/csl-app/
       - name: Build Flutter Web (JS)
