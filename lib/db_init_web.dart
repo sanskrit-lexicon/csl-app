@@ -8,13 +8,13 @@ Future<void> initDatabaseFactory() async {
     databaseFactory = createDatabaseFactoryFfiWeb(
       options: SqfliteFfiWebOptions(
         sharedWorkerUri: Uri.parse('sqflite_sw.js'),
-        sqlite3WasmUri: Uri.parse('sqlite3.wasm'),
         // ignore: invalid_use_of_visible_for_testing_member
         forceAsBasicWorker: true,
       ),
     );
     debugPrint('DB_INIT: databaseFactory successfully assigned.');
   } catch (e, stack) {
-    debugPrint('DB_INIT_ERROR: Exception setting up database factory: $e\n$stack');
+    debugPrint(
+        'DB_INIT_ERROR: Exception setting up database factory: $e\n$stack');
   }
 }
