@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.0] - 2026-04-10
+
+### Added
+- **Web App on Github Pages works on Google Chrome**: Earlier version tried to work with wasm and failed. Now it is made default to javascript. Works on Google Chrome. Also works on iOS, macOS and Android.
+
 ## [0.1.7] - 2026-04-09
 
 ### Added
