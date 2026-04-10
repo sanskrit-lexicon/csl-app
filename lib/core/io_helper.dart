@@ -58,14 +58,16 @@ Future<void> downloadDictionaryNative({
 
   final codeLo = info.codeLo;
   final targets = {
-    'web/sqlite/$codeLo.sqlite': p.join(docsDir, '$codeLo.sqlite'),
-    'web/sqlite/${codeLo}ab.sqlite': p.join(docsDir, '${codeLo}ab.sqlite'),
-    'web/sqlite/${codeLo}authtooltips.sqlite':
+    '$codeLo/$codeLo.sqlite': p.join(docsDir, '$codeLo.sqlite'),
+    '$codeLo/${codeLo}ab.sqlite': p.join(docsDir, '${codeLo}ab.sqlite'),
+    '$codeLo/${codeLo}authtooltips.sqlite':
         p.join(docsDir, '${codeLo}authtooltips.sqlite'),
-    'web/sqlite/${codeLo}bib.sqlite': p.join(docsDir, '${codeLo}bib.sqlite'),
+    '$codeLo/${codeLo}bib.sqlite': p.join(docsDir, '${codeLo}bib.sqlite'),
   };
 
   for (final file in archive) {
+    if (!file.isFile || !file.name.endsWith('.sqlite')) continue;
+
     final fileName = p.basename(file.name);
     final isMain = fileName == '$codeLo.sqlite';
     final isAb = fileName == '${codeLo}ab.sqlite';
@@ -75,13 +77,13 @@ Future<void> downloadDictionaryNative({
     if ((isMain || isAb || isAuth || isBib) && file.isFile) {
       String dest;
       if (isMain) {
-        dest = targets['web/sqlite/$codeLo.sqlite']!;
+        dest = targets['$codeLo/$codeLo.sqlite']!;
       } else if (isAb) {
-        dest = targets['web/sqlite/${codeLo}ab.sqlite']!;
+        dest = targets['$codeLo/${codeLo}ab.sqlite']!;
       } else if (isAuth) {
-        dest = targets['web/sqlite/${codeLo}authtooltips.sqlite']!;
+        dest = targets['$codeLo/${codeLo}authtooltips.sqlite']!;
       } else {
-        dest = targets['web/sqlite/${codeLo}bib.sqlite']!;
+        dest = targets['$codeLo/${codeLo}bib.sqlite']!;
       }
       final outFile = File(dest);
       await outFile.writeAsBytes(file.content as List<int>);
@@ -91,13 +93,8 @@ Future<void> downloadDictionaryNative({
   for (final key in targets.keys) {
     final dest = targets[key]!;
     if (!await File(dest).exists()) {
-      if (key.endsWith('ab.sqlite') || key.endsWith('authtooltips.sqlite')) {
-        debugPrint(
-            'Note: ${p.basename(dest)} not found in zip. Normal for some dictionaries.');
-      } else {
-        debugPrint(
-            'Extraction error: ${p.basename(dest)} not found in expected path in zip');
-      }
+      debugPrint(
+          'Note: ${p.basename(dest)} not found in zip. Normal for some dictionaries.');
     }
   }
 

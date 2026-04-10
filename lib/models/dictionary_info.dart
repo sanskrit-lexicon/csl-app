@@ -4,7 +4,6 @@ class DictionaryInfo {
   final String codeLo; // e.g. "lan"
   final String name; // e.g. "Lanman Sanskrit Reader Dictionary"
   final String title; // e.g. "Lanman Sanskrit Reader Dictionary 1884"
-  final String year; // e.g. "2020"
   final bool hasAccent;
   final bool hasDevaTextOption; // can search Sanskrit in body text too
   final String worldCatUrl;
@@ -15,7 +14,6 @@ class DictionaryInfo {
     required this.codeLo,
     required this.name,
     required this.title,
-    required this.year,
     required this.hasAccent,
     required this.hasDevaTextOption,
     required this.worldCatUrl,
@@ -23,12 +21,11 @@ class DictionaryInfo {
   });
 
   /// Whether this is an English→Sanskrit dictionary (search is in English headwords).
-  bool get isEnglishToSanskrit =>
-      ['ae', 'mwe', 'bor'].contains(codeLo);
+  bool get isEnglishToSanskrit => ['ae', 'mwe', 'bor'].contains(codeLo);
 
   /// Download URL for the zip file.
   String get downloadUrl =>
-      'https://www.sanskrit-lexicon.uni-koeln.de/scans/${codeUp}Scan/$year/downloads/${codeLo}web1.zip';
+      'https://sanskrit-lexicon.github.io/csl-sqlite/$codeLo.zip';
 
   /// Correction form base URL.
   String get correctionBaseUrl =>
