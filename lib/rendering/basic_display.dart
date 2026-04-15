@@ -189,7 +189,7 @@ class BasicDisplay {
     final dict = dictCode.toLowerCase();
 
     // Some dictionaries handle lb differently
-    if (['ap90', 'shs', 'yat'].contains(dict)) {
+    if (['ap90', 'shs', 'yat', 'bor'].contains(dict)) {
       // Replace with space
       return html.replaceAll('<lb/>', ' ');
     }
@@ -325,6 +325,34 @@ class BasicDisplay {
         RegExp(r'<div n="2">|<div n="P">'),
         (m) => '<div style="padding-left:1.5em;">',
       );
+    }
+    // BOR dictionary - preserve I, 1, etc. with margin, make xe/xs inline
+    else if (dict == 'bor') {
+      html = html.replaceAllMapped(
+        RegExp(r'<div n="I">'),
+        (m) => '<div style="margin-top:0.6em;">',
+      );
+      html = html.replaceAllMapped(
+        RegExp(r'<div n="1">|<div n="2">|<div n="3">|<div n="4">'),
+        (m) => '<div style="margin-top:0.6em;">',
+      );
+      html = html.replaceAllMapped(
+        RegExp(r'<div n="xe">(.*?)</div>', dotAll: true),
+        (m) => '<span>${m.group(1)}</span>',
+      );
+      html = html.replaceAllMapped(
+        RegExp(r'<div n="xs">(.*?)</div>', dotAll: true),
+        (m) => '<span>${m.group(1)}</span>',
+      );
+      html = html.replaceAllMapped(
+        RegExp(r'([^- \t\r\n])(\s*)<div n="lb"/>'),
+        (m) => '${m.group(1)} ',
+      );
+      html = html.replaceAllMapped(
+        RegExp(r'-(\s*)<div n="lb"/>'),
+        (m) => '-',
+      );
+      html = html.replaceAll('<div n="lb"/>', '');
     }
     // Default: simple div
     else {
