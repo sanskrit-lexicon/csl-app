@@ -341,6 +341,19 @@ class EntryRenderer {
     html = html.replaceAll(RegExp(r'</?s1[^>]*>'), '');
     html = html.replaceAll(RegExp(r'</?srs[^>]*>'), '');
 
+    // Convert Page references in body text to PDF links
+    // Matches patterns like [Page642-b+ 65] or Page642+ 65
+    // Extracts the page number (before +) and creates a PDF link
+    html = html.replaceAllMapped(
+      RegExp(r'\[?Page(\d+(?:-[a-z])?)\+\s*\d+\]?'),
+      (m) {
+        final pageCol = m.group(1) ?? '';
+        final pdfUrl =
+            'https://www.sanskrit-lexicon.uni-koeln.de/scans/csl-apidev/servepdf.php?dict=${dictCode.toUpperCase()}&page=$pageCol';
+        return '<a href="$pdfUrl">Page$pageCol</a>';
+      },
+    );
+
     // Apply highlighting to English/Non-Sanskrit matches
     if (rawHighlightTerm != null && rawHighlightTerm.isNotEmpty) {
       final escaped = RegExp.escape(rawHighlightTerm);
