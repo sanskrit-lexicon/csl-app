@@ -186,6 +186,16 @@ class EntryParser {
       (m) => '<small>${m.group(1)}</small>',
     );
 
+    // Convert Page references in body to PDF links
+    // Format: Page###-?+ ? (e.g., "Page631-b+ 65" -> link to page "631-b")
+    html = html.replaceAllMapped(
+      RegExp(r'Page(\d+-[a-z])\+\s*\d+'),
+      (m) {
+        final pageCol = m.group(1) ?? '';
+        return '<a href="sanslex://pdf/page/$pageCol" class="page-ref">Page$pageCol</a>';
+      },
+    );
+
     // Highlight search term in body text (not inside tags)
     if (highlightEnabled && highlightTerm != null && highlightTerm.isNotEmpty) {
       // Escape for regex

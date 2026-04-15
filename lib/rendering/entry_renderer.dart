@@ -510,6 +510,19 @@ class _EntryCard extends StatelessWidget {
                   }
                   return true;
                 }
+                // Handle PDF page references: sanslex://pdf/page/###
+                if (url.startsWith('sanslex://pdf/page/')) {
+                  final pageCol = url.substring('sanslex://pdf/page/'.length);
+                  if (pageCol.isNotEmpty) {
+                    final pdfUrl = dictInfo.pdfUrl(pageCol);
+                    final uri = Uri.parse(pdfUrl);
+                    if (await canLaunchUrl(uri)) {
+                      await launchUrl(uri,
+                          mode: LaunchMode.externalApplication);
+                    }
+                  }
+                  return true;
+                }
                 // Handle external http/https URLs - open in browser
                 if (url.startsWith('http://') || url.startsWith('https://')) {
                   final uri = Uri.parse(url);
