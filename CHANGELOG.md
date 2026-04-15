@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.1] - 2026-04-15
+
+### Added
+- **Literary Sources for PW, PWG, PWKVN**: Added dart implementation to provide literary source references for pw, pwg, and pwkvn dictionaries. See #28.
+- **Clickable Page Links in Definitions**: Page links inside definitions are now clickable, allowing quick navigation. See #27.
+- **About Us Page**: Updated About Us section with more information about the app. See #29.
+
+### Fixed
+- **SRS Tag Handling**: Fixed proper handling of SRS tags in definitions. See #26.
+- **Line Breaks in BOR**: Resolved line breaks issue in BOR dictionary. See #25.
+- **Line Breaks and Page Links in ABCH/ACPH/ACSJ**: Fixed line breaks and page links issues in ABCH, ACPH, and ACSJ dictionaries. See #24.
+
 ## [0.2.0] - 2026-04-10
 
 ### Added
