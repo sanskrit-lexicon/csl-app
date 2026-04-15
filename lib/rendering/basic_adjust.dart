@@ -101,6 +101,10 @@ class BasicAdjust {
     else if (dict == 'bor') {
       xml = _adjustBor(xml);
     }
+    // abch, acph, acsj adjustments (add line breaks after certain tags)
+    else if (['abch', 'acph', 'acsj'].contains(dict)) {
+      xml = _adjustAbchFamily(xml, dict);
+    }
 
     return xml;
   }
@@ -304,6 +308,15 @@ class BasicAdjust {
   /// Process key2 tags
   static String _processKey2Tags(String xml) {
     // Key2 tags are typically processed during rendering
+    return xml;
+  }
+
+  /// ABCH/ACPH/ACSJ-specific adjustments - add line breaks after certain tags
+  static String _adjustAbchFamily(String xml, String dictCode) {
+    // Add visual line breaks after </eid> and </s> tags
+    xml = xml.replaceAll('</eid>', '</eid><br>');
+    xml = xml.replaceAll('</s>', '</s><br>');
+
     return xml;
   }
 }

@@ -233,12 +233,28 @@ class EntryRenderer {
       String? highlightSlp1,
       String? rawHighlightTerm,
       String dictCode) {
+    final isAbchFamily =
+        ['abch', 'acph', 'acsj'].contains(dictCode.toLowerCase());
+
     html = html.replaceAllMapped(
       RegExp(r'<(?:s|SA)>(.*?)</(?:s|SA)>', dotAll: true),
       (m) {
         String slp1 = m.group(1) ?? '';
         // Remove <srs/> tags before transliteration
         slp1 = slp1.replaceAll(RegExp(r'</?srs[^>]*>', dotAll: true), '');
+
+        // For ABCH/ACPH/ACSJ: if content is only a page reference, convert to PDF link
+        if (isAbchFamily) {
+          final trimmedContent = slp1.trim();
+          final pageMatch = RegExp(r'^;p\{(\d+)\}$').firstMatch(trimmedContent);
+          if (pageMatch != null) {
+            final pageNum = pageMatch.group(1) ?? '';
+            final pageCol = int.tryParse(pageNum)?.toString() ?? pageNum;
+            final pdfUrl =
+                'https://www.sanskrit-lexicon.uni-koeln.de/scans/csl-apidev/servepdf.php?dict=${dictCode.toUpperCase()}&page=$pageCol';
+            return '[<a href="$pdfUrl">Page $pageCol</a>]';
+          }
+        }
 
         final result = _transliterateWithMarksPreserved(
             slp1, settings.outputTranslit,
