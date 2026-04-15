@@ -337,6 +337,7 @@ class EntryRenderer {
     html = html.replaceAll(RegExp(r'</?info[^>]*>'), '');
     html = html.replaceAll(RegExp(r'</?lex[^>]*>'), '');
     html = html.replaceAll(RegExp(r'</?s1[^>]*>'), '');
+    html = html.replaceAll(RegExp(r'</?srs[^>]*>'), '');
 
     // Apply highlighting to English/Non-Sanskrit matches
     if (rawHighlightTerm != null && rawHighlightTerm.isNotEmpty) {
