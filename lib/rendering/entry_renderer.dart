@@ -236,7 +236,9 @@ class EntryRenderer {
     html = html.replaceAllMapped(
       RegExp(r'<(?:s|SA)>(.*?)</(?:s|SA)>', dotAll: true),
       (m) {
-        final slp1 = m.group(1) ?? '';
+        String slp1 = m.group(1) ?? '';
+        // Remove <srs/> tags before transliteration
+        slp1 = slp1.replaceAll(RegExp(r'</?srs[^>]*>', dotAll: true), '');
 
         final result = _transliterateWithMarksPreserved(
             slp1, settings.outputTranslit,
