@@ -37,10 +37,12 @@ class EntryRenderer {
     String? highlightTerm,
   }) async {
     final dictInfo = DictionaryRegistry.byCode(dictCode)!;
+    final renderStart = DateTime.now();
 
     // 1. Pre-fetch abbreviations used in this entry
     final abbrsNeeded = EntryParser.extractAbbreviations(entry.bodyHtml);
     final abbrCache = <String, String>{};
+    final abbrStart = DateTime.now();
     for (final abbr in abbrsNeeded) {
       final exp = await SearchService.fetchAbbreviation(
         dictCode: dictCode,
@@ -48,6 +50,9 @@ class EntryRenderer {
       );
       if (exp != null) abbrCache[abbr] = exp;
     }
+    final abbrTime = DateTime.now().difference(abbrStart).inMilliseconds;
+    debugPrint(
+        '=== RENDER TIMING [$dictCode]: Abbreviations: ${abbrsNeeded.length} items, ${abbrTime}ms');
 
     // 2. Pre-fetch LS (literary source) expansions using LsService
     final lsRefs = EntryParser.extractLsRefsWithDetails(entry.bodyHtml);
@@ -56,31 +61,38 @@ class EntryRenderer {
     final lsCache = <String, String>{};
     final lsHrefs = <String, String>{};
 
-    for (final ref in lsRefs) {
-      debugPrint(
-          '=== LS DEBUG: Processing n="${ref.nAttribute}", text="${ref.text}"');
+    final lsStart = DateTime.now();
+
+    // Process all LS refs in parallel using Future.wait()
+    final futures = lsRefs.map((ref) async {
       final result = await LsService.processLs(
         dictCode: dictCode,
         lsContent: ref.text,
         nAttribute: ref.nAttribute,
       );
+      return MapEntry(ref, result);
+    });
+
+    final lsResults = await Future.wait(futures);
+
+    // Build lsCache and lsHrefs from parallel results
+    for (final entry in lsResults) {
+      final ref = entry.key;
+      final result = entry.value;
 
       if (result != null) {
         final cacheKey = ref.nAttribute ?? ref.text;
         if (result.expansion != null) {
           lsCache[cacheKey] = result.expansion!;
-          debugPrint('=== LS DEBUG: Stored in lsCache: key="$cacheKey"');
         }
         if (result.href != null) {
           lsHrefs[cacheKey] = result.href!;
-          debugPrint(
-              '=== LS DEBUG: Stored in lsHrefs: key="$cacheKey" => href="${result.href}"');
-        } else {
-          debugPrint('=== LS DEBUG: No href for key="$cacheKey"');
         }
       }
     }
-    debugPrint('=== LS DEBUG: Final lsCache: $lsCache');
+    final lsTime = DateTime.now().difference(lsStart).inMilliseconds;
+    debugPrint(
+        '=== RENDER TIMING [$dictCode]: LS expansions: ${lsRefs.length} items, ${lsTime}ms');
     debugPrint('=== LS DEBUG: Final lsHrefs: $lsHrefs');
 
     // DEBUG: Log raw entry HTML structure
@@ -109,6 +121,11 @@ class EntryRenderer {
     // Build plain text for copy (strip HTML tags from rendered content)
     final plainTextForCopy =
         '$displayKey\n${processedHtml.replaceAll(RegExp(r'<[^>]*>'), '').replaceAll('&nbsp;', ' ').replaceAll('&amp;', '&').replaceAll('&lt;', '<').replaceAll('&gt;', '>').replaceAll('&quot;', '"').trim()}';
+
+    final totalRenderTime =
+        DateTime.now().difference(renderStart).inMilliseconds;
+    debugPrint(
+        '=== RENDER TIMING [$dictCode]: Total entry render time: ${totalRenderTime}ms');
 
     return _EntryCard(
       displayKey: displayKey,

@@ -178,6 +178,8 @@ class LsService {
 
   static const Set<String> _bibDicts = {'pwg', 'pw', 'pwkvn'};
 
+  static const Set<String> _skipDbQueryDicts = {'pwg', 'pw', 'pwkvn'};
+
   // Public methods for testing
   static int romanInt(String roman) {
     if (roman.isEmpty) return 0;
@@ -1321,6 +1323,10 @@ class LsService {
   }
 
   static Future<String?> _fetchExpansion(String dict, String data) async {
+    if (_skipDbQueryDicts.contains(dict)) {
+      return null;
+    }
+
     final key = extractFirstKey(data);
     if (key == null) return null;
 

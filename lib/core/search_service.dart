@@ -34,7 +34,6 @@ class SearchService {
   }) async {
     if (inputWord.trim().isEmpty) return [];
 
-    // For English→Sanskrit dicts (ae, mwe, bor) don't transliterate
     final isEnglish = ['ae', 'mwe', 'bor'].contains(dictCode.toLowerCase());
     final slpWord = isEnglish
         ? inputWord.trim().toLowerCase()
@@ -47,6 +46,7 @@ class SearchService {
     final pattern = _likePattern(slpWord, mode);
 
     final List<Map<String, dynamic>> rows;
+    final queryStart = DateTime.now();
     print(
         'SQL Query [$dictCode]: SELECT key, lnum, data FROM $table WHERE key ${mode == SearchMode.exact ? "=" : "LIKE"} "$pattern"');
 
@@ -63,11 +63,14 @@ class SearchService {
         );
       }
     } catch (e, stack) {
-      debugPrint('SEARCH_ERROR: Exception in searchHeadword [$dictCode]: $e\n$stack');
+      debugPrint(
+          'SEARCH_ERROR: Exception in searchHeadword [$dictCode]: $e\n$stack');
       return [];
     }
 
-    print('SQL Result [$dictCode]: ${rows.length} rows returned for pattern "$pattern"');
+    final queryTime = DateTime.now().difference(queryStart).inMilliseconds;
+    print(
+        'SQL Result [$dictCode]: ${rows.length} rows returned for pattern "$pattern" (query time: ${queryTime}ms)');
 
     return rows.map(SearchResult.fromMap).toList();
   }
@@ -102,21 +105,25 @@ class SearchService {
     // Definition search always uses substring / LIKE for content search
     final pattern = '%$searchWord%';
 
+    final List<Map<String, dynamic>> rows;
+    final queryStart = DateTime.now();
     print(
         'SQL Query [$dictCode]: SELECT key, lnum, data FROM $table WHERE LOWER(data) LIKE LOWER("$pattern")');
 
-    final List<Map<String, dynamic>> rows;
     try {
       rows = await db.rawQuery(
         'SELECT key, lnum, data FROM $table WHERE LOWER(data) LIKE LOWER(?) LIMIT ?',
         [pattern, maxResults],
       );
     } catch (e, stack) {
-      debugPrint('SEARCH_ERROR: Exception in searchDefinition [$dictCode]: $e\n$stack');
+      debugPrint(
+          'SEARCH_ERROR: Exception in searchDefinition [$dictCode]: $e\n$stack');
       return [];
     }
 
-    print('SQL Result [$dictCode]: ${rows.length} rows');
+    final queryTime = DateTime.now().difference(queryStart).inMilliseconds;
+    print(
+        'SQL Result [$dictCode]: ${rows.length} rows (query time: ${queryTime}ms)');
 
     return rows.map(SearchResult.fromMap).toList();
   }
@@ -149,6 +156,7 @@ class SearchService {
     final hwPattern = _likePattern(hwSlp, hwMode);
     final defPattern = '%$defSlp%';
 
+    final queryStart = DateTime.now();
     print(
         'SQL Query [$dictCode]: SELECT ... FROM $table WHERE key LIKE "$hwPattern" AND LOWER(data) LIKE LOWER("$defPattern")');
 
@@ -165,8 +173,10 @@ class SearchService {
       );
     }
 
+    final queryTime = DateTime.now().difference(queryStart).inMilliseconds;
     if (kDebugMode) {
-      debugPrint('SQL Result [$dictCode]: ${rows.length} rows');
+      debugPrint(
+          'SQL Result [$dictCode]: ${rows.length} rows (query time: ${queryTime}ms)');
     }
 
     return rows.map(SearchResult.fromMap).toList();
