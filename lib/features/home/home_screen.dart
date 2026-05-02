@@ -6,9 +6,10 @@ import '../../models/app_settings.dart';
 import '../../providers/search_provider.dart';
 import '../../providers/settings_provider.dart';
 import '../../rendering/entry_parser.dart';
-import '../dictionaries/manage_dictionaries_screen.dart';
 import 'widgets/app_drawer.dart';
 import 'widgets/entry_card.dart';
+import 'widgets/quick_setup_dashboard.dart';
+import 'widgets/home_quick_actions.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -205,51 +206,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     }
 
     if (settings.activeDictCodes.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.library_add, size: 64, color: Colors.grey),
-            const SizedBox(height: 16),
-            const Text('No dictionaries active.'),
-            const SizedBox(height: 8),
-            const Text(
-              'Add dictionaries of your choice to start searching!',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey),
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton.icon(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const ManageDictionariesScreen(),
-                  ),
-                );
-              },
-              icon: const Icon(Icons.library_books),
-              label: const Text('Add or Manage Dictionaries'),
-            ),
-          ],
-        ),
-      );
+      return const QuickSetupDashboard();
     }
 
     final hwQuery = ref.watch(headwordQueryProvider);
     final defQuery = ref.watch(definitionQueryProvider);
 
     if (hwQuery.trim().isEmpty && defQuery.trim().isEmpty) {
-      return const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.search, size: 64, color: Colors.grey),
-            SizedBox(height: 16),
-            Text('Enter at least 3 characters to begin searching.'),
-          ],
-        ),
-      );
+      // Recurring user (has dictionaries) but not searching - show simple quick actions
+      return const HomeQuickActions();
     }
 
     if (_currentTabs.isEmpty) {
