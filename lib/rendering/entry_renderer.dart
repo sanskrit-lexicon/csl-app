@@ -719,6 +719,23 @@ class _EntryCard extends StatelessWidget {
   Widget _linkText(BuildContext context, String label, String url) {
     return GestureDetector(
       onTap: () async {
+        if (url.startsWith('sanslex://page/')) {
+          final p = url.substring('sanslex://page/'.length);
+          if (onPageTap != null) {
+            onPageTap!(p);
+          }
+          return;
+        }
+        if (url.startsWith('sanslex://pdf/page/')) {
+          final p = url.substring('sanslex://pdf/page/'.length);
+          final pdfUrl = dictInfo.pdfUrl(p);
+          final uri = Uri.parse(pdfUrl);
+          if (await canLaunchUrl(uri)) {
+            await launchUrl(uri, mode: LaunchMode.externalApplication);
+          }
+          return;
+        }
+
         final uri = Uri.parse(url);
         if (await canLaunchUrl(uri)) {
           await launchUrl(uri, mode: LaunchMode.externalApplication);

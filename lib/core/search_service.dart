@@ -53,12 +53,12 @@ class SearchService {
     try {
       if (mode == SearchMode.exact) {
         rows = await db.rawQuery(
-          'SELECT key, lnum, data FROM $table WHERE key = ? LIMIT ?',
+          'SELECT key, lnum, data FROM $table WHERE key = ? ORDER BY lnum ASC LIMIT ?',
           [pattern, maxResults],
         );
       } else {
         rows = await db.rawQuery(
-          'SELECT key, lnum, data FROM $table WHERE key LIKE ? LIMIT ?',
+          'SELECT key, lnum, data FROM $table WHERE key LIKE ? ORDER BY lnum ASC LIMIT ?',
           [pattern, maxResults],
         );
       }
@@ -112,7 +112,7 @@ class SearchService {
 
     try {
       rows = await db.rawQuery(
-        'SELECT key, lnum, data FROM $table WHERE LOWER(data) LIKE LOWER(?) LIMIT ?',
+        'SELECT key, lnum, data FROM $table WHERE LOWER(data) LIKE LOWER(?) ORDER BY lnum ASC LIMIT ?',
         [pattern, maxResults],
       );
     } catch (e, stack) {
@@ -163,12 +163,12 @@ class SearchService {
     final List<Map<String, dynamic>> rows;
     if (hwMode == SearchMode.exact) {
       rows = await db.rawQuery(
-        'SELECT key, lnum, data FROM $table WHERE key = ? AND LOWER(data) LIKE LOWER(?) LIMIT ?',
+        'SELECT key, lnum, data FROM $table WHERE key = ? AND LOWER(data) LIKE LOWER(?) ORDER BY lnum ASC LIMIT ?',
         [hwSlp, defPattern, maxResults],
       );
     } else {
       rows = await db.rawQuery(
-        'SELECT key, lnum, data FROM $table WHERE key LIKE ? AND LOWER(data) LIKE LOWER(?) LIMIT ?',
+        'SELECT key, lnum, data FROM $table WHERE key LIKE ? AND LOWER(data) LIKE LOWER(?) ORDER BY lnum ASC LIMIT ?',
         [hwPattern, defPattern, maxResults],
       );
     }
