@@ -45,7 +45,7 @@ class SettingsService {
       customSanskritTextColor:
           prefs.getInt(_customSanskritTextColor) ?? 0xFF339933,
       listMode: prefs.getBool(_listMode) ?? false,
-      fontSize: prefs.getInt(_fontSize) ?? 16,
+      fontSize: (prefs.getInt(_fontSize) ?? 16).clamp(14, 40),
     );
   }
 

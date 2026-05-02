@@ -27,5 +27,16 @@ void main() {
       );
       expect(settings.listMode, false);
     });
+
+    test('fontSize defaults to 16', () {
+      final settings = AppSettings();
+      expect(settings.fontSize, 16);
+    });
+
+    test('fontSize can be set via copyWith', () {
+      final settings = AppSettings();
+      final updated = settings.copyWith(fontSize: 20);
+      expect(updated.fontSize, 20);
+    });
   });
 }

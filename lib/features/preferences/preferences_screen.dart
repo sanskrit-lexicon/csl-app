@@ -135,9 +135,9 @@ class PreferencesScreen extends ConsumerWidget {
               title: const Text('Font Size'),
               subtitle: Slider(
                 value: settings.fontSize.toDouble(),
-                min: 12,
-                max: 24,
-                divisions: 12,
+                min: 14,
+                max: 40,
+                divisions: 26,
                 label: '${settings.fontSize}px',
                 onChanged: (v) {
                   notifier.update(settings.copyWith(fontSize: v.round()));
