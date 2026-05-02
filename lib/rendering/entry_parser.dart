@@ -9,11 +9,11 @@ class LsRef {
 
 /// Structured representation of a parsed dictionary entry.
 class ParsedEntry {
-  final String key1Slp1; // from <key1> — headword in SLP1
-  final String? key2Slp1; // from <key2> — with accent markers
-  final int? homonym; // from <hom>
-  final String bodyHtml; // innerHTML of <body>
-  final String? pageCol; // from <pc>  e.g. "111-a"
+  final String key1Slp1; // from `<key1>` — headword in SLP1
+  final String? key2Slp1; // from `<key2>` — with accent markers
+  final int? homonym; // from `<hom>`
+  final String bodyHtml; // innerHTML of `<body>`
+  final String? pageCol; // from `<pc>`  e.g. "111-a"
   final double lnum; // entry serial number
 
   const ParsedEntry({

@@ -373,4 +373,28 @@ class SearchService {
       return null;
     }
   }
+
+  /// Fetch all entries for a specific page (from `<pc>` tag).
+  static Future<List<SearchResult>> fetchByPage({
+    required String dictCode,
+    required String pageCol,
+  }) async {
+    final db = await DatabaseHelper.openDict(dictCode);
+    final table = dictCode.toLowerCase();
+    
+    // We search for <pc>pageCol</pc> in the data column.
+    // Note: pageCol might be like "1482" or "1482-a".
+    final pattern = '%<pc>$pageCol</pc>%';
+    
+    try {
+      final rows = await db.rawQuery(
+        'SELECT key, lnum, data FROM $table WHERE data LIKE ? ORDER BY lnum ASC',
+        [pattern],
+      );
+      return rows.map(SearchResult.fromMap).toList();
+    } catch (e, stack) {
+      debugPrint('FETCH_BY_PAGE_ERROR: $e\n$stack');
+      return [];
+    }
+  }
 }

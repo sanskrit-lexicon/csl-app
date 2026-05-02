@@ -17,6 +17,7 @@ import 'basic_display.dart';
 class EntryRenderer {
   final AppSettings settings;
   final String dictCode;
+  final void Function(String pageCol)? onPageTap;
   final bool useCologneTheme;
   final Color? customAccentColor;
   final Color? customHeadwordColor;
@@ -24,6 +25,7 @@ class EntryRenderer {
   EntryRenderer(
       {required this.settings,
       required this.dictCode,
+      this.onPageTap,
       this.useCologneTheme = false,
       this.customAccentColor,
       this.customHeadwordColor});
@@ -138,6 +140,7 @@ class EntryRenderer {
       lsCache: lsCache,
       abbrCache: abbrCache,
       onWordTap: onWordTap,
+      onPageTap: onPageTap,
       plainTextForCopy: plainTextForCopy,
       outputTranslit: settings.outputTranslit,
       dictInfo: dictInfo,
@@ -412,6 +415,7 @@ class _EntryCard extends StatelessWidget {
   final Map<String, String> lsCache;
   final Map<String, String> abbrCache;
   final void Function(String slp1Word) onWordTap;
+  final void Function(String pageCol)? onPageTap;
   final String plainTextForCopy;
   final String outputTranslit;
   final DictionaryInfo dictInfo;
@@ -431,6 +435,7 @@ class _EntryCard extends StatelessWidget {
     required this.lsCache,
     required this.abbrCache,
     required this.onWordTap,
+    this.onPageTap,
     required this.plainTextForCopy,
     required this.outputTranslit,
     required this.dictInfo,
@@ -558,6 +563,14 @@ class _EntryCard extends StatelessWidget {
                   }
                   return true;
                 }
+                // Handle Page Headwords: sanslex://page/###
+                if (url.startsWith('sanslex://page/')) {
+                  final p = url.substring('sanslex://page/'.length);
+                  if (onPageTap != null) {
+                    onPageTap!(p);
+                  }
+                  return true;
+                }
                 // Handle PDF page references: sanslex://pdf/page/###
                 if (url.startsWith('sanslex://pdf/page/')) {
                   final pageCol = url.substring('sanslex://pdf/page/'.length);
@@ -669,10 +682,16 @@ class _EntryCard extends StatelessWidget {
                 'PDF',
                 dictInfo.pdfUrl(pageCol ?? ''),
               ),
+              if (pageCol != null)
+                _linkText(
+                  context,
+                  'HTML',
+                  'sanslex://page/$pageCol',
+                ),
               _linkText(
                 context,
                 'Correction',
-                '${dictInfo.correctionBaseUrl}&lnum=${lnum.toStringAsFixed(0)}&hw=$slp1Key',
+                '${dictInfo.correctionBaseUrl}&lnum=${lnum.toString().replaceAll(RegExp(r"\.0$"), "")}&hw=$slp1Key',
               ),
               if (pageCol != null)
                 Text(
@@ -683,7 +702,7 @@ class _EntryCard extends StatelessWidget {
                   ),
                 ),
               Text(
-                'ID:${lnum.toStringAsFixed(0)}',
+                'ID:${lnum.toString().replaceAll(RegExp(r"\.0$"), "")}',
                 style: TextStyle(
                   fontSize: 11,
                   color: theme.colorScheme.outline,
