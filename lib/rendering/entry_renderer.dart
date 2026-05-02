@@ -17,7 +17,6 @@ import 'basic_display.dart';
 class EntryRenderer {
   final AppSettings settings;
   final String dictCode;
-  final void Function(String pageCol)? onPageTap;
   final bool useCologneTheme;
   final Color? customAccentColor;
   final Color? customHeadwordColor;
@@ -25,7 +24,6 @@ class EntryRenderer {
   EntryRenderer(
       {required this.settings,
       required this.dictCode,
-      this.onPageTap,
       this.useCologneTheme = false,
       this.customAccentColor,
       this.customHeadwordColor});
@@ -140,7 +138,6 @@ class EntryRenderer {
       lsCache: lsCache,
       abbrCache: abbrCache,
       onWordTap: onWordTap,
-      onPageTap: onPageTap,
       plainTextForCopy: plainTextForCopy,
       outputTranslit: settings.outputTranslit,
       dictInfo: dictInfo,
@@ -165,7 +162,8 @@ class EntryRenderer {
       Map<String, String> lsHrefsParam,
       String? highlightSlp1,
       String? rawHighlightTerm,
-      String dictCode) {
+      String dictCode,
+      {bool wrap = true}) {
     // Apply BasicAdjust (Feature 5) if enabled
     String html = bodyHtml;
     if (settings.enableBasicAdjust) {
@@ -195,8 +193,15 @@ class EntryRenderer {
     html = _applyTransliteration(html, abbreviationCache, lsCache, lsHrefsParam,
         highlightSlp1, rawHighlightTerm, dictCode);
 
+    if (!wrap) return html;
+
     // Wrap in a div for styling
     return '<div style="font-size:${settings.fontSize}px; line-height:1.6;">$html</div>';
+  }
+
+  static String _formatSuperscript(int n) {
+    const sup = ['⁰', '¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹'];
+    return n.toString().split('').map((d) => sup[int.parse(d)]).join();
   }
 
   /// Transliterate content while preserving <mark> tags for highlighting.
@@ -415,7 +420,6 @@ class _EntryCard extends StatelessWidget {
   final Map<String, String> lsCache;
   final Map<String, String> abbrCache;
   final void Function(String slp1Word) onWordTap;
-  final void Function(String pageCol)? onPageTap;
   final String plainTextForCopy;
   final String outputTranslit;
   final DictionaryInfo dictInfo;
@@ -435,7 +439,6 @@ class _EntryCard extends StatelessWidget {
     required this.lsCache,
     required this.abbrCache,
     required this.onWordTap,
-    this.onPageTap,
     required this.plainTextForCopy,
     required this.outputTranslit,
     required this.dictInfo,
@@ -491,7 +494,7 @@ class _EntryCard extends StatelessWidget {
                     ),
                     if (homonym != null)
                       TextSpan(
-                        text: _superscript(homonym!),
+                        text: EntryRenderer._formatSuperscript(homonym!),
                         style: TextStyle(
                           fontSize: 12,
                           color: theme.colorScheme.secondary,
@@ -560,14 +563,6 @@ class _EntryCard extends StatelessWidget {
                         margin: const EdgeInsets.all(16),
                       ),
                     );
-                  }
-                  return true;
-                }
-                // Handle Page Headwords: sanslex://page/###
-                if (url.startsWith('sanslex://page/')) {
-                  final p = url.substring('sanslex://page/'.length);
-                  if (onPageTap != null) {
-                    onPageTap!(p);
                   }
                   return true;
                 }
@@ -682,12 +677,6 @@ class _EntryCard extends StatelessWidget {
                 'PDF',
                 dictInfo.pdfUrl(pageCol ?? ''),
               ),
-              if (pageCol != null)
-                _linkText(
-                  context,
-                  'HTML',
-                  'sanslex://page/$pageCol',
-                ),
               _linkText(
                 context,
                 'Correction',
@@ -719,23 +708,6 @@ class _EntryCard extends StatelessWidget {
   Widget _linkText(BuildContext context, String label, String url) {
     return GestureDetector(
       onTap: () async {
-        if (url.startsWith('sanslex://page/')) {
-          final p = url.substring('sanslex://page/'.length);
-          if (onPageTap != null) {
-            onPageTap!(p);
-          }
-          return;
-        }
-        if (url.startsWith('sanslex://pdf/page/')) {
-          final p = url.substring('sanslex://pdf/page/'.length);
-          final pdfUrl = dictInfo.pdfUrl(p);
-          final uri = Uri.parse(pdfUrl);
-          if (await canLaunchUrl(uri)) {
-            await launchUrl(uri, mode: LaunchMode.externalApplication);
-          }
-          return;
-        }
-
         final uri = Uri.parse(url);
         if (await canLaunchUrl(uri)) {
           await launchUrl(uri, mode: LaunchMode.externalApplication);
@@ -750,10 +722,5 @@ class _EntryCard extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  String _superscript(int n) {
-    const sup = ['⁰', '¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹'];
-    return n.toString().split('').map((d) => sup[int.parse(d)]).join();
   }
 }

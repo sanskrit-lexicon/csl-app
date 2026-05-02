@@ -6,7 +6,6 @@ import '../../../models/search_result.dart';
 import '../../../providers/settings_provider.dart';
 import '../../../rendering/entry_parser.dart';
 import '../../../rendering/entry_renderer.dart';
-import '../page_headwords_screen.dart';
 
 class EntryCardWidget extends ConsumerWidget {
   final String dictCode;
@@ -34,17 +33,6 @@ class EntryCardWidget extends ConsumerWidget {
     final renderer = EntryRenderer(
       settings: settings,
       dictCode: dictCode,
-      onPageTap: (pageCol) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => PageHeadwordsScreen(
-              dictCode: dictCode,
-              pageCol: pageCol,
-            ),
-          ),
-        );
-      },
       useCologneTheme: settings.themeMode == AppThemeMode.cologne,
       customAccentColor: settings.themeMode == AppThemeMode.custom
           ? settings.customSanskritText
