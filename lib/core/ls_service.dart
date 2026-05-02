@@ -105,6 +105,11 @@ class LsService {
       'Av.': 'av',
       'P.': 'p',
     },
+    'ap': {
+      'Rv.': 'rv',
+      'Av.': 'av',
+      'P.': 'p',
+    },
     'sch': {
       'ṚV.': 'rv',
       'AV.': 'av',
@@ -430,6 +435,12 @@ class LsService {
             return bhagSchUrl(data1);
           } else if (url == 'bhagSchUrl2') {
             return bhagSchUrl2(data1);
+          } else if (url == 'bhagApUrl') {
+            return bhagApUrl(data1);
+          } else if (url == 'rvAvApUrl') {
+            return rvAvApUrl(data1);
+          } else if (url == 'paniniApUrl') {
+            return paniniApUrl(data1);
           } else if (url == 'avGraUrl') {
             return avGraUrl(data1);
           } else if (url == 'dhatuUrl') {
@@ -1290,6 +1301,50 @@ class LsService {
       final pancika = match.group(2)!;
       final kandika = match.group(3)!;
       return 'https://sanskrit-lexicon-scans.github.io/aitbr_auf/app1?$pancika,$kandika';
+    }
+    return null;
+  }
+
+  static String? bhagApUrl(String data1) {
+    final regex = RegExp(r'^(Bhāg\.) +([0-9]+)\. +([0-9]+)\. +([0-9]+)');
+    final match = regex.firstMatch(data1);
+    if (match == null) return null;
+    final s = int.parse(match.group(2)!);
+    final a = match.group(3)!;
+    final v = match.group(4)!;
+    final dir = (s == 10 || s == 11 || s == 12)
+        ? 'https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1/?'
+        : 'https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?';
+    return '$dir$s,$a,$v';
+  }
+
+  static String? rvAvApUrl(String data1) {
+    final regex = RegExp(r'^(Rv\.|Av\.) *([0-9]+)\. +([0-9]+)\. +([0-9]+)');
+    final match = regex.firstMatch(data1);
+    if (match == null) return null;
+    final pfx = match.group(1)!.startsWith('R') ? 'rv' : 'av';
+    final imandala = int.parse(match.group(2)!);
+    final ihymn = int.parse(match.group(3)!);
+    final iverse = int.parse(match.group(4)!);
+
+    final hymnfilepfx =
+        '${pfx}${imandala.toString().padLeft(2, '0')}.${ihymn.toString().padLeft(3, '0')}';
+    final hymnfile = "$hymnfilepfx.html";
+    final anchor = "$hymnfilepfx.${iverse.toString().padLeft(2, '0')}";
+    final dir = 'https://sanskrit-lexicon.github.io/${pfx}links/${pfx}hymns';
+    return '$dir/$hymnfile#$anchor';
+  }
+
+  static String? paniniApUrl(String data1) {
+    final regex = RegExp(r'^(P\.) *([IVX]+)\. +([0-9]+)\. +([0-9]+)');
+    final match = regex.firstMatch(data1);
+    if (match == null) return null;
+    final roman = match.group(2)!;
+    final ic = romanInt(roman.toLowerCase());
+    final is1 = match.group(3)!;
+    final iv = match.group(4)!;
+    if (ic > 0) {
+      return 'https://ashtadhyayi.com/sutraani/$ic/$is1/$iv';
     }
     return null;
   }
