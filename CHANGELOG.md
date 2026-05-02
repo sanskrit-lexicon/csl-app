@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.2] - 2026-05-02
+
+### Added
+- **Welcome Screen**: Added a new welcome/onboarding screen for better first-time user experience.
+- **Footer Icons**: Enhanced entry cards with clear icons for PDF, Correction, and ID information in the footer.
+
+### Fixed
+- **L-id Decimal Display**: Corrected dictionary entry ID (L-number) display to show full decimal precision (e.g., `1034.026` instead of `1034`).
+- **Sequential Result Ordering**: Search results are now consistently ordered by their numeric L-id (`lnum`), ensuring entries appear in their proper dictionary sequence.
+
 ## [0.2.1] - 2026-04-15
 
 ### Added
