@@ -282,11 +282,13 @@ class LsService {
       String dict, String key, String? nAttribute, String data) {
     final String data1;
     if (nAttribute != null && nAttribute.isNotEmpty) {
-      if (!nAttribute.endsWith(' ') &&
-          !data.startsWith(' ') &&
-          RegExp(r'[a-zA-Z0-9āīūēōṇṭḍṇñṅśṣḥḍhṭh]$').hasMatch(nAttribute) &&
-          RegExp(r'^[a-zA-Z0-9āīūēōṇṭḍṇñṅśṣḥḍhṭh]').hasMatch(data)) {
-        // Insert space if border characters shouldn't be blindly merged
+      final isAp = dict == 'ap' || dict == 'ap90';
+      if (isAp ||
+          (!nAttribute.endsWith(' ') &&
+              !data.startsWith(' ') &&
+              RegExp(r'[a-zA-Z0-9āīūēōṇṭḍṇñṅśṣḥḍhṭh]$').hasMatch(nAttribute) &&
+              RegExp(r'^[a-zA-Z0-9āīūēōṇṭḍṇñṅśṣḥḍhṭh]').hasMatch(data))) {
+        // Insert space for AP/AP90 (to match PHP) or if border characters shouldn't be blindly merged
         data1 = '$nAttribute $data';
       } else {
         data1 = '$nAttribute$data';
@@ -1312,20 +1314,29 @@ class LsService {
     final s = int.parse(match.group(2)!);
     final a = match.group(3)!;
     final v = match.group(4)!;
-    final dir = (s == 10 || s == 11 || s == 12)
-        ? 'https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1/?'
-        : 'https://sanskrit-lexicon-scans.github.io/bhagp_bur/app1/?';
+    final dir = 'https://sanskrit-lexicon-scans.github.io/bhagp_bom/app1/?';
     return '$dir$s,$a,$v';
   }
 
   static String? rvAvApUrl(String data1) {
-    final regex = RegExp(r'^(Rv\.|Av\.) *([0-9]+)\. +([0-9]+)\. +([0-9]+)');
-    final match = regex.firstMatch(data1);
-    if (match == null) return null;
+    // Match 3 segments: Mandala. Hymn. Verse (Note: the dot after Hymn is mandatory for 3 segments in AP)
+    var regex = RegExp(r'^(Rv\.|Av\. Pariś\.|Av\.)[^0-9]*([0-9]+)\. +([0-9]+)\. +([0-9]+)');
+    var match = regex.firstMatch(data1);
+    int iverse;
+
+    if (match != null) {
+      iverse = int.parse(match.group(4)!);
+    } else {
+      // Fallback to 2 segments: Mandala. Hymn (default verse to 1)
+      regex = RegExp(r'^(Rv\.|Av\. Pariś\.|Av\.)[^0-9]*([0-9]+)\. +([0-9]+)');
+      match = regex.firstMatch(data1);
+      if (match == null) return null;
+      iverse = 1;
+    }
+
     final pfx = match.group(1)!.startsWith('R') ? 'rv' : 'av';
     final imandala = int.parse(match.group(2)!);
     final ihymn = int.parse(match.group(3)!);
-    final iverse = int.parse(match.group(4)!);
 
     final hymnfilepfx =
         '${pfx}${imandala.toString().padLeft(2, '0')}.${ihymn.toString().padLeft(3, '0')}';
@@ -1336,7 +1347,7 @@ class LsService {
   }
 
   static String? paniniApUrl(String data1) {
-    final regex = RegExp(r'^(P\.) *([IVX]+)\. +([0-9]+)\. +([0-9]+)');
+    final regex = RegExp(r'^(P\. V\.|P\.)[^IVX]*([IVX]+)\. +([0-9]+)\. +([0-9]+)');
     final match = regex.firstMatch(data1);
     if (match == null) return null;
     final roman = match.group(2)!;

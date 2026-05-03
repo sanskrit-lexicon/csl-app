@@ -1429,8 +1429,9 @@ class LsPatterns {
     ),
     // Mb. (Mahābhārata) - 3 parameters: Parvan, Adhyaya, Shloka
     LsPattern(
-      prefixes: ['Mb.'],
-      regex: r'^(Mb\.) +([0-9]+)\. +([0-9]+)\. +([0-9]+)',
+      prefixes: ['Mb.', 'Mb. Crit. Ed.', 'Mb. Crit. ed.'],
+      regex:
+          r'^(Mb\. Crit\. [Ee]d\.|Mb\.)[^0-9]*([0-9]+)\. +([0-9]+)\. +([0-9]+)',
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/mbhbomb/app1?\$2,\$3,\$4',
     ),
@@ -1463,14 +1464,20 @@ class LsPatterns {
     ),
     // Rv. and Av. - 3 parameters
     LsPattern(
-      prefixes: ['Rv.', 'Av.'],
-      regex: r'^(Rv\.|Av\.) *([0-9]+)\. +([0-9]+)\. +([0-9]+)',
+      prefixes: ['Rv.', 'Av.', 'Av. Pariś.'],
+      regex: r'^(Rv\.|Av\. Pariś\.|Av\.)[^0-9]*([0-9]+)\. +([0-9]+)\. +([0-9]+)',
       urlTemplate: 'rvAvApUrl',
     ),
-    // P. (Pāṇini) - 3 parameters, 1st parameter Roman
+    // Rv. and Av. - 2 parameters (fallback for cases like "Rv. 5. 15 3")
     LsPattern(
-      prefixes: ['P.'],
-      regex: r'^(P\.) *([IVX]+)\. +([0-9]+)\. +([0-9]+)',
+      prefixes: ['Rv.', 'Av.', 'Av. Pariś.'],
+      regex: r'^(Rv\.|Av\. Pariś\.|Av\.)[^0-9]*([0-9]+)\. +([0-9]+)',
+      urlTemplate: 'rvAvApUrl',
+    ),
+    // P. (Pāṇini) and P. V. (Pāṇini Vārttika) - 3 parameters, 1st parameter Roman
+    LsPattern(
+      prefixes: ['P.', 'P. V.'],
+      regex: r'^(P\. V\.|P\.)[^IVX]*([IVX]+)\. +([0-9]+)\. +([0-9]+)',
       urlTemplate: 'paniniApUrl',
     ),
     // Me. (Meghadūta) - 1 parameter
@@ -1487,12 +1494,25 @@ class LsPatterns {
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/yajnavalkya/app1?\$2,\$3',
     ),
-    // S. D. (Sāhityadarpaṇa) - 1 parameter
+    // S. D. (Sāhityadarpaṇa) - 1 or 2 parameters (ignore Roman numeral)
+    LsPattern(
+      prefixes: ['S. D.'],
+      regex: r'^(S\. D\.) +([IVXLC]+)\. +([0-9]+)',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/sahityadarpana/app1?\$3',
+    ),
     LsPattern(
       prefixes: ['S. D.'],
       regex: r'^(S\. D\.) +([0-9]+)',
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/sahityadarpana/app1?\$2',
+    ),
+    // Ak. (Amarakośa) - 3 parameters
+    LsPattern(
+      prefixes: ['Ak.'],
+      regex: r'^(Ak\.) +([0-9]+)\. +([0-9]+)\. +([0-9]+)',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/amara_dlc/app1?\$2,\$3,\$4',
     ),
     // Ak. (Amarakośa) - 1 parameter
     LsPattern(
