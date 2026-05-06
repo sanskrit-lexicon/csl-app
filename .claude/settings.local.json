@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(gh pr *)",
+      "PowerShell(gh pr *)",
+      "PowerShell(winget install *)",
+      "PowerShell(choco install *)",
+      "PowerShell(& \"$env:USERPROFILE\\\\gh-cli\\\\bin\\\\gh.exe\" pr list)",
+      "PowerShell(git checkout *)",
+      "PowerShell(git *)",
+      "PowerShell(& \"$env:USERPROFILE\\\\gh-cli\\\\bin\\\\gh.exe\" pr view 37)",
+      "PowerShell(& \"$env:USERPROFILE\\\\gh-cli\\\\bin\\\\gh.exe\" pr diff 37)"
+    ]
+  }
+}
