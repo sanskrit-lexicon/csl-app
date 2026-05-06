@@ -33,7 +33,7 @@ flutter build windows --release
 flutter build web --release
 
 # Regenerate app icons
-flutter pub run flutter_launcher_icons:main
+dart run flutter_launcher_icons
 ```
 
 Lint config is in `analysis_options.yaml` (uses `flutter_lints`; `print` statements are allowed).
