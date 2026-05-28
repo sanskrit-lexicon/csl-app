@@ -54,3 +54,7 @@ app.*.map.json
 # Never commit these to csl-app; they live at:
 # https://github.com/sanskrit-lexicon/csl-sqlite/releases/latest
 assets/sqlite/*.sqlite
+
+# audit sidecars
+.contributing_old.md
+.contributing_audit.txt
