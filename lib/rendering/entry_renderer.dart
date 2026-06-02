@@ -445,7 +445,9 @@ class EntryRenderer {
   /// Convert a `chg` tag to a clickable tooltip link.
   /// Extracts attributes (type, src, date, user, href, note) and children
   /// (old, new) to build a descriptive tooltip message.
-  static String _chgTagToHtml(String fullTag) {
+  /// The link label shows the `<new>` value, transliterated if wrapped in
+  /// `<s>` or `<s1>` tags to match the user's display scheme.
+  String _chgTagToHtml(String fullTag) {
     String getAttr(String name) {
       final re = RegExp('$name="([^"]*)"');
       final m = re.firstMatch(fullTag);
@@ -466,6 +468,8 @@ class EntryRenderer {
 
     final oldVal = getChild('old');
     final newVal = getChild('new');
+
+    final label = _chgLinkLabel(newVal);
 
     final message = StringBuffer();
     if (type == 'add') {
@@ -489,7 +493,24 @@ class EntryRenderer {
     if (note.isNotEmpty) message.write('. Note: $note');
 
     final encoded = Uri.encodeComponent(message.toString());
-    return '<a href="sanslex://tooltip/chg/$encoded">[chg]</a>';
+    return '<a href="sanslex://tooltip/chg/$encoded">$label</a>';
+  }
+
+  /// Build the visible link label for a `<chg>` tag from the `<new>` value.
+  /// Strips any optional `<s>`/`<s1>` wrapper, then transliterates the SLP1
+  /// text to the user's display scheme.
+  String _chgLinkLabel(String newVal) {
+    if (newVal.isEmpty) return '[chg]';
+    String slp1 = newVal.trim();
+    final m = RegExp(r'^<(?:s|s1)>(.*)</(?:s|s1)>$', dotAll: true)
+        .firstMatch(slp1);
+    if (m != null) slp1 = m.group(1)!;
+    return TransliterationService.fromSlp1(
+      slp1,
+      settings.outputTranslit,
+      useAccented: settings.showAccent,
+      dictCode: dictCode,
+    );
   }
 }
 
