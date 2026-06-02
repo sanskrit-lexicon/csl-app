@@ -261,6 +261,38 @@ class EntryRenderer {
     final isAbchFamily =
         ['abch', 'acph', 'acsj'].contains(dictCode.toLowerCase());
 
+    // Process <chg> tags by splitting <s> around them so chg HTML
+    // ends up OUTSIDE the transliteration scope.
+    // Step 1: Any <chg> inside <s>…</s> — split the <s> element.
+    html = html.replaceAllMapped(
+      RegExp(r'<(?:s|SA)>(.*?)</(?:s|SA)>', dotAll: true),
+      (m) {
+        final content = m.group(1) ?? '';
+        if (!content.contains('<chg')) return m.group(0)!;
+        final chgRe = RegExp(r'<chg(?:\s+[^>]*)?>.*?</chg>', dotAll: true);
+        final parts = <String>[];
+        final chgs = <String>[];
+        int last = 0;
+        for (final cm in chgRe.allMatches(content)) {
+          parts.add(content.substring(last, cm.start));
+          chgs.add(content.substring(cm.start, cm.end));
+          last = cm.end;
+        }
+        parts.add(content.substring(last));
+        final sb = StringBuffer();
+        for (int i = 0; i < parts.length; i++) {
+          if (parts[i].isNotEmpty) sb.write('<s>${parts[i]}</s>');
+          if (i < chgs.length) sb.write(_chgTagToHtml(chgs[i]));
+        }
+        return sb.toString();
+      },
+    );
+    // Step 2: Any <chg> outside <s> (rare edge case) — replace directly.
+    html = html.replaceAllMapped(
+      RegExp(r'<chg(?:\s+[^>]*)?>.*?</chg>', dotAll: true),
+      (m) => _chgTagToHtml(m.group(0)!),
+    );
+
     html = html.replaceAllMapped(
       RegExp(r'<(?:s|SA)>(.*?)</(?:s|SA)>', dotAll: true),
       (m) {
@@ -381,6 +413,9 @@ class EntryRenderer {
     html = html.replaceAll(RegExp(r'</?lex[^>]*>'), '');
     html = html.replaceAll(RegExp(r'</?s1[^>]*>'), '');
     html = html.replaceAll(RegExp(r'</?srs[^>]*>'), '');
+    html = html.replaceAll(RegExp(r'</?chg[^>]*>'), '');
+    html = html.replaceAll(RegExp(r'</?old>'), '');
+    html = html.replaceAll(RegExp(r'</?new>'), '');
 
     // Convert Page references in body text to PDF links
     // Matches patterns like [Page642-b+ 65] or Page642+ 65
@@ -405,6 +440,56 @@ class EntryRenderer {
     }
 
     return html;
+  }
+
+  /// Convert a `chg` tag to a clickable tooltip link.
+  /// Extracts attributes (type, src, date, user, href, note) and children
+  /// (old, new) to build a descriptive tooltip message.
+  static String _chgTagToHtml(String fullTag) {
+    String getAttr(String name) {
+      final re = RegExp('$name="([^"]*)"');
+      final m = re.firstMatch(fullTag);
+      return m?.group(1) ?? '';
+    }
+
+    String getChild(String tag) {
+      final re = RegExp('<$tag>(.*?)</$tag>', dotAll: true);
+      final m = re.firstMatch(fullTag);
+      return m?.group(1) ?? '';
+    }
+
+    final type = getAttr('type');
+    final date = getAttr('date');
+    final user = getAttr('user');
+    final href = getAttr('href');
+    final note = getAttr('note');
+
+    final oldVal = getChild('old');
+    final newVal = getChild('new');
+
+    final message = StringBuffer();
+    if (type == 'add') {
+      if (newVal.isNotEmpty) {
+        message.write("Added '$newVal'");
+      } else {
+        message.write('Added');
+      }
+    } else {
+      if (oldVal.isNotEmpty && newVal.isNotEmpty) {
+        message.write("'$oldVal' was changed to '$newVal'");
+      } else if (newVal.isNotEmpty) {
+        message.write("Changed to '$newVal'");
+      } else {
+        message.write('Changed');
+      }
+    }
+    if (user.isNotEmpty) message.write(' based on feedback of $user');
+    if (date.isNotEmpty) message.write(' on $date');
+    if (href.isNotEmpty) message.write('. Ref: $href');
+    if (note.isNotEmpty) message.write('. Note: $note');
+
+    final encoded = Uri.encodeComponent(message.toString());
+    return '<a href="sanslex://tooltip/chg/$encoded">[chg]</a>';
   }
 }
 
