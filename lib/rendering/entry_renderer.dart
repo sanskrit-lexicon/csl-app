@@ -282,7 +282,7 @@ class EntryRenderer {
         final sb = StringBuffer();
         for (int i = 0; i < parts.length; i++) {
           if (parts[i].isNotEmpty) sb.write('<s>${parts[i]}</s>');
-          if (i < chgs.length) sb.write(_chgTagToHtml(chgs[i]));
+          if (i < chgs.length) sb.write(_chgTagToHtml(chgs[i], insideS: true));
         }
         return sb.toString();
       },
@@ -290,7 +290,7 @@ class EntryRenderer {
     // Step 2: Any <chg> outside <s> (rare edge case) — replace directly.
     html = html.replaceAllMapped(
       RegExp(r'<chg(?:\s+[^>]*)?>.*?</chg>', dotAll: true),
-      (m) => _chgTagToHtml(m.group(0)!),
+      (m) => _chgTagToHtml(m.group(0)!, insideS: false),
     );
 
     html = html.replaceAllMapped(
@@ -447,7 +447,7 @@ class EntryRenderer {
   /// (old, new) to build a descriptive tooltip message.
   /// The link label shows the `<new>` value, transliterated if wrapped in
   /// `<s>` or `<s1>` tags to match the user's display scheme.
-  String _chgTagToHtml(String fullTag) {
+  String _chgTagToHtml(String fullTag, {bool insideS = false}) {
     String getAttr(String name) {
       final re = RegExp('$name="([^"]*)"');
       final m = re.firstMatch(fullTag);
@@ -469,7 +469,8 @@ class EntryRenderer {
     final oldVal = getChild('old');
     final newVal = getChild('new');
 
-    final label = _chgLinkLabel(newVal);
+    final oldLabel = _chgLinkLabel(oldVal, insideS: insideS);
+    final newLabel = _chgLinkLabel(newVal, insideS: insideS);
 
     final message = StringBuffer();
     if (type == 'add') {
@@ -493,24 +494,49 @@ class EntryRenderer {
     if (note.isNotEmpty) message.write('. Note: $note');
 
     final encoded = Uri.encodeComponent(message.toString());
-    return '<a href="sanslex://tooltip/chg/$encoded">$label</a>';
+
+    if (oldVal.isNotEmpty && newVal.isNotEmpty) {
+      return '<a href="sanslex://tooltip/chg/$encoded">'
+          '<span class="chg-old">$oldLabel</span>→'
+          '<span class="chg-new">$newLabel</span>'
+          '</a>';
+    }
+    if (newVal.isNotEmpty) {
+      return '<a href="sanslex://tooltip/chg/$encoded">'
+          '<span class="chg-new">$newLabel</span>'
+          '</a>';
+    }
+    return '<a href="sanslex://tooltip/chg/$encoded">[chg]</a>';
   }
 
-  /// Build the visible link label for a `<chg>` tag from the `<new>` value.
-  /// Strips any optional `<s>`/`<s1>` wrapper, then transliterates the SLP1
-  /// text to the user's display scheme.
-  String _chgLinkLabel(String newVal) {
-    if (newVal.isEmpty) return '[chg]';
-    String slp1 = newVal.trim();
+  /// Build the visible label for a change value (old or new).
+  /// Transliteration rules:
+  /// 1. Explicit `<s>`/`<s1>` wrapper → transliterate inner SLP1.
+  /// 2. Bare text when `insideS` is true (chg came from inside `<s>`) →
+  ///    transliterate (it is SLP1 Sanskrit, implicit from context).
+  /// 3. Bare text when `insideS` is false → use as-is (English text).
+  String _chgLinkLabel(String val, {bool insideS = false}) {
+    if (val.isEmpty) return '';
+    final trimmed = val.trim();
     final m = RegExp(r'^<(?:s|s1)>(.*)</(?:s|s1)>$', dotAll: true)
-        .firstMatch(slp1);
-    if (m != null) slp1 = m.group(1)!;
-    return TransliterationService.fromSlp1(
-      slp1,
-      settings.outputTranslit,
-      useAccented: settings.showAccent,
-      dictCode: dictCode,
-    );
+        .firstMatch(trimmed);
+    if (m != null) {
+      return TransliterationService.fromSlp1(
+        m.group(1)!,
+        settings.outputTranslit,
+        useAccented: settings.showAccent,
+        dictCode: dictCode,
+      );
+    }
+    if (insideS) {
+      return TransliterationService.fromSlp1(
+        trimmed,
+        settings.outputTranslit,
+        useAccented: settings.showAccent,
+        dictCode: dictCode,
+      );
+    }
+    return trimmed;
   }
 }
 
@@ -744,6 +770,11 @@ class _EntryCard extends StatelessWidget {
                     element.attributes.containsKey('href') &&
                     element.attributes['href']!
                         .startsWith('sanslex://tooltip/')) {
+                  // chg links use their own colored spans; no extra decoration
+                  if (element.attributes['href']!
+                      .startsWith('sanslex://tooltip/chg/')) {
+                    return null;
+                  }
                   return {
                     'color': isDark ? '#B0BEC5' : '#546E7A',
                     'text-decoration': 'underline dotted',
@@ -760,6 +791,15 @@ class _EntryCard extends StatelessWidget {
                     'color': primaryLightHex,
                     'text-decoration': 'underline dotted',
                   };
+                }
+                if (element.classes.contains('chg-old')) {
+                  return {
+                    'color': '#d32f2f',
+                    'text-decoration': 'line-through',
+                  };
+                }
+                if (element.classes.contains('chg-new')) {
+                  return {'color': '#388e3c'};
                 }
                 if (element.localName == 'mark') {
                   return {
