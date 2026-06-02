@@ -1339,7 +1339,7 @@ class LsService {
     final ihymn = int.parse(match.group(3)!);
 
     final hymnfilepfx =
-        '${pfx}${imandala.toString().padLeft(2, '0')}.${ihymn.toString().padLeft(3, '0')}';
+        '$pfx${imandala.toString().padLeft(2, '0')}.${ihymn.toString().padLeft(3, '0')}';
     final hymnfile = "$hymnfilepfx.html";
     final anchor = "$hymnfilepfx.${iverse.toString().padLeft(2, '0')}";
     final dir = 'https://sanskrit-lexicon.github.io/${pfx}links/${pfx}hymns';

@@ -1630,6 +1630,7 @@ class LsPatterns {
       case 'gra':
         return gra;
       case 'mw':
+        return mw;
       case 'ap90':
       case 'ap':
         return ap;
