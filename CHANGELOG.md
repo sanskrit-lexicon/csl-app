@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.0] - 2026-06-13
+
+### Changed
+- Released the current changelog state as version 1.
+
 ## [0.2.2] - 2026-05-02
 
 ### Added
@@ -41,8 +46,6 @@ All notable changes to this project will be documented in this file.
 - **Engish Dictionaries Headwords**: Fixed wrong transliteration of English dictionary headwords to Devanagari and other schemes. See #20.
 - **UI updates**: Mainly visual changes. See #18, #21.
 
-
-
 ## [0.1.6] - 2026-03-25
 
 ### Added
@@ -66,13 +69,11 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - **Definition Search Transliteration**: Fixed issue where highlighted search terms in definitions were not transliterated when using Devanagari or other output scripts.
 
-
 ## [0.1.3] - 2026-03-24
 
 ### Added
 - **Cologne Theme**: Your favourite colour theme from Colgne website.
 - **Custom Themes**: Choose your colours. Make it your own.
-
 
 ## [0.1.2] - 2026-03-24
 
