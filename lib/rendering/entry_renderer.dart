@@ -259,7 +259,7 @@ class EntryRenderer {
       String? rawHighlightTerm,
       String dictCode) {
     final isAbchFamily =
-        ['abch', 'acph', 'acsj'].contains(dictCode.toLowerCase());
+        ['abch', 'acph', 'acsj', 'nmmb'].contains(dictCode.toLowerCase());
 
     // Process <chg> tags by splitting <s> around them so chg HTML
     // ends up OUTSIDE the transliteration scope.

@@ -540,6 +540,17 @@ class DictionaryRegistry {
       bibliographicEntry: 'Abhidhānacintāmaṇiśiloñcha of Jinadeva.',
     ),
     DictionaryInfo(
+      codeUp: 'NMMB',
+      codeLo: 'nmmb',
+
+      name: 'Nāmamālikā of Bhoja',
+      title: 'Nāmamālikā of Bhoja',
+      hasAccent: false,
+      hasDevaTextOption: true,
+      worldCatUrl: 'https://search.worldcat.org/title/977894663',
+      bibliographicEntry: 'Nāmamālikā of Bhoja.',
+    ),
+    DictionaryInfo(
       codeUp: 'FRI',
       codeLo: 'fri',
 
