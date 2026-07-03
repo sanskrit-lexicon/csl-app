@@ -605,13 +605,22 @@ class LsPatterns {
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/sahityadarpana/app1?\$2',
     ),
-    // Chrestomathie
+    // Benfey Chrestomathie (PWG uppercase form "BENF. Chr. page,line")
+    LsPattern(
+      prefixes: ['BENF. Chr.'],
+      regex: r'^(BENF[.] Chr[.]) *([0-9]+)',
+      urlTemplate:
+          'https://sanskrit-lexicon-scans.github.io/bchrest2/index.html?\$2',
+      dicts: ['pwg'],
+    ),
+    // Chrestomathie (pw + pwg). bchrest2 keys on the printed page (?ipage,
+    // 1-372); PWG cites "Chr. page,line", so the first number is the page.
     LsPattern(
       prefixes: ['Chr.'],
       regex: r'^(Chr[.]) *([0-9]+)',
       urlTemplate:
           'https://sanskrit-lexicon-scans.github.io/bchrest2/index.html?\$2',
-      dicts: ['pw'],
+      dicts: ['pw', 'pwg'],
     ),
     // Dhatupatha
     LsPattern(
