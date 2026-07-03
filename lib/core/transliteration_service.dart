@@ -77,8 +77,9 @@ class TransliterationService {
       return text;
     }
 
+    final String input = useAccented ? text : stripSLP1Accents(text);
     String out =
-        transliterate(text, useAccented ? 'slp1_accented' : 'slp1', toScheme);
+        transliterate(input, useAccented ? 'slp1_accented' : 'slp1', toScheme);
 
     // Fallback: if accents are requested for Devanagari but ASCII markers remained,
     // manually replace them with Vedic Unicode characters.
@@ -104,7 +105,7 @@ class TransliterationService {
   /// In key2, '/' appears before an accented vowel (Vedic pitch accent).
   /// Strip them when accent display is off, or when building LIKE queries.
   static String stripSLP1Accents(String slp1Text) =>
-      slp1Text.replaceAll('/', '').replaceAll('\\', '');
+      slp1Text.replaceAll('/', '').replaceAll('\\', '').replaceAll('^', '');
 
   /// Display name for a scheme code.
   static String displayName(String scheme) =>
