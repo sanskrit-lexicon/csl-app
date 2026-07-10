@@ -1,6 +1,6 @@
 # csl-app
 
-_Created: 18-03-2026 · Last updated: 05-07-2026_
+_Created: 18-03-2026 · Last updated: 11-07-2026_
 
 The Cologne Digital Sanskrit Dictionaries are a web service — but a reader in
 the field, in a library with no signal, or on a phone with a data cap needs
@@ -24,6 +24,7 @@ working with no connection and no per-query server round-trip.
 | [test/](test) | Test suite |
 | [scripts/](scripts) | Build/support scripts |
 | [reference/](reference) | Reference material |
+| [docs/BUILD_RELEASE_MANUAL.md](docs/BUILD_RELEASE_MANUAL.md) | **Operator manual**: per-platform build/run/release, Android signing, the automatic web deploy, and where the dictionary SQLites come from (csl-sqlite gh-pages, downloaded at runtime — nothing bundled) |
 
 ## Usage example — illustrative, not executed
 
