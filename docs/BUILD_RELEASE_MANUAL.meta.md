@@ -22,7 +22,7 @@ release" and "why is the download failing" without reading `lib/core/`.
 ## Provenance
 
 Authored 11-07-2026 by Fable 5 (`claude-fable-5`) under handoff
-[H504-Fable_csl-app_flutter_build_release_manual_10.07.26](https://github.com/gasyoun/Uprava/blob/main/handoffs/H504-Fable_csl-app_flutter_build_release_manual_10.07.26.md)
+[H504-Fable_csl-app_flutter_build_release_manual_10.07.26](https://github.com/gasyoun/Uprava/blob/main/handoffs/archive/H504-Fable_csl-app_flutter_build_release_manual_10.07.26.md)
 (the H501–H531 per-repo manuals programme, Litpam-Indexator MANUAL.md gold
 standard). Every command, URL, and version constraint was read from the code
 (`pubspec.yaml`, `lib/core/*`, `lib/models/dictionary_info.dart`,
