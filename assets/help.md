@@ -146,4 +146,4 @@ This is useful for quickly scanning through many results.
 For bug reports, feature requests, or corrections, please contact us:
 
 - **Email**: drdhaval2785@gmail.com
-- **GitHub**: [csl-app](github.com/sanskrit-lexicon/csl-app)
+- **GitHub**: [csl-app](https://github.com/sanskrit-lexicon/csl-app)
