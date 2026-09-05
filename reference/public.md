@@ -1,3 +1,5 @@
+_Created: 25-03-2026 · Last updated: 05-09-2026_
+
 # Public API Reference (version 0.1.4)
 
 This document lists all public classes, functions, and methods in the CSL App codebase. Each entry includes the file location, description, parameters, return types, and usage examples where applicable.
@@ -2291,3 +2293,5 @@ DownloadService.downloadDictionary
 ---
 
 *Last updated: March 2026*
+
+_Dr. Mārcis Gasūns_

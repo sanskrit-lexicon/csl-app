@@ -1,3 +1,5 @@
+_Created: 19-03-2026 · Last updated: 05-09-2026_
+
 # Changelog
 
 All notable changes to this project will be documented in this file.
@@ -131,3 +133,5 @@ All notable changes to this project will be documented in this file.
 - Basic offline dictionary functionality with support for multiple Cologne Digital Sanskrit Lexicons.
 - Multi-scheme transliteration support.
 - Headword and definition search capabilities.
+
+_Dr. Mārcis Gasūns_

@@ -1,3 +1,5 @@
+_Created: 25-03-2026 · Last updated: 05-09-2026_
+
 # Private API Reference (version 0.1.4)
 
 This document lists all private classes, functions, methods, and fields in the CSL App codebase. These are implementation details not intended for external use.
@@ -1236,3 +1238,5 @@ Private widget for rendering entry cards.
 ---
 
 *Last updated: March 2026*
+
+_Dr. Mārcis Gasūns_

@@ -1,3 +1,5 @@
+_Created: 24-03-2026 · Last updated: 05-09-2026_
+
 # Getting Started
 
 1. Open the app and tap the menu (☰) in the top-left corner
@@ -147,3 +149,5 @@ For bug reports, feature requests, or corrections, please contact us:
 
 - **Email**: drdhaval2785@gmail.com
 - **GitHub**: [csl-app](https://github.com/sanskrit-lexicon/csl-app)
+
+_Dr. Mārcis Gasūns_
