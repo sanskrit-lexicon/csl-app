@@ -24,7 +24,7 @@ class EntryCardWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingsProvider);
-    final dictInfo = DictionaryRegistry.byCode(dictCode)!;
+    final dictInfo = DictionaryRegistry.require(dictCode);
 
     // Parse the raw XML data
     final parsed = EntryParser.parse(searchResult.data, searchResult.lnum);

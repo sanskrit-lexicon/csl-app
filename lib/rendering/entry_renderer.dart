@@ -36,7 +36,7 @@ class EntryRenderer {
     required double lnum,
     String? highlightTerm,
   }) async {
-    final dictInfo = DictionaryRegistry.byCode(dictCode)!;
+    final dictInfo = DictionaryRegistry.require(dictCode);
     final renderStart = DateTime.now();
 
     // 1. Pre-fetch abbreviations used in this entry
@@ -100,14 +100,14 @@ class EntryRenderer {
 
     // 2. Build headword display string
     final slp1Key = _resolveHeadwordSlp1(entry);
-    final isEnglishDict = ['ae', 'mwe', 'bor'].contains(dictCode.toLowerCase());
+    final isEnglishDict = DictionaryRegistry.isEnglishHeadwords(dictCode);
     final displayKey = isEnglishDict
         ? slp1Key
         : TransliterationService.fromSlp1(slp1Key, settings.outputTranslit,
             useAccented: settings.showAccent, dictCode: dictCode);
 
     // 3. Process body HTML
-    final isEnglish = ['ae', 'mwe', 'bor'].contains(dictCode.toLowerCase());
+    final isEnglish = DictionaryRegistry.isEnglishHeadwords(dictCode);
     final highlightSlp1 = (highlightTerm != null && highlightTerm.isNotEmpty)
         ? (isEnglish
             ? highlightTerm.toLowerCase()
@@ -258,8 +258,7 @@ class EntryRenderer {
       String? highlightSlp1,
       String? rawHighlightTerm,
       String dictCode) {
-    final isAbchFamily =
-        ['abch', 'acph', 'acsj', 'nmmb'].contains(dictCode.toLowerCase());
+    final isAbchFamily = DictionaryRegistry.renderProfile(dictCode) == 'abch';
 
     // Process <chg> tags by splitting <s> around them so chg HTML
     // ends up OUTSIDE the transliteration scope.

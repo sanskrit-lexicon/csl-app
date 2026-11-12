@@ -1,3 +1,5 @@
+import '../core/dictionary_registry.dart';
+
 /// BasicAdjust: XML Pre-Processing Module
 ///
 /// This module handles pre-processing of dictionary XML data before rendering.
@@ -101,8 +103,9 @@ class BasicAdjust {
     else if (dict == 'bor') {
       xml = _adjustBor(xml);
     }
-    // abch, acph, acsj, nmmb adjustments (add line breaks after certain tags)
-    else if (['abch', 'acph', 'acsj', 'nmmb'].contains(dict)) {
+    // abch-family adjustments (add line breaks after certain tags);
+    // membership comes from the manifest's renderProfile.
+    else if (DictionaryRegistry.renderProfile(dict) == 'abch') {
       xml = _adjustAbchFamily(xml, dict);
     }
 
