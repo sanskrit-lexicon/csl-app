@@ -1,8 +1,19 @@
-_Created: 19-03-2026 · Last updated: 05-09-2026_
+_Created: 19-03-2026 · Last updated: 12-11-2026_
 
 # Changelog
 
 All notable changes to this project will be documented in this file.
+
+## [0.3.0] - 2026-11-12
+
+### Added
+
+- **NYBJ (Nyāyakośa, 1928)**: New dictionary available in Manage Dictionaries, including Devanagari text option and bibliographic entry.
+- **Dictionary manifest**: The app now reads `dictionaries.json` from csl-sqlite at startup (4 s timeout, cached for offline use, built-in list as fallback), so dictionaries added to csl-sqlite can appear without an app update. Display flags (English headwords, render profile, accent/Devanagari, group, status) come from the manifest.
+
+### Changed
+
+- Dictionary-specific behaviour (English-headword search/rendering, abch-family line breaks) is now driven by manifest flags instead of hardcoded code lists.
 
 ## [0.2.3] - 2026-06-02
 
