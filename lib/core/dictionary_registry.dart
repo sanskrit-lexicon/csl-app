@@ -551,6 +551,18 @@ class DictionaryRegistry {
       bibliographicEntry: 'Nāmamālikā of Bhoja.',
     ),
     DictionaryInfo(
+      codeUp: 'NYBJ',
+      codeLo: 'nybj',
+
+      name: 'Nyāyakośa or Dictionary of Technical Terms of Indian Philosophy',
+      title: 'Nyāyakośa 1928',
+      hasAccent: false,
+      hasDevaTextOption: true,
+      worldCatUrl: '',
+      bibliographicEntry:
+          'BHĪMĀCĀRYA JHAḶAKĪKARA (1928). Nyāyakośa or Dictionary of Technical Terms of Indian Philosophy, 3rd ed. Bombay Sanskrit & Prakrit Series No. XLIX. Poona, Bhandarkar Oriental Research Institute.',
+    ),
+    DictionaryInfo(
       codeUp: 'FRI',
       codeLo: 'fri',
 
