@@ -75,7 +75,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 labelColor: Theme.of(context).colorScheme.primary,
                 unselectedLabelColor: Colors.grey,
                 tabs: _currentTabs.map((code) {
-                  final info = DictionaryRegistry.byCode(code)!;
+                  final info = DictionaryRegistry.require(code);
                   return Tab(
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -308,7 +308,7 @@ class _DictionaryView extends ConsumerWidget {
         final parsed = EntryParser.parse(result.data, result.lnum);
         final slp1Key = parsed.key2Slp1 ?? parsed.key1Slp1;
         final isEnglishDict =
-            ['ae', 'mwe', 'bor'].contains(dictCode.toLowerCase());
+            DictionaryRegistry.isEnglishHeadwords(dictCode);
         final displayKey = isEnglishDict
             ? slp1Key
             : TransliterationService.fromSlp1(

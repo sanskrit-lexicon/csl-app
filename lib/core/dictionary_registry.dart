@@ -1,8 +1,18 @@
 import '../models/dictionary_info.dart';
 
-/// Complete catalogue of all CSL dictionaries, sourced from dictparms.py.
+/// Catalogue of CSL dictionaries.
+///
+/// [builtIn] is the curated offline fallback (sourced from dictparms.py).
+/// At startup the app merges csl-sqlite's `dictionaries.json` over it
+/// ([applyManifest]), so dictionaries added to csl-sqlite appear without an
+/// app release. See dictionary_manifest.dart for fetching and caching.
 class DictionaryRegistry {
-  static const List<DictionaryInfo> all = [
+  static List<DictionaryInfo> _merged = builtIn;
+
+  /// All listable dictionaries (built-in + manifest, minus excluded ones).
+  static List<DictionaryInfo> get all => _merged;
+
+  static const List<DictionaryInfo> builtIn = [
     DictionaryInfo(
       codeUp: 'ACC',
       codeLo: 'acc',
@@ -27,6 +37,7 @@ class DictionaryRegistry {
           'https://www.worldcat.org/title/students-english-sanskrit-dictionary/oclc/43456219',
       bibliographicEntry:
           'APTE, V. S. (1884). The student\'s English-Sanskrit dictionary. Poona.',
+      englishHeadwords: true,
     ),
     DictionaryInfo(
       codeUp: 'AP',
@@ -105,6 +116,7 @@ class DictionaryRegistry {
           'https://www.worldcat.org/title/practical-english-sanskrit-dictionary/oclc/457102878',
       bibliographicEntry:
           'BOROOAH, A. (1877). A Practical English-Sanskrit Dictionary. Calcutta, Wyman.',
+      englishHeadwords: true,
     ),
     DictionaryInfo(
       codeUp: 'BUR',
@@ -299,6 +311,7 @@ class DictionaryRegistry {
           'https://www.worldcat.org/title/dictionary-english-and-sanscrit/oclc/5333096',
       bibliographicEntry:
           'MONIER-WILLIAMS, M. (1851). A dictionary, English and Sanscrit. London, W.H. Allen.',
+      englishHeadwords: true,
     ),
     DictionaryInfo(
       codeUp: 'PE',
@@ -516,6 +529,7 @@ class DictionaryRegistry {
       hasDevaTextOption: true,
       worldCatUrl: 'https://search.worldcat.org/title/163083433',
       bibliographicEntry: 'Abhidhānacintāmaṇi of Hemacandrācārya.',
+      renderProfile: 'abch',
     ),
     DictionaryInfo(
       codeUp: 'ACPH',
@@ -527,6 +541,7 @@ class DictionaryRegistry {
       hasDevaTextOption: true,
       worldCatUrl: 'https://search.worldcat.org/title/163083433',
       bibliographicEntry: 'Abhidhānacintāmaṇipariśiṣṭa of Hemacandrācārya.',
+      renderProfile: 'abch',
     ),
     DictionaryInfo(
       codeUp: 'ACSJ',
@@ -538,6 +553,7 @@ class DictionaryRegistry {
       hasDevaTextOption: true,
       worldCatUrl: 'https://search.worldcat.org/title/163083433',
       bibliographicEntry: 'Abhidhānacintāmaṇiśiloñcha of Jinadeva.',
+      renderProfile: 'abch',
     ),
     DictionaryInfo(
       codeUp: 'NMMB',
@@ -549,6 +565,7 @@ class DictionaryRegistry {
       hasDevaTextOption: true,
       worldCatUrl: 'https://search.worldcat.org/title/977894663',
       bibliographicEntry: 'Nāmamālikā of Bhoja.',
+      renderProfile: 'abch',
     ),
     DictionaryInfo(
       codeUp: 'NYBJ',
@@ -576,13 +593,51 @@ class DictionaryRegistry {
     ),
   ];
 
-  /// Look up a dictionary by its lowercase code.
+  /// Merge a parsed manifest over the built-in list. Safe to call repeatedly;
+  /// always recomputed from [builtIn]. Entries whose status is "excluded"
+  /// are dropped. Built-in dictionaries missing from the manifest are kept.
+  static void applyManifest(Map<String, dynamic> manifest) {
+    final raw = manifest['dictionaries'];
+    if (raw is! List) return;
+    final byCodeMap = <String, Map<String, dynamic>>{};
+    for (final e in raw) {
+      if (e is Map<String, dynamic> && e['code'] is String) {
+        byCodeMap[(e['code'] as String).toLowerCase()] = e;
+      }
+    }
+    final result = <DictionaryInfo>[];
+    for (final b in builtIn) {
+      final m = byCodeMap.remove(b.codeLo);
+      result.add(m == null ? b : b.withManifest(m));
+    }
+    for (final m in byCodeMap.values) {
+      result.add(DictionaryInfo.fromManifest(m));
+    }
+    _merged = List.unmodifiable(
+        result.where((d) => d.status != 'excluded').toList());
+  }
+
+  /// Restore the built-in list (tests).
+  static void reset() => _merged = builtIn;
+
+  /// Look up a dictionary by its lowercase code; null if unknown.
   static DictionaryInfo? byCode(String code) {
     final lo = code.toLowerCase();
-    try {
-      return all.firstWhere((d) => d.codeLo == lo);
-    } catch (_) {
-      return null;
+    for (final d in _merged) {
+      if (d.codeLo == lo) return d;
     }
+    return null;
   }
+
+  /// Like [byCode] but never null: unknown codes get a minimal stub so a
+  /// dictionary the app has no metadata for still displays.
+  static DictionaryInfo require(String code) =>
+      byCode(code) ??
+      DictionaryInfo.fromManifest({'code': code, 'name': code.toUpperCase()});
+
+  static bool isEnglishHeadwords(String code) =>
+      byCode(code)?.englishHeadwords ?? false;
+
+  static String renderProfile(String code) =>
+      byCode(code)?.renderProfile ?? 'default';
 }

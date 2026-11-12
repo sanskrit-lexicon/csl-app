@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'core/dictionary_manifest.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cologne_sanskrit_lexicon/features/home/home_screen.dart';
 import 'package:cologne_sanskrit_lexicon/core/transliteration_service.dart';
@@ -21,6 +22,9 @@ Future<void> main() async {
 
   // Initialize transliteration schemes
   TransliterationService.init();
+
+  // Merge csl-sqlite's dictionary manifest over the built-in list (offline-safe).
+  await DictionaryManifest.load();
 
   runApp(
     const ProviderScope(

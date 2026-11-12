@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'dictionary_registry.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import '../models/app_settings.dart';
 import '../models/search_result.dart';
@@ -34,7 +35,7 @@ class SearchService {
   }) async {
     if (inputWord.trim().isEmpty) return [];
 
-    final isEnglish = ['ae', 'mwe', 'bor'].contains(dictCode.toLowerCase());
+    final isEnglish = DictionaryRegistry.isEnglishHeadwords(dictCode);
     final slpWord = isEnglish
         ? inputWord.trim().toLowerCase()
         : TransliterationService.toSlp1(inputWord.trim(), inputTranslit);
@@ -92,7 +93,7 @@ class SearchService {
   }) async {
     if (inputWord.trim().isEmpty) return [];
 
-    final isEnglish = ['ae', 'mwe', 'bor'].contains(dictCode.toLowerCase());
+    final isEnglish = DictionaryRegistry.isEnglishHeadwords(dictCode);
     // Use outputTranslit for definition search to match displayed text
     final searchWord = isEnglish
         ? inputWord.trim().toLowerCase()
@@ -140,7 +141,7 @@ class SearchService {
     required SearchMode hwMode,
     required int maxResults,
   }) async {
-    final isEnglish = ['ae', 'mwe', 'bor'].contains(dictCode.toLowerCase());
+    final isEnglish = DictionaryRegistry.isEnglishHeadwords(dictCode);
     final hwSlp = isEnglish
         ? hwInput.trim().toLowerCase()
         : TransliterationService.toSlp1(hwInput.trim(), inputTranslit);
